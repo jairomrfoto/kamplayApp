@@ -1,3 +1,11 @@
+export interface CabinNote {
+  id: string;
+  fecha: Date;
+  texto: string;
+  estadoLimpieza: 'Limpia' | 'Necesita Atención' | 'En Limpieza';
+  realizadaPor: string;
+}
+
 export interface Camper {
   id: string;
   nombre: string;
@@ -20,7 +28,71 @@ export interface Camper {
       administradaPor?: string;
     }[];
   };
-  evaluaciones: any[];
+  evaluaciones: EvaluacionCamper[];
+}
+
+export interface Monitor {
+  id: string;
+  nombre: string;
+  especialidad: string;
+  grupoAsignado: string;
+  cabanaAsignada: string;
+  encuestas: EncuestaMonitor[];
+  permisos: {
+    editarActividades: boolean;
+    editarMateriales: boolean;
+    editarGrupos: boolean;
+    editarCabanas: boolean;
+    editarAreaMedica: boolean;
+  };
+  foto?: string;
+  email?: string;
+}
+
+export interface EncuestaMonitor {
+  id: string;
+  monitorId: string;
+  fecha: Date;
+  respuestas: Record<string, string | number | boolean>;
+}
+
+export interface EvaluacionGrupo {
+  id: string;
+  grupoId: string;
+  fecha: Date;
+  puntuacion: number;
+  comentarios: string;
+}
+
+export interface EvaluacionCamper {
+  id: string;
+  camperId: string;
+  fecha: Date;
+  participacion: number;
+  comportamiento: number;
+  integracion: number;
+  comentarios?: string;
+}
+
+export interface Grupo {
+  id: string;
+  nombre: string;
+  edadMinima: number;
+  edadMaxima: number;
+  monitores: string[];
+  acampados: string[];
+  evaluaciones: EvaluacionGrupo[];
+}
+
+export interface Cabana {
+  id: string;
+  numero: string;
+  capacidad: number;
+  ocupantes: string[];
+  monitorEncargado?: string;
+  ultimaRevision: Date;
+  estado: 'Limpia' | 'Necesita Revisión' | 'En Limpieza';
+  notas?: CabinNote[];
 }
 
 export interface Material {
@@ -31,7 +103,49 @@ export interface Material {
   categoria: string;
 }
 
-export interface CabinNote {
+export interface Actividad {
+  id: string;
+  titulo: string;
+  inicio: Date;
+  fin: Date;
+  grupo: string;
+  monitores: string[];
+  materiales: string[];
+  tipo: 'regular' | 'especial';
+  categoria: string;
+  duracion: number;
+  capacidadMaxima: number;
+  edadMinima: number;
+  edadMaxima: number;
+  descripcion?: string;
+  ubicacion: string;
+}
+
+export interface HorarioDiario {
+  id: string;
+  dia: Date;
+  actividades: string[];
+}
+
+export interface MenuItem {
+  id: string;
+  fecha: Date;
+  comidas: {
+    desayuno: string[];
+    almuerzo: {
+      primerPlato: string;
+      segundoPlato: string;
+      postre: string;
+    };
+    merienda: string[];
+    cena: {
+      primerPlato: string;
+      segundoPlato: string;
+      postre: string;
+    };
+  };
+  alergenos: string[];
+  observaciones?: string;
 }
 
 export interface Incident {
@@ -54,4 +168,12 @@ export interface Incident {
     estado?: 'pendiente' | 'en_proceso' | 'resuelta';
     acciones?: string;
   }[];
+}
+
+export interface UserProfile {
+  uid: string;
+  campId: string;
+  role: 'coordinator' | 'monitor' | 'parent';
+  email: string;
+  nombre: string;
 }

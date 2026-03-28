@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useFirestoreSync } from './hooks/useFirestoreSync';
 import Landing from './pages/Landing';
 import About from './pages/About';
 import Benefits from './pages/Benefits';
@@ -23,6 +24,9 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 
 function App() {
+  // Sincroniza automáticamente los datos con Firestore cuando el usuario inicia sesión
+  useFirestoreSync();
+
   return (
     <Router>
       <Routes>

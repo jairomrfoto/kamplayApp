@@ -20,6 +20,8 @@ export interface CampCoordinator {
   email: string;
   name: string;
   role: 'coordinator';
+  photo?: string;
+  location?: string;
   permissions: {
     manageCoordinators: boolean;
     manageMonitors: boolean;

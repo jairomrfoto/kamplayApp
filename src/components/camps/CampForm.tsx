@@ -2,16 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import FormField from './FormField';
 import SuccessModal from './SuccessModal';
 import { generateJoinCode } from '../../utils/generateJoinCode';
+import { saveCampInfo, saveUserProfile } from '../../services/firestore';
+import { useAuth } from '../../hooks/useAuth';
 import type { Camp } from '../../types/camp';
 
 interface CampFormData extends Omit<Camp, 'id' | 'joinCode' | 'adminId'> {}
 
 const CampForm = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showSuccess, setShowSuccess] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
   const [createdCamp, setCreatedCamp] = useState<Camp | null>(null);
@@ -85,22 +88,37 @@ const CampForm = () => {
     return isValid;
   }, [formData, validateField]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isFormValid()) {
-      const camp: Camp = {
-        id: crypto.randomUUID(),
-        ...formData,
-        joinCodes: {
-          monitors: generateJoinCode(),
-          families: generateJoinCode()
-        },
-        adminId: crypto.randomUUID()
-      };
-      
-      // Aquí iría la lógica para guardar el campamento y crear el admin
+    if (!isFormValid()) return;
+
+    const campId = crypto.randomUUID();
+    const camp: Camp = {
+      id: campId,
+      ...formData,
+      joinCodes: {
+        monitors: generateJoinCode(),
+        families: generateJoinCode(),
+      },
+      coordinators: user ? [user.uid] : [],
+      mainCoordinator: user?.uid || '',
+    };
+
+    try {
+      await saveCampInfo(camp);
+      if (user) {
+        await saveUserProfile({
+          uid: user.uid,
+          campId,
+          role: 'coordinator',
+          email: user.email || adminEmail,
+          nombre: user.displayName || '',
+        });
+      }
       setCreatedCamp(camp);
       setShowSuccess(true);
+    } catch (err) {
+      console.error('Error guardando campamento:', err);
     }
   };
 

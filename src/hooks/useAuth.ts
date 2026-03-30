@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  signInWithRedirect,
+  signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   type User
@@ -18,13 +18,13 @@ export function useAuth() {
       setUser(user);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
   const signInWithGoogle = async () => {
     googleProvider.setCustomParameters({ prompt: 'select_account' });
-    await signInWithRedirect(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
   };
 
   const signInWithEmail = async (email: string, password: string) => {
@@ -41,19 +41,8 @@ export function useAuth() {
   };
 
   const signOut = async () => {
-    try {
-      await firebaseSignOut(auth);
-    } catch (error) {
-      console.error('Error signing out:', error);
-      throw error;
-    }
+    await firebaseSignOut(auth);
   };
 
-  return {
-    user,
-    loading,
-    signInWithGoogle,
-    signInWithEmail,
-    signOut
-  };
+  return { user, loading, signInWithGoogle, signInWithEmail, signOut };
 }

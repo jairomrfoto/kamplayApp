@@ -24,8 +24,11 @@ const Login = () => {
     setError('');
     try {
       await signInWithGoogle();
-    } catch {
-      setError('Error al iniciar sesión con Google. Inténtalo de nuevo.');
+      // onAuthStateChanged fires → useEffect navigates to /onboarding
+    } catch (err: any) {
+      if (err.code !== 'auth/popup-closed-by-user') {
+        setError('Error al iniciar sesión con Google. Inténtalo de nuevo.');
+      }
       setLoading(false);
     }
   };

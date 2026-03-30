@@ -19,10 +19,15 @@ const Onboarding = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Check if user already has a profile — redirect to correct dashboard
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if (authLoading || !user) return;
+    if (authLoading) return;
+    if (!user) {
+      navigate('/login');
+      return;
+    }
 
+    // Check if user already has a profile — redirect to correct dashboard
     const checkProfile = async () => {
       try {
         const profile = await getUserProfile(user.uid);
@@ -31,9 +36,8 @@ const Onboarding = () => {
           else if (profile.role === 'monitor') navigate('/monitor-dashboard');
           else navigate('/parent-dashboard');
         }
-        // No profile → stay on onboarding form
       } catch {
-        // Firestore unavailable — stay on onboarding form, let user proceed
+        // Firestore unavailable — stay on onboarding form
       }
     };
 

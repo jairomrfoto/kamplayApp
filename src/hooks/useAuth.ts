@@ -3,7 +3,8 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   signInWithRedirect,
-  getRedirectResult,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   type User
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
@@ -24,11 +25,19 @@ export function useAuth() {
   const signInWithGoogle = async () => {
     googleProvider.setCustomParameters({ prompt: 'select_account' });
     await signInWithRedirect(auth, googleProvider);
-    // Page redirects to Google — execution stops here
   };
 
-  const getGoogleRedirectResult = async () => {
-    return await getRedirectResult(auth);
+  const signInWithEmail = async (email: string, password: string) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      return result.user;
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        return result.user;
+      }
+      throw error;
+    }
   };
 
   const signOut = async () => {
@@ -44,7 +53,7 @@ export function useAuth() {
     user,
     loading,
     signInWithGoogle,
-    getGoogleRedirectResult,
+    signInWithEmail,
     signOut
   };
 }

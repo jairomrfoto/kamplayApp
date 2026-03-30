@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Users, UserCog, Tent, UserPlus, Loader } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { getUserProfile } from '../services/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,30 +10,13 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // When auth state resolves with a logged-in user, navigate appropriately
+  // When Firebase Auth resolves with a user, go to onboarding
+  // Onboarding will handle routing to the correct dashboard
   useEffect(() => {
     if (authLoading) return;
-    if (!user) return;
-
-    const handleLoggedInUser = async () => {
-      setLoading(true);
-      try {
-        const profile = await getUserProfile(user.uid);
-        if (profile?.campId) {
-          if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
-          else if (profile.role === 'monitor') navigate('/monitor-dashboard');
-          else navigate('/parent-dashboard');
-        } else {
-          navigate('/onboarding');
-        }
-      } catch {
-        navigate('/onboarding');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    handleLoggedInUser();
+    if (user) {
+      navigate('/onboarding');
+    }
   }, [user, authLoading]);
 
   const handleGoogleSignIn = async () => {

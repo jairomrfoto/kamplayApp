@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tent, Users, UserCog, UserPlus, ArrowLeft, Loader } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { saveUserProfile, saveCampInfo, getCampByCode } from '../services/firestore';
+import { saveUserProfile, saveCampInfo, getCampByCode, getUserProfile } from '../services/firestore';
 import { generateJoinCode } from '../utils/generateJoinCode';
 import type { UserProfile } from '../types';
 import type { Camp } from '../types/camp';
@@ -12,12 +12,33 @@ type Step = 'role' | 'coordinator-setup' | 'join-camp';
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [step, setStep] = useState<Step>('role');
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Check if user already has a profile — redirect to correct dashboard
+  useEffect(() => {
+    if (authLoading || !user) return;
+
+    const checkProfile = async () => {
+      try {
+        const profile = await getUserProfile(user.uid);
+        if (profile?.campId) {
+          if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
+          else if (profile.role === 'monitor') navigate('/monitor-dashboard');
+          else navigate('/parent-dashboard');
+        }
+        // No profile → stay on onboarding form
+      } catch {
+        // Firestore unavailable — stay on onboarding form, let user proceed
+      }
+    };
+
+    checkProfile();
+  }, [user, authLoading]);
 
   // Datos para coordinador
   const [campData, setCampData] = useState({

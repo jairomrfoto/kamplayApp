@@ -18,18 +18,10 @@ const Login = () => {
         setLoading(true);
         const result = await getGoogleRedirectResult();
         if (!result?.user) return;
-
-        const profile = await getUserProfile(result.user.uid);
-        if (profile?.campId) {
-          if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
-          else if (profile.role === 'monitor') navigate('/monitor-dashboard');
-          else navigate('/parent-dashboard');
-        } else {
-          navigate('/onboarding');
-        }
+        await navigateByProfile(result.user.uid);
       } catch (err) {
         console.error('Error al iniciar sesión:', err);
-        setError('Error al iniciar sesión. Inténtalo de nuevo.');
+        navigate('/onboarding');
       } finally {
         setLoading(false);
       }
@@ -37,6 +29,22 @@ const Login = () => {
 
     checkRedirectResult();
   }, []);
+
+  const navigateByProfile = async (uid: string) => {
+    try {
+      const profile = await getUserProfile(uid);
+      if (profile?.campId) {
+        if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
+        else if (profile.role === 'monitor') navigate('/monitor-dashboard');
+        else navigate('/parent-dashboard');
+      } else {
+        navigate('/onboarding');
+      }
+    } catch {
+      // Firestore offline or error — send to onboarding as safe fallback
+      navigate('/onboarding');
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     if (!userType) return;

@@ -6,45 +6,36 @@ import { getUserProfile } from '../services/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signInWithGoogle, getGoogleRedirectResult } = useAuth();
+  const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const [userType, setUserType] = useState<'parent' | 'monitor' | 'coordinator' | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Handle return from Google redirect
+  // When auth state resolves with a logged-in user, navigate appropriately
   useEffect(() => {
-    const checkRedirectResult = async () => {
+    if (authLoading) return;
+    if (!user) return;
+
+    const handleLoggedInUser = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        const result = await getGoogleRedirectResult();
-        if (!result?.user) return;
-        await navigateByProfile(result.user.uid);
-      } catch (err) {
-        console.error('Error al iniciar sesión:', err);
+        const profile = await getUserProfile(user.uid);
+        if (profile?.campId) {
+          if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
+          else if (profile.role === 'monitor') navigate('/monitor-dashboard');
+          else navigate('/parent-dashboard');
+        } else {
+          navigate('/onboarding');
+        }
+      } catch {
         navigate('/onboarding');
       } finally {
         setLoading(false);
       }
     };
 
-    checkRedirectResult();
-  }, []);
-
-  const navigateByProfile = async (uid: string) => {
-    try {
-      const profile = await getUserProfile(uid);
-      if (profile?.campId) {
-        if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
-        else if (profile.role === 'monitor') navigate('/monitor-dashboard');
-        else navigate('/parent-dashboard');
-      } else {
-        navigate('/onboarding');
-      }
-    } catch {
-      // Firestore offline or error — send to onboarding as safe fallback
-      navigate('/onboarding');
-    }
-  };
+    handleLoggedInUser();
+  }, [user, authLoading]);
 
   const handleGoogleSignIn = async () => {
     if (!userType) return;
@@ -52,7 +43,7 @@ const Login = () => {
     setError('');
     try {
       await signInWithGoogle();
-      // Redirect happens — nothing runs after this
+      // Page redirects to Google — nothing runs after this
     } catch (err) {
       console.error('Error al iniciar sesión:', err);
       setError('Error al iniciar sesión. Inténtalo de nuevo.');

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { 
-  signInWithPopup,
+import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  type User,
-  signInWithRedirect
+  signInWithRedirect,
+  getRedirectResult,
+  type User
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
@@ -22,24 +22,13 @@ export function useAuth() {
   }, []);
 
   const signInWithGoogle = async () => {
-    try {
-      // Configure Google provider to prefer redirect on mobile
-      googleProvider.setCustomParameters({
-        prompt: 'select_account'
-      });
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+    await signInWithRedirect(auth, googleProvider);
+    // Page redirects to Google — execution stops here
+  };
 
-      const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
-    } catch (error) {
-      if (error.code === 'auth/popup-blocked') {
-        // If popup is blocked, try redirect method instead
-        await signInWithRedirect(auth, googleProvider);
-        return null;
-      } else {
-        console.error('Error signing in with Google:', error);
-        throw error;
-      }
-    }
+  const getGoogleRedirectResult = async () => {
+    return await getRedirectResult(auth);
   };
 
   const signOut = async () => {
@@ -55,6 +44,7 @@ export function useAuth() {
     user,
     loading,
     signInWithGoogle,
+    getGoogleRedirectResult,
     signOut
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Users, UserCog, Tent, UserPlus, Loader } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -6,36 +6,48 @@ import { getUserProfile } from '../services/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, getGoogleRedirectResult } = useAuth();
   const [userType, setUserType] = useState<'parent' | 'monitor' | 'coordinator' | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Handle return from Google redirect
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        setLoading(true);
+        const result = await getGoogleRedirectResult();
+        if (!result?.user) return;
+
+        const profile = await getUserProfile(result.user.uid);
+        if (profile?.campId) {
+          if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
+          else if (profile.role === 'monitor') navigate('/monitor-dashboard');
+          else navigate('/parent-dashboard');
+        } else {
+          navigate('/onboarding');
+        }
+      } catch (err) {
+        console.error('Error al iniciar sesión:', err);
+        setError('Error al iniciar sesión. Inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkRedirectResult();
+  }, []);
 
   const handleGoogleSignIn = async () => {
     if (!userType) return;
     setLoading(true);
     setError('');
-
     try {
-      const user = await signInWithGoogle();
-      if (!user) return;
-
-      // Comprobamos si el usuario ya tiene perfil en Firestore
-      const profile = await getUserProfile(user.uid);
-
-      if (profile?.campId) {
-        // Usuario existente → redirigir a su dashboard
-        if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
-        else if (profile.role === 'monitor') navigate('/monitor-dashboard');
-        else navigate('/parent-dashboard');
-      } else {
-        // Usuario nuevo → ir al onboarding para configurar su cuenta
-        navigate('/onboarding');
-      }
+      await signInWithGoogle();
+      // Redirect happens — nothing runs after this
     } catch (err) {
       console.error('Error al iniciar sesión:', err);
       setError('Error al iniciar sesión. Inténtalo de nuevo.');
-    } finally {
       setLoading(false);
     }
   };

@@ -39,20 +39,30 @@ const JoinCamp = () => {
       }
 
       const role = isMonitor ? 'monitor' : 'parent';
-      const currentProfile = await getUserProfile(user.uid);
-      await saveUserProfile({
-        uid: user.uid,
-        campId: camp.id,
-        role,
-        email: user.email || '',
-        nombre: currentProfile?.nombre || user.email?.split('@')[0] || '',
-      });
 
-      // Persist campId locally so next session loads the camp instantly
+      // Save locally and navigate immediately — no waiting for Firestore
       setLocalProfile(user.uid, { role, campId: camp.id });
-
       if (isMonitor) navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');
+
+      // Sync to Firestore in background
+      getUserProfile(user.uid).then(currentProfile => {
+        saveUserProfile({
+          uid: user.uid,
+          campId: camp.id,
+          role,
+          email: user.email || '',
+          nombre: currentProfile?.nombre || user.email?.split('@')[0] || '',
+        }).catch(err => console.error('Error saving profile to Firestore:', err));
+      }).catch(() => {
+        saveUserProfile({
+          uid: user.uid,
+          campId: camp.id,
+          role,
+          email: user.email || '',
+          nombre: user.email?.split('@')[0] || '',
+        }).catch(err => console.error('Error saving profile to Firestore:', err));
+      });
     } catch (err) {
       console.error(err);
       setError('Error al unirse al campamento. Inténtalo de nuevo.');

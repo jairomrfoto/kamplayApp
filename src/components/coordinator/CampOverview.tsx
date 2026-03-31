@@ -41,41 +41,42 @@ const CampOverview = () => {
     if (!user) return;
     setCreateLoading(true);
     setCreateError('');
-    try {
-      const campId = crypto.randomUUID();
-      const codes = {
-        monitors: generateJoinCode('MON'),
-        families: generateJoinCode('PAD'),
-      };
-      const camp: Camp = {
-        id: campId,
-        name: campData.name,
-        location: campData.location,
-        startDate: new Date(campData.startDate),
-        endDate: new Date(campData.endDate),
-        maxCampers: campData.maxCampers,
-        monitorsCount: campData.monitorsCount,
-        joinCodes: codes,
-        coordinators: [user.uid],
-        mainCoordinator: user.uid,
-      };
-      const profile: UserProfile = {
-        uid: user.uid,
-        campId,
-        role: 'coordinator',
-        email: user.email || '',
-        nombre: user.displayName || user.email?.split('@')[0] || 'Coordinador',
-      };
-      await Promise.all([saveCampInfo(camp), saveUserProfile(profile)]);
-      setLocalProfile(user.uid, { role: 'coordinator', campId: campId });
-      setCurrentCamp(camp);
-      setCreating(false);
-    } catch (err) {
-      console.error(err);
-      setCreateError('Error al crear el campamento. Inténtalo de nuevo.');
-    } finally {
-      setCreateLoading(false);
-    }
+
+    const campId = crypto.randomUUID();
+    const codes = {
+      monitors: generateJoinCode('MON'),
+      families: generateJoinCode('PAD'),
+    };
+    const camp: Camp = {
+      id: campId,
+      name: campData.name,
+      location: campData.location,
+      startDate: new Date(campData.startDate),
+      endDate: new Date(campData.endDate),
+      maxCampers: campData.maxCampers,
+      monitorsCount: campData.monitorsCount,
+      joinCodes: codes,
+      coordinators: [user.uid],
+      mainCoordinator: user.uid,
+    };
+    const profile: UserProfile = {
+      uid: user.uid,
+      campId,
+      role: 'coordinator',
+      email: user.email || '',
+      nombre: user.displayName || user.email?.split('@')[0] || 'Coordinador',
+    };
+
+    // Update UI and localStorage immediately — no waiting for Firestore
+    setLocalProfile(user.uid, { role: 'coordinator', campId });
+    setCurrentCamp(camp);
+    setCreating(false);
+    setCreateLoading(false);
+
+    // Sync to Firestore in background
+    Promise.all([saveCampInfo(camp), saveUserProfile(profile)]).catch(err => {
+      console.error('Error saving camp to Firestore (will retry on reconnect):', err);
+    });
   };
 
   if (isLoading) {

@@ -100,26 +100,9 @@ export const useStore = create<AppState>((set, get) => ({
   actividades: initialData.actividades,
   menus: initialData.menus,
   horariosDiarios: initialData.horariosDiarios,
-  currentMonitor: initialData.monitores[0],
+  currentMonitor: undefined,
   incidencias: initialData.incidencias,
-  currentCoordinator: {
-    id: 'coord-1',
-    campId: 'camp-1',
-    email: 'coordinator@example.com',
-    name: 'Coordinador Principal',
-    role: 'coordinator',
-    permissions: {
-      manageCoordinators: true,
-      manageMonitors: true,
-      manageCampers: true,
-      manageActivities: true,
-      manageSchedule: true,
-      viewReports: true,
-    },
-    isMainCoordinator: true,
-    photo: '',
-    location: 'Madrid',
-  },
+  currentCoordinator: undefined,
 
   // ── Carga desde Firestore ────────────────────────────────────────────────
   loadFromFirestore: async (campId: string) => {

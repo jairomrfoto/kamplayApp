@@ -145,6 +145,12 @@ export function subscribeToIncidencias(
 
 // ─── Campamento (documento raíz) ─────────────────────────────────────────────
 
+export async function getCampInfo(campId: string): Promise<Camp | null> {
+  const snap = await getDoc(doc(db, 'campamentos', campId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...fromFirestore(snap.data() as Record<string, unknown>) } as Camp;
+}
+
 export async function saveCampInfo(camp: Camp): Promise<void> {
   await setDoc(
     doc(db, 'campamentos', camp.id),

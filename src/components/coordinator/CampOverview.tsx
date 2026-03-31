@@ -1,160 +1,182 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/store';
-import { Users, Calendar, Package, Award, MapPin, Clock, AlertTriangle } from 'lucide-react';
+import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
 
 const CampOverview = () => {
-  const { campHistory, monitores, campers, actividades } = useStore();
+  const { currentCamp, monitores, campers, actividades, incidencias, isLoading } = useStore();
   const [showIncidentForm, setShowIncidentForm] = useState(false);
-  const currentCamp = campHistory[0]; // Using the first camp as example
+  const [copiedMonitor, setCopiedMonitor] = useState(false);
+  const [copiedParent, setCopiedParent] = useState(false);
+
+  const copyToClipboard = async (text: string, type: 'monitor' | 'parent') => {
+    await navigator.clipboard.writeText(text);
+    if (type === 'monitor') {
+      setCopiedMonitor(true);
+      setTimeout(() => setCopiedMonitor(false), 2000);
+    } else {
+      setCopiedParent(true);
+      setTimeout(() => setCopiedParent(false), 2000);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader size={32} className="animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!currentCamp) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center text-gray-500">
+          <p className="text-lg font-medium">Cargando campamento...</p>
+          <p className="text-sm mt-1">Si esto persiste, recarga la página.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (d: Date | string) =>
+    new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end mb-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{currentCamp.name}</h1>
+          <div className="flex items-center gap-4 mt-1 text-gray-500 text-sm">
+            <span className="flex items-center gap-1"><MapPin size={14} /> {currentCamp.location}</span>
+            <span className="flex items-center gap-1">
+              <Clock size={14} />
+              {formatDate(currentCamp.startDate)} – {formatDate(currentCamp.endDate)}
+            </span>
+          </div>
+        </div>
         <button
           onClick={() => setShowIncidentForm(true)}
-          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm"
         >
-          <AlertTriangle size={20} />
-          Reportar Incidencia
+          <AlertTriangle size={16} /> Reportar incidencia
         </button>
       </div>
 
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-indigo-50 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <Users className="text-indigo-600" size={20} />
+            <div>
+              <p className="text-xs text-gray-500">Acampados</p>
+              <p className="text-2xl font-bold text-gray-900">{campers.length}</p>
+              <p className="text-xs text-gray-400">/ {currentCamp.maxCampers} plazas</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-green-50 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <UserCog className="text-green-600" size={20} />
+            <div>
+              <p className="text-xs text-gray-500">Monitores</p>
+              <p className="text-2xl font-bold text-gray-900">{monitores.length}</p>
+              <p className="text-xs text-gray-400">/ {currentCamp.monitorsCount} previstos</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-purple-50 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <Calendar className="text-purple-600" size={20} />
+            <div>
+              <p className="text-xs text-gray-500">Actividades</p>
+              <p className="text-2xl font-bold text-gray-900">{actividades.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-red-50 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="text-red-500" size={20} />
+            <div>
+              <p className="text-xs text-gray-500">Incidencias</p>
+              <p className="text-2xl font-bold text-gray-900">{incidencias.length}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Join codes */}
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{currentCamp.nombre}</h1>
-            <div className="flex items-center gap-2 mt-2 text-gray-600">
-              <MapPin size={18} />
-              <span>{currentCamp.ubicacion}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock size={18} className="text-indigo-600" />
-            <span>{new Date(currentCamp.fechaInicio).toLocaleDateString()} - {new Date(currentCamp.fechaFin).toLocaleDateString()}</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-indigo-50 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <Users className="text-indigo-600" />
-              <div>
-                <p className="text-sm text-gray-600">Participantes</p>
-                <p className="text-xl font-bold">{currentCamp.estadisticas.participantes}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-green-50 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="text-green-600" />
-              <div>
-                <p className="text-sm text-gray-600">Actividades</p>
-                <p className="text-xl font-bold">{currentCamp.estadisticas.actividades}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-purple-50 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <Package className="text-purple-600" />
-              <div>
-                <p className="text-sm text-gray-600">Materiales</p>
-                <p className="text-xl font-bold">{currentCamp.materiales.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-yellow-50 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <Award className="text-yellow-600" />
-              <div>
-                <p className="text-sm text-gray-600">Satisfacción</p>
-                <p className="text-xl font-bold">{currentCamp.estadisticas.satisfaccion}%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Logros del Campamento</h2>
-          <div className="space-y-3">
-            {currentCamp.logros.map((logro: string, index: number) => (
-              <div key={index} className="flex items-start gap-2">
-                <div className="w-2 h-2 mt-2 rounded-full bg-green-500" />
-                <p className="text-gray-600">{logro}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Incidencias</h2>
-          <div className="space-y-3">
-            {currentCamp.incidencias.map((incidencia: string, index: number) => (
-              <div key={index} className="flex items-start gap-2">
-                <div className="w-2 h-2 mt-2 rounded-full bg-red-500" />
-                <p className="text-gray-600">{incidencia}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Momentos Destacados</h2>
-          <div className="space-y-4">
-            {currentCamp.momentosDestacados.map((momento: string, index: number) => (
-              <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                <span className="text-indigo-600 font-medium">#{index + 1}</span>
-                <p className="mt-1 text-gray-600">{momento}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Informe Médico</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Total Incidencias:</span>
-              <span className="font-medium">{currentCamp.informeMedico.incidencias}</span>
-            </div>
-            {currentCamp.informeMedico.atencionesMedicas.map((atencion: any, index: number) => (
-              <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">{atencion.fecha}</span>
-                  <span className="font-medium">{atencion.tipo}</span>
-                </div>
-                <p className="mt-2 text-sm text-gray-600">{atencion.descripcion}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Evaluación General</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600">Puntuación General:</span>
-              <span className="text-xl font-bold text-indigo-600">
-                {currentCamp.evaluacion.puntuacion}/5.0
-              </span>
-            </div>
-            <p className="text-gray-600 bg-gray-50 p-4 rounded-lg">
-              {currentCamp.evaluacion.comentarios}
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Package size={18} className="text-indigo-600" />
+          Códigos de acceso al campamento
+        </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Comparte estos códigos para que monitores y familias puedan acceder a la app.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Monitor code */}
+          <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4">
+            <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2 flex items-center gap-1">
+              <UserCog size={14} /> Código para monitores
             </p>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xl font-mono font-bold text-indigo-900 tracking-widest">
+                {currentCamp.joinCodes.monitors}
+              </span>
+              <button
+                onClick={() => copyToClipboard(currentCamp.joinCodes.monitors, 'monitor')}
+                className="flex items-center gap-1 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors shrink-0"
+              >
+                {copiedMonitor ? <><Check size={12} /> Copiado</> : <><Copy size={12} /> Copiar</>}
+              </button>
+            </div>
+          </div>
+          {/* Parent code */}
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2 flex items-center gap-1">
+              <Users size={14} /> Código para padres/tutores
+            </p>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xl font-mono font-bold text-blue-900 tracking-widest">
+                {currentCamp.joinCodes.families}
+              </span>
+              <button
+                onClick={() => copyToClipboard(currentCamp.joinCodes.families, 'parent')}
+                className="flex items-center gap-1 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors shrink-0"
+              >
+                {copiedParent ? <><Check size={12} /> Copiado</> : <><Copy size={12} /> Copiar</>}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {showIncidentForm && (
-        <IncidentForm onClose={() => setShowIncidentForm(false)} />
+      {/* Recent incidents */}
+      {incidencias.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Últimas incidencias</h2>
+          <div className="space-y-3">
+            {incidencias.slice(0, 3).map(inc => (
+              <div key={inc.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className={`w-2 h-2 mt-2 rounded-full shrink-0 ${
+                  inc.tipo === 'grave' ? 'bg-red-500' :
+                  inc.tipo === 'moderada' ? 'bg-yellow-500' : 'bg-green-500'
+                }`} />
+                <div>
+                  <p className="text-sm text-gray-800">{inc.descripcion}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {new Date(inc.fecha).toLocaleDateString('es-ES')} · {inc.estado}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
+
+      {showIncidentForm && <IncidentForm onClose={() => setShowIncidentForm(false)} />}
     </div>
   );
 };

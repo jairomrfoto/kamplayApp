@@ -21,6 +21,7 @@ import Incidencias from './pages/Incidencias';
 import Menu from './pages/Menu';
 import CreateCamp from './pages/CreateCamp';
 import Onboarding from './pages/Onboarding';
+import JoinCamp from './pages/JoinCamp';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 
@@ -37,6 +38,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/create-camp" element={<CreateCamp />} />
         <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/join-camp" element={<JoinCamp />} />
         <Route path="/parent-dashboard/*" element={<ParentDashboard />} />
         <Route path="/coordinator-dashboard/*" element={<CoordinatorDashboard />} />
         <Route path="/monitor-dashboard/*" element={<MonitorDashboard />} />

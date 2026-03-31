@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tent, LogOut, User, ChevronDown } from 'lucide-react';
+import { Tent, LogOut, User, ChevronDown, PlusCircle } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -29,6 +29,14 @@ const Navbar = () => {
         >
           <Tent size={24} />
           <h1 className="text-lg lg:text-xl font-bold">Kamplay</h1>
+        </Link>
+
+        <Link
+          to="/join-camp"
+          className="flex items-center gap-1.5 text-sm bg-white text-indigo-600 font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
+        >
+          <PlusCircle size={16} />
+          <span className="hidden sm:inline">Unirme a campamento</span>
         </Link>
 
         <div className="relative">

@@ -14,6 +14,7 @@ export interface Camper {
   foto?: string;
   grupo: string;
   cabana: string;
+  parentUid?: string;   // links camper to their parent's Firebase user
   infoMedica: {
     alergias: string[];
     medicacion: string[];

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { getUserProfile, subscribeToIncidencias, getCampInfo } from '../services/firestore';
@@ -7,55 +7,65 @@ import { getLocalProfile, setLocalProfile } from '../utils/localProfile';
 
 export function useFirestoreSync() {
   const { loadFromFirestore, setCurrentCamp, setIncidencias } = useStore();
-  const unsubscribeRef = useRef<(() => void) | null>(null);
+  const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
+  const loadedCampIdRef = useRef<string | null>(null);
+
+  const loadCamp = useCallback(async (campId: string) => {
+    if (!campId || loadedCampIdRef.current === campId) return;
+    loadedCampIdRef.current = campId;
+
+    try {
+      const camp = await getCampInfo(campId);
+      if (camp) setCurrentCamp(camp);
+
+      await loadFromFirestore(campId);
+
+      if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
+      unsubscribeIncidenciasRef.current = subscribeToIncidencias(
+        campId,
+        (incidencias) => setIncidencias(incidencias)
+      );
+    } catch (err) {
+      console.error('Error loading camp data:', err);
+    }
+  }, [loadFromFirestore, setCurrentCamp, setIncidencias]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = null;
+      if (!user) {
+        if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
+        loadedCampIdRef.current = null;
+        return;
       }
 
-      if (!user) return;
+      // Step 1: Load from localStorage immediately — instant, no network needed
+      const local = getLocalProfile(user.uid);
+      if (local?.campId) {
+        loadCamp(local.campId);
+      }
 
-      let campId = '';
-
+      // Step 2: Verify with Firestore in background, update if campId changed
       try {
         const profile = await getUserProfile(user.uid);
-        if (profile?.campId) {
-          campId = profile.campId;
-          // Keep localStorage in sync with Firestore
+        if (profile) {
           setLocalProfile(user.uid, {
             role: profile.role as 'coordinator' | 'monitor' | 'parent',
-            campId: profile.campId,
+            campId: profile.campId || '',
           });
+          // If Firestore has a different/newer campId, reload
+          if (profile.campId && profile.campId !== local?.campId) {
+            loadedCampIdRef.current = null; // reset so loadCamp runs again
+            loadCamp(profile.campId);
+          }
         }
       } catch {
-        // Firestore offline — fall back to localStorage
-        const local = getLocalProfile(user.uid);
-        if (local?.campId) campId = local.campId;
-      }
-
-      if (!campId) return;
-
-      try {
-        const camp = await getCampInfo(campId);
-        if (camp) setCurrentCamp(camp);
-
-        await loadFromFirestore(campId);
-
-        unsubscribeRef.current = subscribeToIncidencias(
-          campId,
-          (incidencias) => setIncidencias(incidencias)
-        );
-      } catch (error) {
-        console.error('Error sincronizando datos con Firestore:', error);
+        // Firestore offline — localStorage already handled this
       }
     });
 
     return () => {
       unsubscribeAuth();
-      if (unsubscribeRef.current) unsubscribeRef.current();
+      if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
     };
-  }, [loadFromFirestore, setCurrentCamp, setIncidencias]);
+  }, [loadCamp]);
 }

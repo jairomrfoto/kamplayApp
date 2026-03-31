@@ -17,6 +17,7 @@ const Onboarding = () => {
   const [step, setStep] = useState<Step>('role');
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingProfile, setCheckingProfile] = useState(true);
   const [error, setError] = useState('');
   const [copiedMonitor, setCopiedMonitor] = useState(false);
   const [copiedParent, setCopiedParent] = useState(false);
@@ -45,8 +46,10 @@ const Onboarding = () => {
           if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
           else if (profile.role === 'monitor') navigate('/monitor-dashboard');
           else navigate('/parent-dashboard');
+          return;
         }
       } catch { /* stay on onboarding */ }
+      setCheckingProfile(false);
     };
     checkProfile();
   }, [user, authLoading]);
@@ -185,7 +188,7 @@ const Onboarding = () => {
   };
 
   // ── UI ─────────────────────────────────────────────────────────────────────
-  if (authLoading) {
+  if (authLoading || checkingProfile) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Loader size={32} className="animate-spin text-indigo-600" />

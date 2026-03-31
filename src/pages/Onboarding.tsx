@@ -69,14 +69,8 @@ const Onboarding = () => {
   const handleRoleSelect = async (selectedRole: Role) => {
     if (!user) return;
     setRole(selectedRole);
-
-    if (selectedRole === 'coordinator') {
-      setStep('coordinator-setup');
-      return;
-    }
-
-    // Monitor and parent: save role, go directly to their dashboard
     setLoading(true);
+
     try {
       await saveUserProfile({
         uid: user.uid,
@@ -85,7 +79,9 @@ const Onboarding = () => {
         email: user.email || '',
         nombre: user.displayName || user.email?.split('@')[0] || '',
       });
-      navigate(selectedRole === 'monitor' ? '/monitor-dashboard' : '/parent-dashboard');
+      if (selectedRole === 'coordinator') navigate('/coordinator-dashboard');
+      else if (selectedRole === 'monitor') navigate('/monitor-dashboard');
+      else navigate('/parent-dashboard');
     } catch (err) {
       console.error(err);
       setError('Error al guardar tu perfil. Inténtalo de nuevo.');

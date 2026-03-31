@@ -1,13 +1,28 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/store';
-import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import { saveUserProfile, saveCampInfo } from '../../services/firestore';
+import { generateJoinCode } from '../../utils/generateJoinCode';
+import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
+import type { Camp } from '../../types/camp';
+import type { UserProfile } from '../../types';
 
 const CampOverview = () => {
-  const { currentCamp, monitores, campers, actividades, incidencias, isLoading } = useStore();
+  const { currentCamp, monitores, campers, actividades, incidencias, isLoading, setCurrentCamp } = useStore();
+  const { user } = useAuth();
   const [showIncidentForm, setShowIncidentForm] = useState(false);
   const [copiedMonitor, setCopiedMonitor] = useState(false);
   const [copiedParent, setCopiedParent] = useState(false);
+
+  // Camp creation form state
+  const [creating, setCreating] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [campData, setCampData] = useState({
+    name: '', location: '', startDate: '', endDate: '',
+    maxCampers: 30, monitorsCount: 3,
+  });
 
   const copyToClipboard = async (text: string, type: 'monitor' | 'parent') => {
     await navigator.clipboard.writeText(text);
@@ -20,6 +35,47 @@ const CampOverview = () => {
     }
   };
 
+  const handleCreateCamp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setCreateLoading(true);
+    setCreateError('');
+    try {
+      const campId = crypto.randomUUID();
+      const codes = {
+        monitors: generateJoinCode('MON'),
+        families: generateJoinCode('PAD'),
+      };
+      const camp: Camp = {
+        id: campId,
+        name: campData.name,
+        location: campData.location,
+        startDate: new Date(campData.startDate),
+        endDate: new Date(campData.endDate),
+        maxCampers: campData.maxCampers,
+        monitorsCount: campData.monitorsCount,
+        joinCodes: codes,
+        coordinators: [user.uid],
+        mainCoordinator: user.uid,
+      };
+      const profile: UserProfile = {
+        uid: user.uid,
+        campId,
+        role: 'coordinator',
+        email: user.email || '',
+        nombre: user.displayName || user.email?.split('@')[0] || 'Coordinador',
+      };
+      await Promise.all([saveCampInfo(camp), saveUserProfile(profile)]);
+      setCurrentCamp(camp);
+      setCreating(false);
+    } catch (err) {
+      console.error(err);
+      setCreateError('Error al crear el campamento. Inténtalo de nuevo.');
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -28,13 +84,90 @@ const CampOverview = () => {
     );
   }
 
+  // No camp yet — show prompt to create one
   if (!currentCamp) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center text-gray-500">
-          <p className="text-lg font-medium">Cargando campamento...</p>
-          <p className="text-sm mt-1">Si esto persiste, recarga la página.</p>
-        </div>
+      <div className="max-w-lg mx-auto mt-8">
+        {!creating ? (
+          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+            <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <PlusCircle size={32} className="text-indigo-600" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Aún no tienes ningún campamento</h2>
+            <p className="text-gray-500 text-sm mb-6">
+              Crea tu primer campamento para empezar a gestionar acampados, monitores y actividades.
+            </p>
+            <button
+              onClick={() => setCreating(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+            >
+              Crear campamento
+            </button>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Crear campamento</h2>
+            <p className="text-sm text-gray-500 mb-5">Rellena los datos básicos del campamento</p>
+
+            <form onSubmit={handleCreateCamp} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del campamento</label>
+                <input type="text" required value={campData.name}
+                  onChange={e => setCampData({ ...campData, name: e.target.value })}
+                  placeholder="Ej: Campamento Verano 2025"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                <input type="text" required value={campData.location}
+                  onChange={e => setCampData({ ...campData, location: e.target.value })}
+                  placeholder="Ej: Sierra de Gredos, Ávila"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha inicio</label>
+                  <input type="date" required value={campData.startDate}
+                    onChange={e => setCampData({ ...campData, startDate: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha fin</label>
+                  <input type="date" required value={campData.endDate} min={campData.startDate}
+                    onChange={e => setCampData({ ...campData, endDate: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nº acampados</label>
+                  <input type="number" min={1} required value={campData.maxCampers}
+                    onChange={e => setCampData({ ...campData, maxCampers: parseInt(e.target.value) || 1 })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nº monitores</label>
+                  <input type="number" min={1} required value={campData.monitorsCount}
+                    onChange={e => setCampData({ ...campData, monitorsCount: parseInt(e.target.value) || 1 })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+              </div>
+
+              {createError && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{createError}</p>}
+
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={() => setCreating(false)}
+                  className="flex-1 border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                  Cancelar
+                </button>
+                <button type="submit" disabled={createLoading}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
+                  {createLoading ? <><Loader size={16} className="animate-spin" /> Creando...</> : 'Crear campamento'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
     );
   }
@@ -116,7 +249,6 @@ const CampOverview = () => {
           Comparte estos códigos para que monitores y familias puedan acceder a la app.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Monitor code */}
           <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4">
             <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2 flex items-center gap-1">
               <UserCog size={14} /> Código para monitores
@@ -133,7 +265,6 @@ const CampOverview = () => {
               </button>
             </div>
           </div>
-          {/* Parent code */}
           <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2 flex items-center gap-1">
               <Users size={14} /> Código para padres/tutores

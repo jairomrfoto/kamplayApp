@@ -40,15 +40,23 @@ const Onboarding = () => {
     if (!user) { navigate('/login'); return; }
 
     const checkProfile = async () => {
-      try {
-        const profile = await getUserProfile(user.uid);
-        if (profile?.role) {
-          if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
-          else if (profile.role === 'monitor') navigate('/monitor-dashboard');
-          else navigate('/parent-dashboard');
-          return;
+      // Retry up to 4 times — Firestore may take a moment to connect
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          const profile = await getUserProfile(user.uid);
+          if (profile?.role) {
+            if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
+            else if (profile.role === 'monitor') navigate('/monitor-dashboard');
+            else navigate('/parent-dashboard');
+            return;
+          }
+          break; // no profile found, show role selection
+        } catch {
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+          }
         }
-      } catch { /* stay on onboarding */ }
+      }
       setCheckingProfile(false);
     };
     checkProfile();
@@ -71,20 +79,33 @@ const Onboarding = () => {
     setRole(selectedRole);
     setLoading(true);
 
-    try {
-      await saveUserProfile({
-        uid: user.uid,
-        campId: '',
-        role: selectedRole,
-        email: user.email || '',
-        nombre: user.displayName || user.email?.split('@')[0] || '',
-      });
+    const profile = {
+      uid: user.uid,
+      campId: '',
+      role: selectedRole,
+      email: user.email || '',
+      nombre: user.displayName || user.email?.split('@')[0] || '',
+    };
+
+    let saved = false;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        await saveUserProfile(profile);
+        saved = true;
+        break;
+      } catch {
+        if (attempt < 3) {
+          await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+        }
+      }
+    }
+
+    if (saved) {
       if (selectedRole === 'coordinator') navigate('/coordinator-dashboard');
       else if (selectedRole === 'monitor') navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');
-    } catch (err) {
-      console.error(err);
-      setError('Error al guardar tu perfil. Inténtalo de nuevo.');
+    } else {
+      setError('Sin conexión con el servidor. Comprueba tu internet e inténtalo de nuevo.');
       setLoading(false);
     }
   };

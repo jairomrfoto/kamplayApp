@@ -3,22 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Tent, Users, UserCog, UserPlus, Loader } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { saveUserProfile, getUserProfile } from '../services/firestore';
+import { getLocalProfile, setLocalProfile } from '../utils/localProfile';
 
 type Role = 'coordinator' | 'monitor' | 'parent';
-
-// ── localStorage helpers keyed by uid ────────────────────────────────────────
-function localKey(uid: string) { return `kamplay_role_${uid}`; }
-
-function getLocalRole(uid: string): Role | null {
-  try {
-    const val = localStorage.getItem(localKey(uid));
-    return val as Role | null;
-  } catch { return null; }
-}
-
-function setLocalRole(uid: string, role: Role) {
-  try { localStorage.setItem(localKey(uid), role); } catch { /* ignore */ }
-}
 
 function redirectByRole(role: Role, navigate: (path: string) => void) {
   if (role === 'coordinator') navigate('/coordinator-dashboard');
@@ -41,9 +28,9 @@ const Onboarding = () => {
     if (!user) { navigate('/login'); return; }
 
     // 1. Instant check: localStorage
-    const cached = getLocalRole(user.uid);
-    if (cached) {
-      redirectByRole(cached, navigate);
+    const cached = getLocalProfile(user.uid);
+    if (cached?.role) {
+      redirectByRole(cached.role, navigate);
       return;
     }
 
@@ -53,7 +40,7 @@ const Onboarding = () => {
       .then(profile => {
         clearTimeout(timeout);
         if (profile?.role) {
-          setLocalRole(user.uid, profile.role as Role);
+          setLocalProfile(user.uid, { role: profile.role as Role, campId: profile.campId || '' });
           redirectByRole(profile.role as Role, navigate);
         } else {
           setChecking(false);
@@ -73,7 +60,7 @@ const Onboarding = () => {
     setError('');
 
     // Save to localStorage immediately — no network needed
-    setLocalRole(user.uid, role);
+    setLocalProfile(user.uid, { role, campId: '' });
 
     // Try Firestore in background — don't block navigation
     const profile = {

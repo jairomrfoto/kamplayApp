@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tent, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { getCampByCode, saveUserProfile, getUserProfile } from '../services/firestore';
+import { setLocalProfile } from '../utils/localProfile';
 
 const JoinCamp = () => {
   const navigate = useNavigate();
@@ -37,14 +38,18 @@ const JoinCamp = () => {
         return;
       }
 
+      const role = isMonitor ? 'monitor' : 'parent';
       const currentProfile = await getUserProfile(user.uid);
       await saveUserProfile({
         uid: user.uid,
         campId: camp.id,
-        role: isMonitor ? 'monitor' : 'parent',
+        role,
         email: user.email || '',
         nombre: currentProfile?.nombre || user.email?.split('@')[0] || '',
       });
+
+      // Persist campId locally so next session loads the camp instantly
+      setLocalProfile(user.uid, { role, campId: camp.id });
 
       if (isMonitor) navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');

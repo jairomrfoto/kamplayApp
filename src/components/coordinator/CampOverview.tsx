@@ -3,6 +3,7 @@ import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import { saveUserProfile, saveCampInfo } from '../../services/firestore';
 import { generateJoinCode } from '../../utils/generateJoinCode';
+import { setLocalProfile } from '../../utils/localProfile';
 import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
 import type { Camp } from '../../types/camp';
@@ -66,6 +67,7 @@ const CampOverview = () => {
         nombre: user.displayName || user.email?.split('@')[0] || 'Coordinador',
       };
       await Promise.all([saveCampInfo(camp), saveUserProfile(profile)]);
+      setLocalProfile(user.uid, { role: 'coordinator', campId: campId });
       setCurrentCamp(camp);
       setCreating(false);
     } catch (err) {

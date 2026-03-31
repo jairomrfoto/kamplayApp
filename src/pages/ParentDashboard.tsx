@@ -1,8 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/store';
-import { Tent, LogOut, User, Calendar, UtensilsCrossed } from 'lucide-react';
-import JoinCampButton from '../components/parent/JoinCampButton';
+import { Tent, LogOut, User, Calendar, UtensilsCrossed, ChevronDown, PlusCircle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import EditableChildInfo from '../components/parent/EditableChildInfo';
 import ActivityCalendar from '../components/parent/ActivityCalendar';
 import MenuDiario from '../components/menu/MenuDiario';
@@ -13,11 +13,21 @@ import type { Camper } from '../types';
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
-  const { campers, updateCamper, menus, addCamper } = useStore();
+  const { user, signOut } = useAuth();
+  const { campers, updateCamper, menus, addCamper, currentCamp } = useStore();
   const [selectedContent, setSelectedContent] = React.useState<'info' | 'calendar' | 'menu' | null>(null);
-  const [selectedChild, setSelectedChild] = React.useState<Camper | null>(campers[0] || null);
+  const [selectedChild, setSelectedChild] = React.useState<Camper | null>(null);
   const [showAddChildForm, setShowAddChildForm] = React.useState(false);
-  const todayMenu = menus.find(m => m.fecha.toDateString() === new Date().toDateString());
+  const [showMenu, setShowMenu] = React.useState(false);
+
+  const todayMenu = menus.find(m => {
+    try {
+      const fecha = m.fecha instanceof Date ? m.fecha : new Date(m.fecha as any);
+      return fecha.toDateString() === new Date().toDateString();
+    } catch {
+      return false;
+    }
+  });
 
   const handleAddChild = (childData: Omit<Camper, 'id'>) => {
     const newChild = {
@@ -30,29 +40,82 @@ const ParentDashboard = () => {
     setShowAddChildForm(false);
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Padre/Madre';
+  const initial = displayName.charAt(0).toUpperCase();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-indigo-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Tent className="h-8 w-8" />
-            <div>
-              <h1 className="text-xl font-bold">Kamplay</h1>
-              <p className="text-sm text-indigo-200">Tu pasión, su felicidad</p>
-            </div>
+      {/* Navbar */}
+      <header className="bg-indigo-600 text-white p-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Tent size={22} />
+            <span className="text-lg font-bold">Kamplay</span>
+            <span className="text-indigo-300 text-sm hidden sm:inline">· Panel de Familia</span>
           </div>
-          <div className="flex items-center gap-4">
-          <JoinCampButton />
-            <button
-              onClick={() => navigate('/login')}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+
+          <div className="flex items-center gap-3">
+            <Link
+              to="/join-camp"
+              className="flex items-center gap-1.5 text-sm bg-white text-indigo-600 font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
             >
-              <LogOut size={20} />
-              <span>Cerrar Sesión</span>
-            </button>
+              <PlusCircle size={15} />
+              <span className="hidden sm:inline">Unirme a campamento</span>
+            </Link>
+
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-indigo-700"
+              >
+                <div className="w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center text-sm font-medium">
+                  {initial}
+                </div>
+                <ChevronDown size={14} />
+              </button>
+              {showMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg py-2 text-gray-900 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium">{displayName}</p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 w-full"
+                    >
+                      <LogOut size={15} /> Cerrar sesión
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
+
+      {/* No camp banner */}
+      {!currentCamp && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-amber-800 text-sm">
+              Aún no estás vinculado a ningún campamento. Pídele el código al coordinador.
+            </p>
+            <Link
+              to="/join-camp"
+              className="text-sm bg-amber-600 text-white px-4 py-1.5 rounded-lg hover:bg-amber-700 whitespace-nowrap"
+            >
+              Introducir código
+            </Link>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <ChildSelector
@@ -108,8 +171,8 @@ const ParentDashboard = () => {
         {selectedContent && (
           <div className="mt-6">
             {selectedContent === 'info' && (
-              <EditableChildInfo 
-                camper={selectedChild} 
+              <EditableChildInfo
+                camper={selectedChild}
                 onUpdate={(updatedCamper) => updateCamper(updatedCamper)}
               />
             )}

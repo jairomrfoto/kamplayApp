@@ -41,7 +41,7 @@ const Onboarding = () => {
     const checkProfile = async () => {
       try {
         const profile = await getUserProfile(user.uid);
-        if (profile?.campId) {
+        if (profile?.role) {
           if (profile.role === 'coordinator') navigate('/coordinator-dashboard');
           else if (profile.role === 'monitor') navigate('/monitor-dashboard');
           else navigate('/parent-dashboard');
@@ -59,6 +59,34 @@ const Onboarding = () => {
     } else {
       setCopiedParent(true);
       setTimeout(() => setCopiedParent(false), 2000);
+    }
+  };
+
+  // ── Role selection ──────────────────────────────────────────────────────────
+  const handleRoleSelect = async (selectedRole: Role) => {
+    if (!user) return;
+    setRole(selectedRole);
+
+    if (selectedRole === 'coordinator') {
+      setStep('coordinator-setup');
+      return;
+    }
+
+    // Monitor and parent: save role, go directly to their dashboard
+    setLoading(true);
+    try {
+      await saveUserProfile({
+        uid: user.uid,
+        campId: '',
+        role: selectedRole,
+        email: user.email || '',
+        nombre: user.displayName || user.email?.split('@')[0] || '',
+      });
+      navigate(selectedRole === 'monitor' ? '/monitor-dashboard' : '/parent-dashboard');
+    } catch (err) {
+      console.error(err);
+      setError('Error al guardar tu perfil. Inténtalo de nuevo.');
+      setLoading(false);
     }
   };
 
@@ -195,20 +223,20 @@ const Onboarding = () => {
                   <p className="text-sm text-gray-500">Creo y gestiono campamentos</p>
                 </div>
               </button>
-              <button onClick={() => { setRole('monitor'); setStep('join-camp'); }}
+              <button onClick={() => handleRoleSelect('monitor')}
                 className="w-full flex items-center gap-4 bg-indigo-50 border-2 border-indigo-200 hover:border-indigo-500 text-gray-800 px-5 py-4 rounded-xl transition-all">
                 <div className="bg-indigo-100 p-2 rounded-lg"><UserCog size={24} className="text-indigo-600" /></div>
                 <div className="text-left">
                   <p className="font-semibold">Monitor</p>
-                  <p className="text-sm text-gray-500">Tengo un código MON-XXXXXX</p>
+                  <p className="text-sm text-gray-500">Accedo a mi panel y me uno al campamento</p>
                 </div>
               </button>
-              <button onClick={() => { setRole('parent'); setStep('join-camp'); }}
+              <button onClick={() => handleRoleSelect('parent')}
                 className="w-full flex items-center gap-4 bg-blue-50 border-2 border-blue-200 hover:border-blue-500 text-gray-800 px-5 py-4 rounded-xl transition-all">
                 <div className="bg-blue-100 p-2 rounded-lg"><Users size={24} className="text-blue-600" /></div>
                 <div className="text-left">
                   <p className="font-semibold">Padre / Tutor</p>
-                  <p className="text-sm text-gray-500">Tengo un código PAD-XXXXXX</p>
+                  <p className="text-sm text-gray-500">Accedo a mi panel y me uno al campamento</p>
                 </div>
               </button>
             </div>

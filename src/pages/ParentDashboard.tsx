@@ -4,7 +4,7 @@ import { useStore } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
 import { getCampByCode, saveUserProfile } from '../services/firestore';
 import { firestoreCampers } from '../services/firestore';
-import { setLocalProfile } from '../utils/localProfile';
+import { updateLocalCamp } from '../utils/localProfile';
 import {
   Tent, LogOut, ChevronDown, PlusCircle, MapPin, Calendar,
   User, Loader, ArrowLeft, Baby
@@ -113,7 +113,7 @@ const JoinCampForm = ({ user, onJoined }: JoinCampFormProps) => {
       const camp = await getCampByCode(trimmed, 'family');
       if (!camp) { setError('Código no encontrado.'); setLoading(false); return; }
 
-      setLocalProfile(user.uid, { role: 'parent', campId: camp.id });
+      updateLocalCamp(user.uid, camp.id, camp);
       saveUserProfile({ uid: user.uid, campId: camp.id, role: 'parent', email: user.email || '', nombre: '' })
         .catch(() => {});
       onJoined(camp.id);

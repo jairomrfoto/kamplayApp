@@ -3,7 +3,7 @@ import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import { saveUserProfile, saveCampInfo } from '../../services/firestore';
 import { generateJoinCode } from '../../utils/generateJoinCode';
-import { setLocalProfile } from '../../utils/localProfile';
+import { updateLocalCamp } from '../../utils/localProfile';
 import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
 import type { Camp } from '../../types/camp';
@@ -68,7 +68,7 @@ const CampOverview = () => {
     };
 
     // Update UI and localStorage immediately — no waiting for Firestore
-    setLocalProfile(user.uid, { role: 'coordinator', campId });
+    updateLocalCamp(user.uid, campId, camp);
     setCurrentCamp(camp);
     setCreating(false);
     setCreateLoading(false);

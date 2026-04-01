@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Tent, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { getCampByCode, saveUserProfile, getUserProfile } from '../services/firestore';
-import { setLocalProfile } from '../utils/localProfile';
+import { updateLocalCamp } from '../utils/localProfile';
 
 const JoinCamp = () => {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const JoinCamp = () => {
       const role = isMonitor ? 'monitor' : 'parent';
 
       // Save locally and navigate immediately — no waiting for Firestore
-      setLocalProfile(user.uid, { role, campId: camp.id });
+      updateLocalCamp(user.uid, camp.id, camp);
       if (isMonitor) navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');
 

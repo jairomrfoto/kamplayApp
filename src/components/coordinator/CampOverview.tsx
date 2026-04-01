@@ -67,16 +67,21 @@ const CampOverview = () => {
       nombre: user.displayName || user.email?.split('@')[0] || 'Coordinador',
     };
 
-    // Update UI and localStorage immediately — no waiting for Firestore
+    try {
+      // Save to Firestore first — this is required for other users to find the camp
+      await Promise.all([saveCampInfo(camp), saveUserProfile(profile)]);
+    } catch (err) {
+      console.error('Firestore save error:', err);
+      setCreateError('Error al guardar en la base de datos. Comprueba tu conexión e inténtalo de nuevo.');
+      setCreateLoading(false);
+      return;
+    }
+
+    // Only update UI and localStorage after Firestore confirms
     updateLocalCamp(user.uid, campId, camp);
     setCurrentCamp(camp);
     setCreating(false);
     setCreateLoading(false);
-
-    // Sync to Firestore in background
-    Promise.all([saveCampInfo(camp), saveUserProfile(profile)]).catch(err => {
-      console.error('Error saving camp to Firestore (will retry on reconnect):', err);
-    });
   };
 
   if (isLoading) {

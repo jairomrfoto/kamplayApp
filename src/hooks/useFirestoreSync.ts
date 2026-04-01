@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserProfile, subscribeToIncidencias, getCampInfo } from '../services/firestore';
+import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile } from '../services/firestore';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
 
@@ -10,15 +10,23 @@ export function useFirestoreSync() {
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const loadedCampIdRef = useRef<string | null>(null);
 
-  const loadCamp = useCallback(async (campId: string, uid: string) => {
+  const loadCamp = useCallback(async (campId: string, uid: string, localCamp?: any) => {
     if (!campId || loadedCampIdRef.current === campId) return;
     loadedCampIdRef.current = campId;
 
     try {
-      const camp = await getCampInfo(campId);
+      let camp = await getCampInfo(campId);
+
+      if (!camp && localCamp) {
+        // Camp exists in localStorage but not in Firestore (was created while offline)
+        // Re-upload it now that we have connectivity
+        console.log('Re-syncing camp to Firestore:', campId);
+        await saveCampInfo(localCamp);
+        camp = localCamp;
+      }
+
       if (camp) {
         setCurrentCamp(camp);
-        // Save full camp object to localStorage for offline reload
         updateLocalCamp(uid, campId, camp);
       }
 
@@ -31,7 +39,6 @@ export function useFirestoreSync() {
       );
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
-      // Firestore failed — camp object is already restored from localStorage below
     }
   }, [loadFromFirestore, setCurrentCamp, setIncidencias]);
 
@@ -45,15 +52,10 @@ export function useFirestoreSync() {
 
       // Step 1: Restore from localStorage immediately (instant, no network)
       const local = getLocalProfile(user.uid);
-      if (local?.camp) {
-        // Full camp object cached — set it right away
-        setCurrentCamp(local.camp);
-      }
-      if (local?.campId) {
-        loadCamp(local.campId, user.uid);
-      }
+      if (local?.camp) setCurrentCamp(local.camp);
+      if (local?.campId) loadCamp(local.campId, user.uid, local.camp);
 
-      // Step 2: Verify/refresh from Firestore in background
+      // Step 2: Verify/refresh profile from Firestore
       try {
         const profile = await getUserProfile(user.uid);
         if (profile) {
@@ -61,13 +63,16 @@ export function useFirestoreSync() {
           setLocalProfile(user.uid, {
             role: profile.role as 'coordinator' | 'monitor' | 'parent',
             campId,
-            camp: local?.camp, // keep cached camp until Firestore refreshes it
+            camp: local?.camp,
           });
-          // Reload if campId changed (e.g. after joining a new camp)
           if (campId && campId !== local?.campId) {
             loadedCampIdRef.current = null;
-            loadCamp(campId, user.uid);
+            loadCamp(campId, user.uid, local?.camp);
           }
+        } else if (local?.campId) {
+          // Profile not in Firestore either — re-upload it
+          const localRole = local.role || 'coordinator';
+          await saveUserProfile({ uid: user.uid, campId: local.campId, role: localRole, email: user.email || '', nombre: user.displayName || '' });
         }
       } catch {
         // Firestore offline — localStorage already handled this

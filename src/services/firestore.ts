@@ -29,6 +29,7 @@ import {
   query,
   where,
   getDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type {
@@ -158,16 +159,21 @@ export async function saveCampInfo(camp: Camp): Promise<void> {
   );
 }
 
+export async function saveJoinCodes(campId: string, monitorCode: string, familyCode: string): Promise<void> {
+  const batch = writeBatch(db);
+  batch.set(doc(db, 'codigos', monitorCode), { campId, type: 'monitor' });
+  batch.set(doc(db, 'codigos', familyCode), { campId, type: 'family' });
+  await batch.commit();
+}
+
 export async function getCampByCode(
   code: string,
-  type: 'monitor' | 'family'
+  _type?: string
 ): Promise<Camp | null> {
-  const field = type === 'monitor' ? 'joinCodes.monitors' : 'joinCodes.families';
-  const q = query(collection(db, 'campamentos'), where(field, '==', code));
-  const snapshot = await getDocs(q);
-  if (snapshot.empty) return null;
-  const d = snapshot.docs[0];
-  return { id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as Camp;
+  const snap = await getDoc(doc(db, 'codigos', code.trim().toUpperCase()));
+  if (!snap.exists()) return null;
+  const { campId } = snap.data() as { campId: string };
+  return getCampInfo(campId);
 }
 
 // ─── Perfil de usuario ───────────────────────────────────────────────────────

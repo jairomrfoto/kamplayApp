@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
-import { saveUserProfile, saveCampInfo } from '../../services/firestore';
+import { saveUserProfile, saveCampInfo, saveJoinCodes } from '../../services/firestore';
 import { generateJoinCode } from '../../utils/generateJoinCode';
 import { updateLocalCamp } from '../../utils/localProfile';
 import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle } from 'lucide-react';
@@ -69,7 +69,11 @@ const CampOverview = () => {
 
     try {
       // Save to Firestore first — this is required for other users to find the camp
-      await Promise.all([saveCampInfo(camp), saveUserProfile(profile)]);
+      await Promise.all([
+        saveCampInfo(camp),
+        saveUserProfile(profile),
+        saveJoinCodes(campId, codes.monitors, codes.families),
+      ]);
     } catch (err) {
       console.error('Firestore save error:', err);
       setCreateError('Error al guardar en la base de datos. Comprueba tu conexión e inténtalo de nuevo.');

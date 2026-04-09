@@ -171,19 +171,20 @@ export async function getCampByCode(
   _type?: string
 ): Promise<Camp | null> {
   const trimmed = code.trim().toUpperCase();
-  // Retry up to 3 times — Firestore may not be connected yet on first load
-  for (let attempt = 0; attempt < 3; attempt++) {
+  // Retry up to 4 times — Firestore connection may not be ready immediately
+  const delays = [2000, 4000, 6000];
+  for (let attempt = 0; attempt < 4; attempt++) {
     try {
       const snap = await getDoc(doc(db, 'codigos', trimmed));
       if (!snap.exists()) return null;
       const { campId } = snap.data() as { campId: string };
       return getCampInfo(campId);
     } catch (err: unknown) {
-      const code = (err as { code?: string })?.code;
+      const errCode = (err as { code?: string })?.code;
       const msg = (err as { message?: string })?.message ?? '';
-      const isOffline = code === 'unavailable' || msg.includes('offline');
-      if (isOffline && attempt < 2) {
-        await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+      const isOffline = errCode === 'unavailable' || msg.includes('offline');
+      if (isOffline && attempt < 3) {
+        await new Promise(r => setTimeout(r, delays[attempt]));
         continue;
       }
       throw err;

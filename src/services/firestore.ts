@@ -170,10 +170,26 @@ export async function getCampByCode(
   code: string,
   _type?: string
 ): Promise<Camp | null> {
-  const snap = await getDoc(doc(db, 'codigos', code.trim().toUpperCase()));
-  if (!snap.exists()) return null;
-  const { campId } = snap.data() as { campId: string };
-  return getCampInfo(campId);
+  const trimmed = code.trim().toUpperCase();
+  // Retry up to 3 times — Firestore may not be connected yet on first load
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const snap = await getDoc(doc(db, 'codigos', trimmed));
+      if (!snap.exists()) return null;
+      const { campId } = snap.data() as { campId: string };
+      return getCampInfo(campId);
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      const msg = (err as { message?: string })?.message ?? '';
+      const isOffline = code === 'unavailable' || msg.includes('offline');
+      if (isOffline && attempt < 2) {
+        await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+        continue;
+      }
+      throw err;
+    }
+  }
+  return null;
 }
 
 // ─── Perfil de usuario ───────────────────────────────────────────────────────

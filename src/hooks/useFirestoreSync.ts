@@ -1,7 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile } from '../services/firestore';
+import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes } from '../services/firestore';
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
 
@@ -28,6 +30,16 @@ export function useFirestoreSync() {
       if (camp) {
         setCurrentCamp(camp);
         updateLocalCamp(uid, campId, camp);
+
+        // Ensure join codes exist in Firestore (may be missing if camp was created before this feature)
+        const monCode = camp.joinCodes?.monitors;
+        const famCode = camp.joinCodes?.families;
+        if (monCode && famCode) {
+          const codeSnap = await getDoc(doc(db, 'codigos', monCode)).catch(() => null);
+          if (!codeSnap?.exists()) {
+            saveJoinCodes(campId, monCode, famCode).catch(() => {});
+          }
+        }
       }
 
       await loadFromFirestore(campId);

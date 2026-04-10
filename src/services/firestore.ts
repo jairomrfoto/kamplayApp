@@ -70,6 +70,60 @@ async function getDocRest(path: string): Promise<Record<string, unknown> | null>
   if (!json.fields) return null;
   return Object.fromEntries(Object.entries(json.fields).map(([k, fv]) => [k, parseRestValue(fv)]));
 }
+
+function toRestValue(v: unknown): unknown {
+  if (v === null || v === undefined) return { nullValue: null };
+  if (typeof v === 'string') return { stringValue: v };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (v instanceof Date) return { timestampValue: v.toISOString() };
+  if (v instanceof Timestamp) return { timestampValue: v.toDate().toISOString() };
+  if (typeof v === 'number') return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+  if (Array.isArray(v)) return { arrayValue: { values: v.map(toRestValue) } };
+  if (typeof v === 'object') return { mapValue: { fields: Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, fv]) => [k, toRestValue(fv)])) } };
+  return { nullValue: null };
+}
+
+async function setDocRest(path: string, data: Record<string, unknown>): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not authenticated');
+  const token = await user.getIdToken();
+  const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  const fields = Object.fromEntries(Object.entries(data).map(([k, v]) => [k, toRestValue(v)]));
+  const res = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/${path}`,
+    {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields }),
+    }
+  );
+  if (!res.ok) throw new Error(`REST write ${res.status}`);
+}
+
+// Runs a SDK operation with a timeout; falls back to REST on offline/timeout
+function sdkWithRestFallback<T>(
+  sdkFn: () => Promise<T>,
+  restFn: () => Promise<T>,
+  timeoutMs = 4000
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const timer = setTimeout(() => {
+      if (!done) { done = true; restFn().then(resolve).catch(reject); }
+    }, timeoutMs);
+    sdkFn().then(v => {
+      if (!done) { done = true; clearTimeout(timer); resolve(v); }
+    }).catch(err => {
+      const msg = (err as { message?: string })?.message ?? '';
+      const code = (err as { code?: string })?.code ?? '';
+      if (!done && (msg.includes('offline') || code === 'unavailable')) {
+        done = true; clearTimeout(timer); restFn().then(resolve).catch(reject);
+      } else if (!done) {
+        done = true; clearTimeout(timer); reject(err);
+      }
+    });
+  });
+}
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
   Actividad, HorarioDiario, MenuItem, Incident, UserProfile,
@@ -201,17 +255,23 @@ export async function getCampInfo(campId: string): Promise<Camp | null> {
 }
 
 export async function saveCampInfo(camp: Camp): Promise<void> {
-  await setDoc(
-    doc(db, 'campamentos', camp.id),
-    toFirestore(camp as unknown as Record<string, unknown>)
+  const data = toFirestore(camp as unknown as Record<string, unknown>);
+  await sdkWithRestFallback(
+    () => setDoc(doc(db, 'campamentos', camp.id), data),
+    () => setDocRest(`campamentos/${camp.id}`, data)
   );
 }
 
 export async function saveJoinCodes(campId: string, monitorCode: string, familyCode: string): Promise<void> {
-  const batch = writeBatch(db);
-  batch.set(doc(db, 'codigos', monitorCode), { campId, type: 'monitor' });
-  batch.set(doc(db, 'codigos', familyCode), { campId, type: 'family' });
-  await batch.commit();
+  await Promise.all([
+    sdkWithRestFallback(
+      () => { const b = writeBatch(db); b.set(doc(db, 'codigos', monitorCode), { campId, type: 'monitor' }); b.set(doc(db, 'codigos', familyCode), { campId, type: 'family' }); return b.commit(); },
+      () => Promise.all([
+        setDocRest(`codigos/${monitorCode}`, { campId, type: 'monitor' }),
+        setDocRest(`codigos/${familyCode}`, { campId, type: 'family' }),
+      ]).then(() => undefined)
+    ),
+  ]);
 }
 
 export async function getCampByCode(
@@ -240,7 +300,10 @@ export async function getCampByCode(
 // ─── Perfil de usuario ───────────────────────────────────────────────────────
 
 export async function saveUserProfile(profile: UserProfile): Promise<void> {
-  await setDoc(doc(db, 'usuarios', profile.uid), profile);
+  await sdkWithRestFallback(
+    () => setDoc(doc(db, 'usuarios', profile.uid), profile as unknown as Record<string, unknown>),
+    () => setDocRest(`usuarios/${profile.uid}`, profile as unknown as Record<string, unknown>)
+  );
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {

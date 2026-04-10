@@ -31,7 +31,45 @@ import {
   getDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db, auth } from '../config/firebase';
+
+// ─── Firestore REST fallback (bypasses SDK connection state) ─────────────────
+// Used when the SDK reports "client is offline" — works as a plain HTTPS request.
+
+function parseRestValue(v: unknown): unknown {
+  const val = v as Record<string, unknown>;
+  if ('stringValue' in val) return val.stringValue;
+  if ('integerValue' in val) return Number(val.integerValue);
+  if ('doubleValue' in val) return Number(val.doubleValue);
+  if ('booleanValue' in val) return val.booleanValue;
+  if ('timestampValue' in val) return new Date(val.timestampValue as string);
+  if ('nullValue' in val) return null;
+  if ('arrayValue' in val) {
+    const values = ((val.arrayValue as Record<string, unknown>).values as unknown[]) ?? [];
+    return values.map(parseRestValue);
+  }
+  if ('mapValue' in val) {
+    const fields = ((val.mapValue as Record<string, unknown>).fields as Record<string, unknown>) ?? {};
+    return Object.fromEntries(Object.entries(fields).map(([k, fv]) => [k, parseRestValue(fv)]));
+  }
+  return null;
+}
+
+async function getDocRest(path: string): Promise<Record<string, unknown> | null> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not authenticated');
+  const token = await user.getIdToken();
+  const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  const res = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/${path}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`REST ${res.status}`);
+  const json = await res.json() as { fields?: Record<string, unknown> };
+  if (!json.fields) return null;
+  return Object.fromEntries(Object.entries(json.fields).map(([k, fv]) => [k, parseRestValue(fv)]));
+}
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
   Actividad, HorarioDiario, MenuItem, Incident, UserProfile,
@@ -147,9 +185,19 @@ export function subscribeToIncidencias(
 // ─── Campamento (documento raíz) ─────────────────────────────────────────────
 
 export async function getCampInfo(campId: string): Promise<Camp | null> {
-  const snap = await getDoc(doc(db, 'campamentos', campId));
-  if (!snap.exists()) return null;
-  return { id: snap.id, ...fromFirestore(snap.data() as Record<string, unknown>) } as Camp;
+  try {
+    const snap = await getDoc(doc(db, 'campamentos', campId));
+    if (!snap.exists()) return null;
+    return { id: snap.id, ...fromFirestore(snap.data() as Record<string, unknown>) } as Camp;
+  } catch (err: unknown) {
+    const msg = (err as { message?: string })?.message ?? '';
+    if (msg.includes('offline') || (err as { code?: string })?.code === 'unavailable') {
+      const data = await getDocRest(`campamentos/${campId}`);
+      if (!data) return null;
+      return { id: campId, ...data } as unknown as Camp;
+    }
+    throw err;
+  }
 }
 
 export async function saveCampInfo(camp: Camp): Promise<void> {
@@ -171,26 +219,22 @@ export async function getCampByCode(
   _type?: string
 ): Promise<Camp | null> {
   const trimmed = code.trim().toUpperCase();
-  // Retry up to 4 times — Firestore connection may not be ready immediately
-  const delays = [2000, 4000, 6000];
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try {
-      const snap = await getDoc(doc(db, 'codigos', trimmed));
-      if (!snap.exists()) return null;
-      const { campId } = snap.data() as { campId: string };
+  try {
+    const snap = await getDoc(doc(db, 'codigos', trimmed));
+    if (!snap.exists()) return null;
+    const { campId } = snap.data() as { campId: string };
+    return getCampInfo(campId);
+  } catch (err: unknown) {
+    const msg = (err as { message?: string })?.message ?? '';
+    if (msg.includes('offline') || (err as { code?: string })?.code === 'unavailable') {
+      // SDK offline — fall back to REST API (plain HTTPS, no persistent connection needed)
+      const codeData = await getDocRest(`codigos/${trimmed}`);
+      if (!codeData) return null;
+      const campId = codeData.campId as string;
       return getCampInfo(campId);
-    } catch (err: unknown) {
-      const errCode = (err as { code?: string })?.code;
-      const msg = (err as { message?: string })?.message ?? '';
-      const isOffline = errCode === 'unavailable' || msg.includes('offline');
-      if (isOffline && attempt < 3) {
-        await new Promise(r => setTimeout(r, delays[attempt]));
-        continue;
-      }
-      throw err;
     }
+    throw err;
   }
-  return null;
 }
 
 // ─── Perfil de usuario ───────────────────────────────────────────────────────

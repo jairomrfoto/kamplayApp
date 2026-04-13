@@ -338,11 +338,14 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 function makeCrud<T extends { id: string }>(colName: string) {
   return {
-    save: (campId: string, item: T) =>
-      setDoc(
-        campDocRef(campId, colName, item.id),
-        toFirestore(item as unknown as Record<string, unknown>)
-      ),
+    save: (campId: string, item: T) => {
+      const data = toFirestore(item as unknown as Record<string, unknown>);
+      const restPath = `campamentos/${campId}/${colName}/${item.id}`;
+      return sdkWithRestFallback(
+        () => setDoc(campDocRef(campId, colName, item.id), data),
+        () => setDocRest(restPath, data)
+      );
+    },
     update: (campId: string, item: T) =>
       updateDoc(
         campDocRef(campId, colName, item.id),

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tent, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { getCampByCode, saveUserProfile, getUserProfile, firestoreMonitores } from '../services/firestore';
-import { updateLocalCamp } from '../utils/localProfile';
+import { getCampByCode, saveUserProfile, firestoreMonitores } from '../services/firestore';
+import { setLocalProfile } from '../utils/localProfile';
+import { useStore } from '../store/store';
 
 const JoinCamp = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { setCurrentCamp } = useStore();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,8 +44,10 @@ const JoinCamp = () => {
 
       const nombre = user.displayName || user.email?.split('@')[0] || 'Monitor';
 
-      // Save locally and navigate immediately
-      updateLocalCamp(user.uid, camp.id, camp);
+      // Update store + localStorage immediately — works even for new users with no prior profile
+      setCurrentCamp(camp);
+      setLocalProfile(user.uid, { role, campId: camp.id, camp });
+
       if (isMonitor) navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');
 

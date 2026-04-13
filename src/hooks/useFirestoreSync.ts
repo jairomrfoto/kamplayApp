@@ -1,3 +1,16 @@
+/**
+ * useFirestoreSync — bootstrap hook mounted once at app root.
+ *
+ * On auth state change it:
+ *   1. Instantly restores the last camp from localStorage (no network latency).
+ *   2. Fetches the latest profile from Firestore and loads the camp if it changed.
+ *   3. Starts real-time onSnapshot listeners for incidencias, acampados, and monitores
+ *      so every connected client reflects edits immediately.
+ *
+ * Connectivity strategy: getCampInfo / saveCampInfo / saveJoinCodes all use
+ * sdkWithRestFallback (see firestore.ts) — if the Firestore SDK streaming
+ * connection is unavailable they fall back to direct REST calls automatically.
+ */
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -56,7 +69,7 @@ export function useFirestoreSync() {
       unsubscribeMonitoresRef.current = subscribeToMonitores(campId, (monitores) => {
         setMonitores(monitores);
         // Keep currentMonitor in sync — picks up permission changes made by coordinator in real time
-        const mine = monitores.find(m => m.id === user.uid);
+        const mine = monitores.find(m => m.id === uid);
         if (mine) setCurrentMonitor(mine);
       });
     } catch (err) {

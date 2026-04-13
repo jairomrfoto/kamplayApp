@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tent, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { getCampByCode, saveUserProfile, getUserProfile } from '../services/firestore';
+import { getCampByCode, saveUserProfile, getUserProfile, firestoreMonitores } from '../services/firestore';
 import { updateLocalCamp } from '../utils/localProfile';
 
 const JoinCamp = () => {
@@ -40,29 +40,36 @@ const JoinCamp = () => {
 
       const role = isMonitor ? 'monitor' : 'parent';
 
-      // Save locally and navigate immediately — no waiting for Firestore
+      const nombre = user.displayName || user.email?.split('@')[0] || 'Monitor';
+
+      // Save locally and navigate immediately
       updateLocalCamp(user.uid, camp.id, camp);
       if (isMonitor) navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');
 
       // Sync to Firestore in background
-      getUserProfile(user.uid).then(currentProfile => {
-        saveUserProfile({
-          uid: user.uid,
-          campId: camp.id,
-          role,
+      const profile = { uid: user.uid, campId: camp.id, role, email: user.email || '', nombre };
+      saveUserProfile(profile).catch(err => console.error('Error saving profile:', err));
+
+      // Register monitor in the camp's monitors subcollection so the coordinator sees them
+      if (isMonitor) {
+        firestoreMonitores.save(camp.id, {
+          id: user.uid,
+          nombre,
+          especialidad: '',
+          grupoAsignado: '',
+          cabanaAsignada: '',
+          encuestas: [],
+          permisos: {
+            editarActividades: false,
+            editarMateriales: false,
+            editarGrupos: false,
+            editarCabanas: false,
+            editarAreaMedica: false,
+          },
           email: user.email || '',
-          nombre: currentProfile?.nombre || user.email?.split('@')[0] || '',
-        }).catch(err => console.error('Error saving profile to Firestore:', err));
-      }).catch(() => {
-        saveUserProfile({
-          uid: user.uid,
-          campId: camp.id,
-          role,
-          email: user.email || '',
-          nombre: user.email?.split('@')[0] || '',
-        }).catch(err => console.error('Error saving profile to Firestore:', err));
-      });
+        }).catch(err => console.error('Error registering monitor:', err));
+      }
     } catch (err) {
       console.error(err);
       setError('Error al unirse al campamento. Inténtalo de nuevo.');

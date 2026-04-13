@@ -236,6 +236,28 @@ export function subscribeToIncidencias(
   });
 }
 
+export function subscribeToCampers(
+  campId: string,
+  callback: (campers: Camper[]) => void
+): () => void {
+  return onSnapshot(campCol(campId, 'acampados'), snapshot => {
+    callback(snapshot.docs.map(
+      d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as Camper)
+    ));
+  });
+}
+
+export function subscribeToMonitores(
+  campId: string,
+  callback: (monitores: Monitor[]) => void
+): () => void {
+  return onSnapshot(campCol(campId, 'monitores'), snapshot => {
+    callback(snapshot.docs.map(
+      d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as Monitor)
+    ));
+  });
+}
+
 // ─── Campamento (documento raíz) ─────────────────────────────────────────────
 
 export async function getCampInfo(campId: string): Promise<Camp | null> {

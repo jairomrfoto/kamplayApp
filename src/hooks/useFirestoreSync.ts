@@ -1,15 +1,17 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes } from '../services/firestore';
+import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores } from '../services/firestore';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
 
 export function useFirestoreSync() {
-  const { loadFromFirestore, setCurrentCamp, setIncidencias } = useStore();
+  const { loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
+  const unsubscribeCampersRef = useRef<(() => void) | null>(null);
+  const unsubscribeMonitoresRef = useRef<(() => void) | null>(null);
   const loadedCampIdRef = useRef<string | null>(null);
 
   const loadCamp = useCallback(async (campId: string, uid: string, localCamp?: any) => {
@@ -44,11 +46,14 @@ export function useFirestoreSync() {
 
       await loadFromFirestore(campId);
 
+      // Real-time listeners — any change by any user propagates immediately
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
-      unsubscribeIncidenciasRef.current = subscribeToIncidencias(
-        campId,
-        (incidencias) => setIncidencias(incidencias)
-      );
+      if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
+      if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
+
+      unsubscribeIncidenciasRef.current = subscribeToIncidencias(campId, setIncidencias);
+      unsubscribeCampersRef.current = subscribeToCampers(campId, setCampers);
+      unsubscribeMonitoresRef.current = subscribeToMonitores(campId, setMonitores);
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }
@@ -94,6 +99,8 @@ export function useFirestoreSync() {
     return () => {
       unsubscribeAuth();
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
+      if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
+      if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
     };
   }, [loadCamp, setCurrentCamp]);
 }

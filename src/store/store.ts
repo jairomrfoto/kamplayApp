@@ -39,6 +39,8 @@ interface AppState {
   updateIncident: (incident: Incident) => void;
   addIncidentFollowUp: (incidentId: string, followUp: { comentario: string; realizadoPor: string }) => void;
   setIncidencias: (incidencias: Incident[]) => void;
+  setCampers: (campers: Camper[]) => void;
+  setMonitores: (monitores: Monitor[]) => void;
 
   // ── Campamento ───────────────────────────────────────────────────────────
   joinCamp: (code: string, type: 'monitor' | 'family') => Promise<boolean>;
@@ -120,6 +122,8 @@ export const useStore = create<AppState>((set, get) => ({
 
   // ── Incidencias ──────────────────────────────────────────────────────────
   setIncidencias: (incidencias) => set({ incidencias }),
+  setCampers: (campers) => set({ campers }),
+  setMonitores: (monitores) => set({ monitores }),
 
   addIncident: (incident) => {
     const newIncident: Incident = { id: crypto.randomUUID(), ...incident };

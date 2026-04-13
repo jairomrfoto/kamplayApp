@@ -2,14 +2,140 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/store';
 import { useAuth } from '../hooks/useAuth';
-import { getCampByCode, saveUserProfile } from '../services/firestore';
-import { firestoreCampers } from '../services/firestore';
+import { getCampByCode, saveUserProfile, firestoreCampers } from '../services/firestore';
 import { updateLocalCamp } from '../utils/localProfile';
 import {
   Tent, LogOut, ChevronDown, PlusCircle, MapPin, Calendar,
-  User, Loader, ArrowLeft, Baby
+  User, Loader, ArrowLeft, Baby, Heart, Pencil, X, Plus, Check,
 } from 'lucide-react';
 import type { Camper } from '../types';
+
+// ─── Medical Info Editor ──────────────────────────────────────────────────────
+interface MedicalEditorProps {
+  child: Camper;
+  campId: string;
+  onClose: () => void;
+}
+
+const MedicalEditor = ({ child, campId, onClose }: MedicalEditorProps) => {
+  const { updateCamper } = useStore();
+  const [alergias, setAlergias] = useState<string[]>(child.infoMedica.alergias);
+  const [medicacion, setMedicacion] = useState<string[]>(child.infoMedica.medicacion);
+  const [notas, setNotas] = useState(child.infoMedica.notas);
+  const [newAlergia, setNewAlergia] = useState('');
+  const [newMed, setNewMed] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    setLoading(true);
+    const updated: Camper = {
+      ...child,
+      infoMedica: { alergias, medicacion, notas },
+    };
+    // updateCamper saves to Firestore → real-time listeners notify monitors & coordinator
+    await firestoreCampers.save(campId, updated).catch(console.error);
+    updateCamper(updated);
+    setLoading(false);
+    setSaved(true);
+    setTimeout(onClose, 800);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <div>
+            <h3 className="font-bold text-gray-900">Info médica de {child.nombre}</h3>
+            <p className="text-xs text-gray-500 mt-0.5">Visible para monitores y coordinador</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* Alergias */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Alergias</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {alergias.map((a, i) => (
+                <span key={i} className="flex items-center gap-1 bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full">
+                  {a}
+                  <button onClick={() => setAlergias(alergias.filter((_, j) => j !== i))}>
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text" value={newAlergia} onChange={e => setNewAlergia(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && newAlergia.trim()) { setAlergias([...alergias, newAlergia.trim()]); setNewAlergia(''); } }}
+                placeholder="Ej: cacahuetes, penicilina..."
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                onClick={() => { if (newAlergia.trim()) { setAlergias([...alergias, newAlergia.trim()]); setNewAlergia(''); } }}
+                className="bg-red-100 text-red-600 px-3 py-2 rounded-lg hover:bg-red-200">
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Medicación */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Medicación necesaria</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {medicacion.map((m, i) => (
+                <span key={i} className="flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full">
+                  {m}
+                  <button onClick={() => setMedicacion(medicacion.filter((_, j) => j !== i))}>
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text" value={newMed} onChange={e => setNewMed(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && newMed.trim()) { setMedicacion([...medicacion, newMed.trim()]); setNewMed(''); } }}
+                placeholder="Ej: Ventolín (asma), Insulina..."
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                onClick={() => { if (newMed.trim()) { setMedicacion([...medicacion, newMed.trim()]); setNewMed(''); } }}
+                className="bg-blue-100 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-200">
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Notas */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Otras notas médicas</label>
+            <textarea
+              value={notas} onChange={e => setNotas(e.target.value)}
+              rows={3} placeholder="Ej: Lleva epipen en la mochila. Diabético tipo 1..."
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            />
+          </div>
+        </div>
+
+        <div className="p-5 border-t border-gray-100">
+          <button
+            onClick={handleSave} disabled={loading || saved}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+            {saved ? <><Check size={18} /> Guardado</> : loading ? <><Loader size={18} className="animate-spin" /> Guardando...</> : 'Guardar info médica'}
+          </button>
+          <p className="text-xs text-gray-400 text-center mt-2">
+            Los monitores y el coordinador verán este cambio inmediatamente
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ─── Add Child Form ───────────────────────────────────────────────────────────
 interface AddChildFormProps {
@@ -88,7 +214,7 @@ const AddChildForm = ({ campId, parentUid, onSave, onCancel }: AddChildFormProps
   );
 };
 
-// ─── Join Camp Form (for parents without a camp) ──────────────────────────────
+// ─── Join Camp Form ───────────────────────────────────────────────────────────
 interface JoinCampFormProps {
   user: { uid: string; email: string | null };
   onJoined: (campId: string) => void;
@@ -153,24 +279,20 @@ const ParentDashboard = () => {
   const { currentCamp, campers, addCamper } = useStore();
   const [showMenu, setShowMenu] = useState(false);
   const [addingChild, setAddingChild] = useState(false);
+  const [editingMedical, setEditingMedical] = useState<Camper | null>(null);
   const [joinedCampId, setJoinedCampId] = useState<string | null>(null);
 
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'Padre/Madre';
   const initial = displayName.charAt(0).toUpperCase();
-
-  // My children = campers in this camp linked to my uid
   const myChildren = campers.filter(c => c.parentUid === user?.uid);
-
   const activeCampId = currentCamp?.id || joinedCampId;
 
   const handleLogout = async () => { await signOut(); navigate('/login'); };
-
   const formatDate = (d: Date | string) =>
     new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
       <header className="bg-indigo-600 text-white p-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -215,7 +337,6 @@ const ParentDashboard = () => {
       </header>
 
       <main className="max-w-3xl mx-auto py-6 px-4">
-        {/* No camp yet */}
         {!activeCampId && user && (
           <JoinCampForm
             user={{ uid: user.uid, email: user.email }}
@@ -223,10 +344,8 @@ const ParentDashboard = () => {
           />
         )}
 
-        {/* Has a camp */}
         {activeCampId && (
           <div className="space-y-6">
-            {/* Camp info */}
             {currentCamp && (
               <div className="bg-white rounded-xl shadow-sm p-5">
                 <h2 className="text-lg font-bold text-gray-900 mb-3">{currentCamp.name}</h2>
@@ -242,7 +361,6 @@ const ParentDashboard = () => {
               </div>
             )}
 
-            {/* Add child form */}
             {addingChild && user && (
               <AddChildForm
                 campId={activeCampId}
@@ -252,7 +370,6 @@ const ParentDashboard = () => {
               />
             )}
 
-            {/* Children list */}
             {!addingChild && (
               <div className="bg-white rounded-xl shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
@@ -260,8 +377,7 @@ const ParentDashboard = () => {
                     <Baby size={18} className="text-indigo-500" />
                     Mis hijos en este campamento
                   </h3>
-                  <button
-                    onClick={() => setAddingChild(true)}
+                  <button onClick={() => setAddingChild(true)}
                     className="flex items-center gap-1.5 text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700">
                     <PlusCircle size={14} /> Añadir hijo
                   </button>
@@ -271,32 +387,66 @@ const ParentDashboard = () => {
                   <div className="text-center py-8">
                     <Baby size={32} className="text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500 text-sm mb-4">Aún no has añadido ningún hijo a este campamento.</p>
-                    <button
-                      onClick={() => setAddingChild(true)}
+                    <button onClick={() => setAddingChild(true)}
                       className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm hover:bg-indigo-700">
                       Añadir mi primer hijo
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {myChildren.map(child => (
-                      <div key={child.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                        <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                          <User size={18} className="text-indigo-600" />
+                      <div key={child.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                        {/* Child header */}
+                        <div className="flex items-center gap-4 p-4 bg-gray-50">
+                          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
+                            <User size={18} className="text-indigo-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900">{child.nombre}</p>
+                            <p className="text-sm text-gray-500">{child.edad} años
+                              {child.grupo && <span className="ml-2">· Grupo: {child.grupo}</span>}
+                              {child.cabana && <span className="ml-2">· Cabaña: {child.cabana}</span>}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setEditingMedical(child)}
+                            className="flex items-center gap-1.5 text-xs bg-white border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 shrink-0">
+                            <Heart size={13} className="text-red-400" /> Info médica
+                          </button>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-gray-900">{child.nombre}</p>
-                          <p className="text-sm text-gray-500">{child.edad} años</p>
-                        </div>
-                        {child.grupo && (
-                          <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full shrink-0">
-                            Grupo: {child.grupo}
-                          </span>
+
+                        {/* Medical info summary */}
+                        {(child.infoMedica.alergias.length > 0 || child.infoMedica.medicacion.length > 0 || child.infoMedica.notas) && (
+                          <div className="px-4 py-3 space-y-2 text-sm">
+                            {child.infoMedica.alergias.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 items-center">
+                                <span className="text-xs text-gray-500 font-medium">Alergias:</span>
+                                {child.infoMedica.alergias.map((a, i) => (
+                                  <span key={i} className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">{a}</span>
+                                ))}
+                              </div>
+                            )}
+                            {child.infoMedica.medicacion.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 items-center">
+                                <span className="text-xs text-gray-500 font-medium">Medicación:</span>
+                                {child.infoMedica.medicacion.map((m, i) => (
+                                  <span key={i} className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{m}</span>
+                                ))}
+                              </div>
+                            )}
+                            {child.infoMedica.notas && (
+                              <p className="text-gray-600 text-xs italic">{child.infoMedica.notas}</p>
+                            )}
+                          </div>
                         )}
-                        {child.cabana && (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full shrink-0">
-                            Cabaña: {child.cabana}
-                          </span>
+
+                        {!child.infoMedica.alergias.length && !child.infoMedica.medicacion.length && !child.infoMedica.notas && (
+                          <div className="px-4 py-3">
+                            <button onClick={() => setEditingMedical(child)}
+                              className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800">
+                              <Pencil size={12} /> Añadir información médica
+                            </button>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -307,6 +457,15 @@ const ParentDashboard = () => {
           </div>
         )}
       </main>
+
+      {/* Medical info editor modal */}
+      {editingMedical && activeCampId && (
+        <MedicalEditor
+          child={editingMedical}
+          campId={activeCampId}
+          onClose={() => setEditingMedical(null)}
+        />
+      )}
     </div>
   );
 };

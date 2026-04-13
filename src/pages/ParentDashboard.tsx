@@ -7,6 +7,7 @@ import { updateLocalCamp } from '../utils/localProfile';
 import {
   Tent, LogOut, ChevronDown, PlusCircle, MapPin, Calendar,
   User, Loader, ArrowLeft, Baby, Heart, Pencil, X, Plus, Check,
+  UtensilsCrossed, Baby as ChildIcon,
 } from 'lucide-react';
 import type { Camper } from '../types';
 
@@ -273,11 +274,73 @@ const JoinCampForm = ({ user, onJoined }: JoinCampFormProps) => {
 };
 
 // ─── Main ParentDashboard ─────────────────────────────────────────────────────
+const MenuCalendar = () => {
+  const { menus, currentCamp } = useStore();
+  const upcomingMenus = menus
+    .filter(m => m.fecha && new Date(m.fecha) >= new Date(new Date().setHours(0,0,0,0)))
+    .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+    .slice(0, 7);
+
+  const formatDay = (d: Date | string) =>
+    new Date(d).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' });
+
+  if (!currentCamp) return null;
+
+  if (upcomingMenus.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <UtensilsCrossed size={32} className="text-gray-300 mx-auto mb-3" />
+        <p className="text-gray-500 text-sm">El coordinador aún no ha publicado el menú.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {upcomingMenus.map(menu => (
+        <div key={menu.id} className="border border-gray-200 rounded-xl p-4">
+          <p className="text-sm font-semibold text-indigo-700 capitalize mb-3">{formatDay(menu.fecha)}</p>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {menu.comidas.desayuno && (
+              <div className="bg-yellow-50 rounded-lg p-2">
+                <p className="font-medium text-yellow-800 mb-1">Desayuno</p>
+                <p className="text-gray-600">{menu.comidas.desayuno}</p>
+              </div>
+            )}
+            {menu.comidas.almuerzo && (
+              <div className="bg-orange-50 rounded-lg p-2">
+                <p className="font-medium text-orange-800 mb-1">Almuerzo</p>
+                <p className="text-gray-600">{menu.comidas.almuerzo}</p>
+              </div>
+            )}
+            {menu.comidas.merienda && (
+              <div className="bg-green-50 rounded-lg p-2">
+                <p className="font-medium text-green-800 mb-1">Merienda</p>
+                <p className="text-gray-600">{menu.comidas.merienda}</p>
+              </div>
+            )}
+            {menu.comidas.cena && (
+              <div className="bg-blue-50 rounded-lg p-2">
+                <p className="font-medium text-blue-800 mb-1">Cena</p>
+                <p className="text-gray-600">{menu.comidas.cena}</p>
+              </div>
+            )}
+          </div>
+          {menu.alergenos && menu.alergenos.length > 0 && (
+            <p className="text-xs text-red-600 mt-2">⚠ Alérgenos: {menu.alergenos.join(', ')}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const ParentDashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { currentCamp, campers, addCamper } = useStore();
   const [showMenu, setShowMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState<'children' | 'menu'>('children');
   const [addingChild, setAddingChild] = useState(false);
   const [editingMedical, setEditingMedical] = useState<Camper | null>(null);
   const [joinedCampId, setJoinedCampId] = useState<string | null>(null);
@@ -361,7 +424,31 @@ const ParentDashboard = () => {
               </div>
             )}
 
-            {addingChild && user && (
+            {/* Tabs */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('children')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'children' ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <Baby size={15} /> Mis hijos
+              </button>
+              <button
+                onClick={() => setActiveTab('menu')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'menu' ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <UtensilsCrossed size={15} /> Menú
+              </button>
+            </div>
+
+            {/* Menu tab */}
+            {activeTab === 'menu' && (
+              <div className="bg-white rounded-xl shadow-sm p-5">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <UtensilsCrossed size={18} className="text-indigo-500" /> Menú del campamento
+                </h3>
+                <MenuCalendar />
+              </div>
+            )}
+
+            {activeTab === 'children' && addingChild && user && (
               <AddChildForm
                 campId={activeCampId}
                 parentUid={user.uid}
@@ -370,7 +457,7 @@ const ParentDashboard = () => {
               />
             )}
 
-            {!addingChild && (
+            {activeTab === 'children' && !addingChild && (
               <div className="bg-white rounded-xl shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900 flex items-center gap-2">

@@ -2,28 +2,48 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Join codes — readable by any authenticated user, writable by coordinators
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+
+    function isCoordinator(campId) {
+      return isAuth() &&
+        get(/databases/$(database)/documents/campamentos/$(campId)).data.mainCoordinator == request.auth.uid;
+    }
+
+    // ── Join codes — any authenticated user can look up a code to join ────────
     match /codigos/{code} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow read: if isAuth();
+      allow write: if isAuth();
     }
 
-    // User profiles — each user can only read/write their own
+    // ── User profiles — each user manages only their own ──────────────────────
     match /usuarios/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
-    // Camps — any authenticated user can read; only coordinators can write
+    // ── Camps ─────────────────────────────────────────────────────────────────
     match /campamentos/{campId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null
-        && resource.data.mainCoordinator == request.auth.uid;
+      // Any authenticated user can read camp info (to join with a code)
+      allow read: if isAuth();
+      // Only authenticated users can create a camp
+      allow create: if isAuth();
+      // Only the main coordinator can update or delete
+      allow update, delete: if isAuth() &&
+        resource.data.mainCoordinator == request.auth.uid;
 
-      // Subcollections — readable by any authenticated user in the camp
+      // ── Subcollections (acampados, monitores, grupos, etc.) ───────────────
+      // All camp members (any authenticated user with the camp ID) can read.
+      // Writes require authentication — the app enforces finer-grained role
+      // logic (coordinator vs monitor vs parent) at the service layer.
       match /{subcollection}/{docId} {
-        allow read: if request.auth != null;
-        allow write: if request.auth != null;
+        allow read: if isAuth();
+        allow write: if isAuth();
       }
     }
   }

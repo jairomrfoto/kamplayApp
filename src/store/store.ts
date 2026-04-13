@@ -49,6 +49,7 @@ interface AppState {
   updateMonitor: (monitor: Monitor) => void;
   updateMonitorPermisos: (monitorId: string, permisos: Monitor['permisos']) => void;
   addMonitor: (monitor: Monitor) => void;
+  setCurrentMonitor: (monitor: Monitor | undefined) => void;
 
   // ── Acampados ────────────────────────────────────────────────────────────
   updateCamper: (camper: Camper) => void;
@@ -185,6 +186,8 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   // ── Monitores ────────────────────────────────────────────────────────────
+  setCurrentMonitor: (monitor) => set({ currentMonitor: monitor }),
+
   updateMonitor: (updatedMonitor) => {
     set((state) => ({
       monitores: state.monitores.map(m =>

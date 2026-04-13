@@ -8,7 +8,7 @@ import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
 
 export function useFirestoreSync() {
-  const { loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores } = useStore();
+  const { loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores, setCurrentMonitor } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
   const unsubscribeMonitoresRef = useRef<(() => void) | null>(null);
@@ -53,7 +53,12 @@ export function useFirestoreSync() {
 
       unsubscribeIncidenciasRef.current = subscribeToIncidencias(campId, setIncidencias);
       unsubscribeCampersRef.current = subscribeToCampers(campId, setCampers);
-      unsubscribeMonitoresRef.current = subscribeToMonitores(campId, setMonitores);
+      unsubscribeMonitoresRef.current = subscribeToMonitores(campId, (monitores) => {
+        setMonitores(monitores);
+        // Keep currentMonitor in sync — picks up permission changes made by coordinator in real time
+        const mine = monitores.find(m => m.id === user.uid);
+        if (mine) setCurrentMonitor(mine);
+      });
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }

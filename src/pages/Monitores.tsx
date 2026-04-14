@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../store/store';
-import { Plus, Search, UserCog, Shield } from 'lucide-react';
+import { Plus, Search, RefreshCw, Shield } from 'lucide-react';
 import MonitorProfile from '../components/monitors/MonitorProfile';
 import MonitorProfileForm from '../components/monitors/MonitorProfileForm';
 import MonitorPermissions from '../components/coordinator/MonitorPermissions';
 import type { Monitor } from '../types';
 
 const Monitores = () => {
-  const { monitores, updateMonitor } = useStore();
+  const { monitores, updateMonitor, loadFromFirestore, currentCamp } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMonitor, setSelectedMonitor] = useState<string | null>(null);
   const [editingMonitor, setEditingMonitor] = useState<string | null>(null);
   const [managingPermissions, setManagingPermissions] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Refresh on mount so the coordinator always sees the latest list,
+  // even if the real-time onSnapshot listener missed the update.
+  useEffect(() => {
+    if (currentCamp?.id) loadFromFirestore(currentCamp.id);
+  }, [currentCamp?.id]);
+
+  const handleRefresh = async () => {
+    if (!currentCamp?.id || refreshing) return;
+    setRefreshing(true);
+    await loadFromFirestore(currentCamp.id);
+    setRefreshing(false);
+  };
 
   const handleUpdateMonitor = (updatedMonitor: Monitor) => {
     updateMonitor(updatedMonitor);
@@ -22,9 +35,13 @@ const Monitores = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Equipo de Monitores</h2>
-        <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
-          <Plus size={20} />
-          Nuevo Monitor
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+        >
+          <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
+          {refreshing ? 'Actualizando...' : 'Actualizar'}
         </button>
       </div>
 

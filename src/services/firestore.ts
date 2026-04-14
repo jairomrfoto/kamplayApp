@@ -123,29 +123,32 @@ async function listCollectionRest<T>(path: string): Promise<T[]> {
   });
 }
 
-// Runs a SDK operation with a timeout; falls back to REST on offline/timeout
-function sdkWithRestFallback<T>(
-  sdkFn: () => Promise<T>,
-  restFn: () => Promise<T>,
-  timeoutMs = 4000
-): Promise<T> {
-  return new Promise((resolve, reject) => {
-    let done = false;
-    const timer = setTimeout(() => {
-      if (!done) { done = true; restFn().then(resolve).catch(reject); }
-    }, timeoutMs);
-    sdkFn().then(v => {
-      if (!done) { done = true; clearTimeout(timer); resolve(v); }
-    }).catch(err => {
-      const msg = (err as { message?: string })?.message ?? '';
-      const code = (err as { code?: string })?.code ?? '';
-      if (!done && (msg.includes('offline') || code === 'unavailable')) {
-        done = true; clearTimeout(timer); restFn().then(resolve).catch(reject);
-      } else if (!done) {
-        done = true; clearTimeout(timer); reject(err);
-      }
-    });
+// ── Read helper: races SDK and REST simultaneously, resolves with first winner ─
+// No timeout needed — whichever path responds first wins.
+// If SDK is offline it rejects immediately → REST result is used.
+// If both fail, the error from the last one propagates.
+function raceBothReads<T>(sdkFn: () => Promise<T>, restFn: () => Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    let failures = 0;
+    const onFail = (err: unknown) => { if (++failures === 2) reject(err); };
+    sdkFn().then(resolve).catch(onFail);
+    restFn().then(resolve).catch(onFail);
   });
+}
+
+// Keep the old name as an alias so callers don't need updating yet
+const sdkWithRestFallback = raceBothReads;
+
+// ── Write helper: REST is authoritative (guaranteed to reach Firestore) ───────
+// SDK write fires in background for local cache but is not awaited.
+// Rationale: the SDK can resolve setDoc() from its in-memory buffer even when
+// the server hasn't received the data, causing sdkWithRestFallback to skip REST.
+function restFirstWrite(
+  restFn: () => Promise<void>,
+  sdkFn: () => Promise<void>
+): Promise<void> {
+  sdkFn().catch(() => {}); // background — for local SDK cache only
+  return restFn();         // this is what we await
 }
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
@@ -289,70 +292,61 @@ export function subscribeToMonitores(
 // ─── Campamento (documento raíz) ─────────────────────────────────────────────
 
 export async function getCampInfo(campId: string): Promise<Camp | null> {
-  try {
-    const snap = await getDoc(doc(db, 'campamentos', campId));
-    if (!snap.exists()) return null;
-    return { id: snap.id, ...fromFirestore(snap.data() as Record<string, unknown>) } as Camp;
-  } catch (err: unknown) {
-    const msg = (err as { message?: string })?.message ?? '';
-    if (msg.includes('offline') || (err as { code?: string })?.code === 'unavailable') {
+  return raceBothReads(
+    async () => {
+      const snap = await getDoc(doc(db, 'campamentos', campId));
+      if (!snap.exists()) return null;
+      return { id: snap.id, ...fromFirestore(snap.data() as Record<string, unknown>) } as Camp;
+    },
+    async () => {
       const data = await getDocRest(`campamentos/${campId}`);
       if (!data) return null;
       return { id: campId, ...data } as unknown as Camp;
     }
-    throw err;
-  }
+  );
 }
 
 export async function saveCampInfo(camp: Camp): Promise<void> {
   const data = toFirestore(camp as unknown as Record<string, unknown>);
-  await sdkWithRestFallback(
-    () => setDoc(doc(db, 'campamentos', camp.id), data),
-    () => setDocRest(`campamentos/${camp.id}`, data)
+  await restFirstWrite(
+    () => setDocRest(`campamentos/${camp.id}`, data),
+    () => setDoc(doc(db, 'campamentos', camp.id), data)
   );
 }
 
 export async function saveJoinCodes(campId: string, monitorCode: string, familyCode: string): Promise<void> {
+  const b = writeBatch(db);
+  b.set(doc(db, 'codigos', monitorCode), { campId, type: 'monitor' });
+  b.set(doc(db, 'codigos', familyCode), { campId, type: 'family' });
+  b.commit().catch(() => {});
   await Promise.all([
-    sdkWithRestFallback(
-      () => { const b = writeBatch(db); b.set(doc(db, 'codigos', monitorCode), { campId, type: 'monitor' }); b.set(doc(db, 'codigos', familyCode), { campId, type: 'family' }); return b.commit(); },
-      () => Promise.all([
-        setDocRest(`codigos/${monitorCode}`, { campId, type: 'monitor' }),
-        setDocRest(`codigos/${familyCode}`, { campId, type: 'family' }),
-      ]).then(() => undefined)
-    ),
+    setDocRest(`codigos/${monitorCode}`, { campId, type: 'monitor' }),
+    setDocRest(`codigos/${familyCode}`, { campId, type: 'family' }),
   ]);
 }
 
-export async function getCampByCode(
-  code: string,
-  _type?: string
-): Promise<Camp | null> {
+export async function getCampByCode(code: string, _type?: string): Promise<Camp | null> {
   const trimmed = code.trim().toUpperCase();
-  try {
-    const snap = await getDoc(doc(db, 'codigos', trimmed));
-    if (!snap.exists()) return null;
-    const { campId } = snap.data() as { campId: string };
-    return getCampInfo(campId);
-  } catch (err: unknown) {
-    const msg = (err as { message?: string })?.message ?? '';
-    if (msg.includes('offline') || (err as { code?: string })?.code === 'unavailable') {
-      // SDK offline — fall back to REST API (plain HTTPS, no persistent connection needed)
-      const codeData = await getDocRest(`codigos/${trimmed}`);
-      if (!codeData) return null;
-      const campId = codeData.campId as string;
-      return getCampInfo(campId);
+  const codeData = await raceBothReads(
+    async () => {
+      const snap = await getDoc(doc(db, 'codigos', trimmed));
+      return snap.exists() ? (snap.data() as { campId: string }) : null;
+    },
+    async () => {
+      const data = await getDocRest(`codigos/${trimmed}`);
+      return data ? { campId: data.campId as string } : null;
     }
-    throw err;
-  }
+  );
+  if (!codeData) return null;
+  return getCampInfo(codeData.campId);
 }
 
 // ─── Perfil de usuario ───────────────────────────────────────────────────────
 
 export async function saveUserProfile(profile: UserProfile): Promise<void> {
-  await sdkWithRestFallback(
-    () => setDoc(doc(db, 'usuarios', profile.uid), profile as unknown as Record<string, unknown>),
-    () => setDocRest(`usuarios/${profile.uid}`, profile as unknown as Record<string, unknown>)
+  await restFirstWrite(
+    () => setDocRest(`usuarios/${profile.uid}`, profile as unknown as Record<string, unknown>),
+    () => setDoc(doc(db, 'usuarios', profile.uid), profile as unknown as Record<string, unknown>)
   );
 }
 
@@ -369,9 +363,9 @@ function makeCrud<T extends { id: string }>(colName: string) {
     save: (campId: string, item: T) => {
       const data = toFirestore(item as unknown as Record<string, unknown>);
       const restPath = `campamentos/${campId}/${colName}/${item.id}`;
-      return sdkWithRestFallback(
-        () => setDoc(campDocRef(campId, colName, item.id), data),
-        () => setDocRest(restPath, data)
+      return restFirstWrite(
+        () => setDocRest(restPath, data),
+        () => setDoc(campDocRef(campId, colName, item.id), data)
       );
     },
     update: (campId: string, item: T) =>

@@ -100,6 +100,29 @@ async function setDocRest(path: string, data: Record<string, unknown>): Promise<
   if (!res.ok) throw new Error(`REST write ${res.status}`);
 }
 
+// Lists all documents in a Firestore subcollection via REST (no SDK connection needed)
+async function listCollectionRest<T>(path: string): Promise<T[]> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not authenticated');
+  const token = await user.getIdToken();
+  const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  const res = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/${path}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`REST list ${res.status}`);
+  const json = await res.json() as { documents?: Array<{ name: string; fields?: Record<string, unknown> }> };
+  if (!json.documents) return [];
+  return json.documents.map(d => {
+    const id = d.name.split('/').pop() as string;
+    const fields = Object.fromEntries(
+      Object.entries(d.fields ?? {}).map(([k, fv]) => [k, parseRestValue(fv)])
+    );
+    return { id, ...fields } as T;
+  });
+}
+
 // Runs a SDK operation with a timeout; falls back to REST on offline/timeout
 function sdkWithRestFallback<T>(
   sdkFn: () => Promise<T>,
@@ -183,9 +206,14 @@ const campDocRef = (campId: string, col: string, id: string) =>
 // ─── Carga de colecciones ────────────────────────────────────────────────────
 
 async function loadCollection<T>(campId: string, col: string): Promise<T[]> {
-  const snapshot = await getDocs(campCol(campId, col));
-  return snapshot.docs.map(
-    d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as T)
+  return sdkWithRestFallback(
+    async () => {
+      const snapshot = await getDocs(campCol(campId, col));
+      return snapshot.docs.map(
+        d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as T)
+      );
+    },
+    () => listCollectionRest<T>(`campamentos/${campId}/${col}`)
   );
 }
 

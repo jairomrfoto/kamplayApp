@@ -30,7 +30,7 @@ function App() {
   useFirestoreSync();
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />

@@ -88,7 +88,10 @@ const CampOverview = () => {
     setCreateLoading(false);
   };
 
-  if (isLoading) {
+  // Only block the full view with a spinner when there is no camp yet.
+  // If currentCamp already exists (e.g. loaded from localStorage), show it
+  // immediately — the background data refresh doesn't need to hide the UI.
+  if (isLoading && !currentCamp) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader size={32} className="animate-spin text-indigo-600" />

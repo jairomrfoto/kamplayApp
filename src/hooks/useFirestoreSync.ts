@@ -14,14 +14,15 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores } from '../services/firestore';
+import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores, getCoordinatorProfile } from '../services/firestore';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
+import type { CampCoordinator } from '../types/camp';
 
 export function useFirestoreSync() {
-  const { loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores, setCurrentMonitor } = useStore();
+  const { loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores, setCurrentMonitor, setCurrentCoordinator } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
   const unsubscribeMonitoresRef = useRef<(() => void) | null>(null);
@@ -46,6 +47,29 @@ export function useFirestoreSync() {
       if (camp) {
         setCurrentCamp(camp);
         updateLocalCamp(uid, campId, camp);
+
+        // If user is a coordinator for this camp, load their extended profile
+        if (camp.coordinators?.includes(uid)) {
+          const extra = await getCoordinatorProfile(campId, uid).catch(() => null);
+          const coordinator: CampCoordinator = {
+            id: uid,
+            campId,
+            email: auth.currentUser?.email || '',
+            name: auth.currentUser?.displayName || '',
+            role: 'coordinator',
+            permissions: {
+              manageCoordinators: camp.mainCoordinator === uid,
+              manageMonitors: true,
+              manageCampers: true,
+              manageActivities: true,
+              manageSchedule: true,
+              viewReports: true,
+            },
+            isMainCoordinator: camp.mainCoordinator === uid,
+            ...(extra || {}),
+          };
+          setCurrentCoordinator(coordinator);
+        }
 
         // Ensure join codes exist in Firestore (may be missing if camp was created before this feature)
         const monCode = camp.joinCodes?.monitors;

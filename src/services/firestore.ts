@@ -389,10 +389,22 @@ export const firestoreMenus      = makeCrud<MenuItem>('menus');
 export const firestoreIncidencias = makeCrud<Incident>('incidencias');
 
 // ─── Coordinador ─────────────────────────────────────────────────────────────
+// Saved as a camp subcollection so Firestore rules allow access.
 
-export async function saveCoordinator(coordinator: CampCoordinator): Promise<void> {
-  await setDoc(
-    doc(db, 'coordinadores', coordinator.id),
-    coordinator as unknown as Record<string, unknown>
+export async function saveCoordinator(campId: string, coordinator: CampCoordinator): Promise<void> {
+  const data = coordinator as unknown as Record<string, unknown>;
+  await restFirstWrite(
+    () => setDocRest(`campamentos/${campId}/coordinadores/${coordinator.id}`, data),
+    () => setDoc(doc(db, 'campamentos', campId, 'coordinadores', coordinator.id), data)
+  );
+}
+
+export async function getCoordinatorProfile(campId: string, uid: string): Promise<Partial<CampCoordinator> | null> {
+  return raceBothReads(
+    async () => {
+      const snap = await getDoc(doc(db, 'campamentos', campId, 'coordinadores', uid));
+      return snap.exists() ? (snap.data() as Partial<CampCoordinator>) : null;
+    },
+    async () => getDocRest(`campamentos/${campId}/coordinadores/${uid}`) as Promise<Partial<CampCoordinator> | null>
   );
 }

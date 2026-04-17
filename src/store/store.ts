@@ -10,7 +10,7 @@ import {
   firestoreCampers, firestoreMonitores, firestoreGrupos,
   firestoreCabanas, firestoreMateriales, firestoreActividades,
   firestoreHorarios, firestoreMenus, firestoreIncidencias,
-  loadCampData, getCampByCode,
+  loadCampData, getCampByCode, saveCampInfo, saveCoordinator,
 } from '../services/firestore';
 
 interface AppState {
@@ -83,6 +83,7 @@ interface AppState {
   updateMenu: (menu: MenuItem) => void;
 
   // ── Coordinadores ────────────────────────────────────────────────────────
+  setCurrentCoordinator: (coordinator: CampCoordinator | undefined) => void;
   addCoordinator: (coordinator: CampCoordinator) => void;
   removeCoordinator: (coordinatorId: string) => void;
   updateCoordinatorPermissions: (coordinatorId: string, permissions: CampCoordinator['permissions']) => void;
@@ -412,46 +413,64 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   // ── Coordinadores ────────────────────────────────────────────────────────
-  addCoordinator: (coordinator) => set((state) => {
-    if (!state.currentCamp) return state;
-    return {
-      currentCamp: {
-        ...state.currentCamp,
-        coordinators: [...state.currentCamp.coordinators, coordinator.id],
-      },
-    };
-  }),
+  setCurrentCoordinator: (coordinator) => set({ currentCoordinator: coordinator }),
 
-  removeCoordinator: (coordinatorId) => set((state) => {
-    if (!state.currentCamp) return state;
-    if (state.currentCamp.mainCoordinator === coordinatorId) return state;
-    return {
-      currentCamp: {
-        ...state.currentCamp,
-        coordinators: state.currentCamp.coordinators.filter(id => id !== coordinatorId),
-      },
-    };
-  }),
+  addCoordinator: (coordinator) => {
+    set((state) => {
+      if (!state.currentCamp) return state;
+      return {
+        currentCamp: {
+          ...state.currentCamp,
+          coordinators: [...state.currentCamp.coordinators, coordinator.id],
+        },
+      };
+    });
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      saveCoordinator(currentCamp.id, coordinator).catch(console.error);
+      saveCampInfo(currentCamp).catch(console.error);
+    }
+  },
 
-  updateCoordinatorPermissions: (_coordinatorId, _permissions) => set((state) => {
-    if (!state.currentCoordinator?.isMainCoordinator) return state;
-    return state;
-  }),
+  removeCoordinator: (coordinatorId) => {
+    set((state) => {
+      if (!state.currentCamp) return state;
+      if (state.currentCamp.mainCoordinator === coordinatorId) return state;
+      return {
+        currentCamp: {
+          ...state.currentCamp,
+          coordinators: state.currentCamp.coordinators.filter(id => id !== coordinatorId),
+        },
+      };
+    });
+    const { currentCamp } = get();
+    if (currentCamp?.id) saveCampInfo(currentCamp).catch(console.error);
+  },
 
-  updateCoordinator: (updatedCoordinator) => set((state) => ({
-    currentCoordinator:
-      state.currentCoordinator?.id === updatedCoordinator.id
-        ? updatedCoordinator
-        : state.currentCoordinator,
-  })),
+  updateCoordinatorPermissions: (_coordinatorId, _permissions) => {},
 
-  transferMainCoordinator: (newMainCoordinatorId) => set((state) => {
-    if (!state.currentCamp || !state.currentCoordinator?.isMainCoordinator) return state;
-    return {
-      currentCamp: {
-        ...state.currentCamp,
-        mainCoordinator: newMainCoordinatorId,
-      },
-    };
-  }),
+  updateCoordinator: (updatedCoordinator) => {
+    set((state) => ({
+      currentCoordinator:
+        state.currentCoordinator?.id === updatedCoordinator.id
+          ? updatedCoordinator
+          : state.currentCoordinator,
+    }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) saveCoordinator(currentCamp.id, updatedCoordinator).catch(console.error);
+  },
+
+  transferMainCoordinator: (newMainCoordinatorId) => {
+    set((state) => {
+      if (!state.currentCamp || !state.currentCoordinator?.isMainCoordinator) return state;
+      return {
+        currentCamp: {
+          ...state.currentCamp,
+          mainCoordinator: newMainCoordinatorId,
+        },
+      };
+    });
+    const { currentCamp } = get();
+    if (currentCamp?.id) saveCampInfo(currentCamp).catch(console.error);
+  },
 }));

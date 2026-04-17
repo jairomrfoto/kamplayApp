@@ -7,14 +7,13 @@ const CoordinatorProfile = () => {
   const { currentCoordinator, updateCoordinator } = useStore();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    ...currentCoordinator,
     name: currentCoordinator?.name ?? '',
     email: currentCoordinator?.email ?? '',
     location: currentCoordinator?.location ?? '',
     photo: currentCoordinator?.photo ?? '',
     experiencia: currentCoordinator?.experiencia ?? [],
     certificaciones: currentCoordinator?.certificaciones ?? [],
-    formacion: currentCoordinator?.formacion ?? []
+    formacion: currentCoordinator?.formacion ?? [],
   });
 
   const addExperiencia = () => {
@@ -66,7 +65,13 @@ const CoordinatorProfile = () => {
     setIsEditing(false);
   };
 
-  if (!currentCoordinator) return null;
+  if (!currentCoordinator) {
+    return (
+      <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+        Cargando perfil...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

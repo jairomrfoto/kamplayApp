@@ -8,7 +8,7 @@ interface Props {
 }
 
 const CoordinatorManagement = ({ onClose }: Props) => {
-  const { currentCoordinator, addCoordinator, removeCoordinator, updateCoordinatorPermissions } = useStore();
+  const { currentCoordinator, currentCamp, addCoordinator, removeCoordinator } = useStore();
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
 
@@ -125,28 +125,31 @@ const CoordinatorManagement = ({ onClose }: Props) => {
                 </div>
               </div>
 
-              {/* Otros Coordinadores */}
-              {currentCoordinator.campId && (
-                <div className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-gray-100 rounded-lg">
-                        <Mail className="text-gray-600" size={20} />
+              {/* Otros coordinadores del campamento */}
+              {currentCamp?.coordinators
+                .filter(id => id !== currentCamp.mainCoordinator)
+                .map(coordId => (
+                  <div key={coordId} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gray-100 rounded-lg">
+                          <Mail className="text-gray-600" size={20} />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Coordinador</h4>
+                          <p className="text-sm text-gray-500 font-mono text-xs">{coordId.slice(0, 12)}…</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">ejemplo@email.com</h4>
-                        <p className="text-sm text-gray-500">Coordinador</p>
-                      </div>
+                      <button
+                        onClick={() => removeCoordinator(coordId)}
+                        className="text-red-600 hover:text-red-700 text-sm"
+                      >
+                        Eliminar
+                      </button>
                     </div>
-                    <button
-                      onClick={() => removeCoordinator('coordinator-id')}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      Eliminar
-                    </button>
                   </div>
-                </div>
-              )}
+                ))
+              }
             </div>
           </div>
         </div>

@@ -55,7 +55,7 @@ function parseRestValue(v: unknown): unknown {
   return null;
 }
 
-async function getDocRest(path: string): Promise<Record<string, unknown> | null> {
+export async function getDocRest(path: string): Promise<Record<string, unknown> | null> {
   const user = auth.currentUser;
   if (!user) throw new Error('Not authenticated');
   const token = await user.getIdToken();
@@ -98,6 +98,18 @@ async function setDocRest(path: string, data: Record<string, unknown>): Promise<
     }
   );
   if (!res.ok) throw new Error(`REST write ${res.status}`);
+}
+
+async function deleteDocRest(path: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not authenticated');
+  const token = await user.getIdToken();
+  const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  const res = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/${path}`,
+    { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (!res.ok && res.status !== 404) throw new Error(`REST delete ${res.status}`);
 }
 
 // Lists all documents in a Firestore subcollection via REST (no SDK connection needed)
@@ -351,9 +363,16 @@ export async function saveUserProfile(profile: UserProfile): Promise<void> {
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
-  const snap = await getDoc(doc(db, 'usuarios', uid));
-  if (!snap.exists()) return null;
-  return snap.data() as UserProfile;
+  return raceBothReads(
+    async () => {
+      const snap = await getDoc(doc(db, 'usuarios', uid));
+      return snap.exists() ? (snap.data() as UserProfile) : null;
+    },
+    async () => {
+      const data = await getDocRest(`usuarios/${uid}`);
+      return data ? (data as unknown as UserProfile) : null;
+    }
+  );
 }
 
 // ─── CRUD genérico por colección ─────────────────────────────────────────────
@@ -374,7 +393,10 @@ function makeCrud<T extends { id: string }>(colName: string) {
         toFirestore(item as unknown as Record<string, unknown>)
       ),
     delete: (campId: string, id: string) =>
-      deleteDoc(campDocRef(campId, colName, id)),
+      restFirstWrite(
+        () => deleteDocRest(`campamentos/${campId}/${colName}/${id}`),
+        () => deleteDoc(campDocRef(campId, colName, id))
+      ),
   };
 }
 

@@ -54,6 +54,7 @@ interface AppState {
   // ── Acampados ────────────────────────────────────────────────────────────
   updateCamper: (camper: Camper) => void;
   addCamper: (camper: Camper) => void;
+  deleteCamper: (camperId: string) => void;
 
   // ── Actividades ──────────────────────────────────────────────────────────
   addActividad: (actividad: Actividad) => void;
@@ -246,6 +247,14 @@ export const useStore = create<AppState>((set, get) => ({
     const { currentCamp } = get();
     if (currentCamp?.id) {
       firestoreCampers.save(currentCamp.id, camper).catch(console.error);
+    }
+  },
+
+  deleteCamper: (camperId) => {
+    set((state) => ({ campers: state.campers.filter(c => c.id !== camperId) }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      firestoreCampers.delete(currentCamp.id, camperId).catch(console.error);
     }
   },
 
@@ -447,7 +456,19 @@ export const useStore = create<AppState>((set, get) => ({
     if (currentCamp?.id) saveCampInfo(currentCamp).catch(console.error);
   },
 
-  updateCoordinatorPermissions: (_coordinatorId, _permissions) => {},
+  updateCoordinatorPermissions: (coordinatorId, permissions) => {
+    set((state) => ({
+      currentCoordinator:
+        state.currentCoordinator?.id === coordinatorId
+          ? { ...state.currentCoordinator, permissions }
+          : state.currentCoordinator,
+    }));
+    const { currentCamp, currentCoordinator } = get();
+    if (currentCamp?.id && currentCoordinator) {
+      const updated = { ...currentCoordinator, permissions };
+      saveCoordinator(currentCamp.id, updated).catch(console.error);
+    }
+  },
 
   updateCoordinator: (updatedCoordinator) => {
     set((state) => ({

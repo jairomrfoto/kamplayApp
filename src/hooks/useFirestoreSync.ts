@@ -14,9 +14,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores, getCoordinatorProfile } from '../services/firestore';
-import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores, getCoordinatorProfile, getDocRest } from '../services/firestore';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
 import type { CampCoordinator } from '../types/camp';
@@ -75,8 +73,8 @@ export function useFirestoreSync() {
         const monCode = camp.joinCodes?.monitors;
         const famCode = camp.joinCodes?.families;
         if (monCode && famCode) {
-          const codeSnap = await getDoc(doc(db, 'codigos', monCode)).catch(() => null);
-          if (!codeSnap?.exists()) {
+          const codeData = await getDocRest(`codigos/${monCode}`).catch(() => null);
+          if (!codeData) {
             saveJoinCodes(campId, monCode, famCode).catch(() => {});
           }
         }

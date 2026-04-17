@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { useStore } from '../store/store';
 import { Plus, Search, Edit, Trash, FileSpreadsheet } from 'lucide-react';
@@ -11,7 +11,8 @@ import ImportCampersModal from '../components/acampados/ImportCampersModal';
 const ITEM_SIZE = 64; // Altura de cada fila
 
 const Acampados = () => {
-  const { campers, addCamper } = useStore();
+  const { campers, addCamper, deleteCamper, currentCamp, loadFromFirestore } = useStore();
+  useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id); }, [currentCamp?.id]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingCamper, setEditingCamper] = useState<string | null>(null);
@@ -57,7 +58,10 @@ const Acampados = () => {
             >
               <Edit size={18} />
             </button>
-            <button className="text-red-600 hover:text-red-800">
+            <button
+              onClick={() => { if (window.confirm('¿Eliminar acampado?')) deleteCamper(camper.id); }}
+              className="text-red-600 hover:text-red-800"
+            >
               <Trash size={18} />
             </button>
           </div>

@@ -11,7 +11,8 @@ const CARD_HEIGHT = 320;
 const GRID_GAP = 24;
 
 const Actividades = () => {
-  const { actividades } = useStore();
+  const { actividades, currentCamp, loadFromFirestore } = useStore();
+  React.useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id); }, [currentCamp?.id]);
   const [showForm, setShowForm] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('todas');
   const [gridWidth, setGridWidth] = useState(window.innerWidth - 384); // Account for sidebar width (320px) + padding

@@ -26,6 +26,7 @@ export function useFirestoreSync() {
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
   const unsubscribeMonitoresRef = useRef<(() => void) | null>(null);
   const loadedCampIdRef = useRef<string | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadCamp = useCallback(async (campId: string, uid: string, localCamp?: any) => {
     if (!campId || loadedCampIdRef.current === campId) return;
@@ -72,6 +73,13 @@ export function useFirestoreSync() {
         const mine = monitores.find(m => m.id === uid);
         if (mine) setCurrentMonitor(mine);
       });
+
+      // Poll all collections every 30s — ensures changes from other users
+      // are reflected even when the SDK streaming connection is broken.
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = setInterval(() => {
+        loadFromFirestore(campId);
+      }, 30_000);
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }
@@ -119,6 +127,7 @@ export function useFirestoreSync() {
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
       if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
       if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
   }, [loadCamp, setCurrentCamp]);
 }

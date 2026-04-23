@@ -12,7 +12,7 @@ const ITEM_SIZE = 64; // Altura de cada fila
 
 const Acampados = () => {
   const { campers, addCamper, deleteCamper, currentCamp, loadFromFirestore } = useStore();
-  useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id); }, [currentCamp?.id]);
+  useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id, true); }, [currentCamp?.id]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingCamper, setEditingCamper] = useState<string | null>(null);

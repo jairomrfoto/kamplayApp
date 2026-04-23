@@ -7,7 +7,7 @@ import GrupoForm from '../components/grupos/GrupoForm';
 
 const Grupos = () => {
   const { grupos, campers, currentCamp, loadFromFirestore } = useStore();
-  React.useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id); }, [currentCamp?.id]);
+  React.useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id, true); }, [currentCamp?.id]);
   const [selectedGrupo, setSelectedGrupo] = useState<string | null>(null);
   const [selectedCamper, setSelectedCamper] = useState<string | null>(null);
   const [showGrupoEval, setShowGrupoEval] = useState(false);

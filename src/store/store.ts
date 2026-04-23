@@ -31,7 +31,7 @@ interface AppState {
   incidencias: Incident[];
 
   // ── Acciones de carga ────────────────────────────────────────────────────
-  loadFromFirestore: (campId: string) => Promise<void>;
+  loadFromFirestore: (campId: string, silent?: boolean) => Promise<void>;
   setCurrentCamp: (camp: Camp) => void;
 
   // ── Incidencias ──────────────────────────────────────────────────────────
@@ -110,14 +110,14 @@ export const useStore = create<AppState>((set, get) => ({
   currentCoordinator: undefined,
 
   // ── Carga desde Firestore ────────────────────────────────────────────────
-  loadFromFirestore: async (campId: string) => {
-    set({ isLoading: true });
+  loadFromFirestore: async (campId: string, silent = false) => {
+    if (!silent) set({ isLoading: true });
     try {
       const data = await loadCampData(campId);
       set({ ...data, isLoading: false });
     } catch (error) {
       console.error('Error cargando datos desde Firestore:', error);
-      set({ isLoading: false });
+      if (!silent) set({ isLoading: false });
     }
   },
 

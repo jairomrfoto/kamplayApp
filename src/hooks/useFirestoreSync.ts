@@ -4,12 +4,10 @@
  * On auth state change it:
  *   1. Instantly restores the last camp from localStorage (no network latency).
  *   2. Fetches the latest profile from Firestore and loads the camp if it changed.
- *   3. Starts real-time onSnapshot listeners for incidencias, acampados, and monitores
- *      so every connected client reflects edits immediately.
- *
- * Connectivity strategy: getCampInfo / saveCampInfo / saveJoinCodes all use
- * sdkWithRestFallback (see firestore.ts) — if the Firestore SDK streaming
- * connection is unavailable they fall back to direct REST calls automatically.
+ *   3. Starts REST-polling subscriptions for monitores (5s), incidencias (8s),
+ *      acampados (10s) — SDK onSnapshot streaming is unavailable in this env.
+ *   4. Polls all collections every 15s as a full-refresh safety net.
+ *   5. Re-fetches immediately on visibilitychange (tab focus).
  */
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -35,8 +33,6 @@ export function useFirestoreSync() {
       let camp = await getCampInfo(campId);
 
       if (!camp && localCamp) {
-        // Camp exists in localStorage but not in Firestore (was created while offline)
-        // Re-upload it now that we have connectivity
         console.log('Re-syncing camp to Firestore:', campId);
         await saveCampInfo(localCamp);
         camp = localCamp;
@@ -46,7 +42,6 @@ export function useFirestoreSync() {
         setCurrentCamp(camp);
         updateLocalCamp(uid, campId, camp);
 
-        // If user is a coordinator for this camp, load their extended profile
         if (camp.coordinators?.includes(uid)) {
           const extra = await getCoordinatorProfile(campId, uid).catch(() => null);
           const coordinator: CampCoordinator = {
@@ -69,7 +64,6 @@ export function useFirestoreSync() {
           setCurrentCoordinator(coordinator);
         }
 
-        // Ensure join codes exist in Firestore (may be missing if camp was created before this feature)
         const monCode = camp.joinCodes?.monitors;
         const famCode = camp.joinCodes?.families;
         if (monCode && famCode) {
@@ -82,7 +76,7 @@ export function useFirestoreSync() {
 
       await loadFromFirestore(campId);
 
-      // Real-time listeners — any change by any user propagates immediately
+      // REST-polling subscriptions (replace broken SDK onSnapshot)
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
       if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
       if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
@@ -91,21 +85,30 @@ export function useFirestoreSync() {
       unsubscribeCampersRef.current = subscribeToCampers(campId, setCampers);
       unsubscribeMonitoresRef.current = subscribeToMonitores(campId, (monitores) => {
         setMonitores(monitores);
-        // Keep currentMonitor in sync — picks up permission changes made by coordinator in real time
         const mine = monitores.find(m => m.id === uid);
         if (mine) setCurrentMonitor(mine);
       });
 
-      // Poll all collections every 30s — ensures changes from other users
-      // are reflected even when the SDK streaming connection is broken.
+      // Full refresh every 15s (silent — no loading spinner)
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
       pollIntervalRef.current = setInterval(() => {
-        loadFromFirestore(campId);
-      }, 30_000);
+        loadFromFirestore(campId, true);
+      }, 15_000);
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }
   }, [loadFromFirestore, setCurrentCamp, setIncidencias]);
+
+  // Immediate refresh when user returns to the tab
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && loadedCampIdRef.current) {
+        loadFromFirestore(loadedCampIdRef.current, true);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [loadFromFirestore]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
@@ -115,12 +118,10 @@ export function useFirestoreSync() {
         return;
       }
 
-      // Step 1: Restore from localStorage immediately (instant, no network)
       const local = getLocalProfile(user.uid);
       if (local?.camp) setCurrentCamp(local.camp);
       if (local?.campId) loadCamp(local.campId, user.uid, local.camp);
 
-      // Step 2: Verify/refresh profile from Firestore
       try {
         const profile = await getUserProfile(user.uid);
         if (profile) {
@@ -135,7 +136,6 @@ export function useFirestoreSync() {
             loadCamp(campId, user.uid, local?.camp);
           }
         } else if (local?.campId) {
-          // Profile not in Firestore either — re-upload it
           const localRole = local.role || 'coordinator';
           await saveUserProfile({ uid: user.uid, campId: local.campId, role: localRole, email: user.email || '', nombre: user.displayName || '' });
         }

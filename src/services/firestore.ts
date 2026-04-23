@@ -265,40 +265,42 @@ export async function loadCampData(campId: string): Promise<CampData> {
   return { campers, monitores, grupos, cabanas, materiales, actividades, horariosDiarios, menus, incidencias };
 }
 
-// ─── Listener en tiempo real para incidencias ────────────────────────────────
+// ─── Suscripcion en tiempo real via REST polling ──────────────────────────────
+// onSnapshot del SDK retorna 400 (streaming roto). Sustituimos por REST polling.
+function subscribeRestPoll<T>(
+  path: string,
+  callback: (items: T[]) => void,
+  intervalMs: number
+): () => void {
+  let active = true;
+  const run = async () => {
+    if (!active) return;
+    try { callback(await listCollectionRest<T>(path)); } catch { /* ignore */ }
+    if (active) setTimeout(run, intervalMs);
+  };
+  run();
+  return () => { active = false; };
+}
 
 export function subscribeToIncidencias(
   campId: string,
   callback: (incidencias: Incident[]) => void
 ): () => void {
-  return onSnapshot(campCol(campId, 'incidencias'), snapshot => {
-    const incidencias = snapshot.docs.map(
-      d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as Incident)
-    );
-    callback(incidencias);
-  });
+  return subscribeRestPoll<Incident>(`campamentos/${campId}/incidencias`, callback, 8_000);
 }
 
 export function subscribeToCampers(
   campId: string,
   callback: (campers: Camper[]) => void
 ): () => void {
-  return onSnapshot(campCol(campId, 'acampados'), snapshot => {
-    callback(snapshot.docs.map(
-      d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as Camper)
-    ));
-  });
+  return subscribeRestPoll<Camper>(`campamentos/${campId}/acampados`, callback, 10_000);
 }
 
 export function subscribeToMonitores(
   campId: string,
   callback: (monitores: Monitor[]) => void
 ): () => void {
-  return onSnapshot(campCol(campId, 'monitores'), snapshot => {
-    callback(snapshot.docs.map(
-      d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as Monitor)
-    ));
-  });
+  return subscribeRestPoll<Monitor>(`campamentos/${campId}/monitores`, callback, 5_000);
 }
 
 // ─── Campamento (documento raíz) ─────────────────────────────────────────────

@@ -6,8 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import FormField from './FormField';
 import SuccessModal from './SuccessModal';
 import { generateJoinCode } from '../../utils/generateJoinCode';
-import { saveCampInfo, saveUserProfile } from '../../services/firestore';
+import { saveCampInfo, addUserCampId } from '../../services/firestore';
 import { useAuth } from '../../hooks/useAuth';
+import { useStore } from '../../store/store';
+import { addLocalCamp } from '../../utils/localProfile';
 import type { Camp } from '../../types/camp';
 
 interface CampFormData extends Omit<Camp, 'id' | 'joinCode' | 'adminId'> {}
@@ -15,6 +17,7 @@ interface CampFormData extends Omit<Camp, 'id' | 'joinCode' | 'adminId'> {}
 const CampForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addCampToUser } = useStore();
   const [showSuccess, setShowSuccess] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
   const [createdCamp, setCreatedCamp] = useState<Camp | null>(null);
@@ -107,13 +110,9 @@ const CampForm = () => {
     try {
       await saveCampInfo(camp);
       if (user) {
-        await saveUserProfile({
-          uid: user.uid,
-          campId,
-          role: 'coordinator',
-          email: user.email || adminEmail,
-          nombre: user.displayName || '',
-        });
+        addCampToUser(camp);
+        addLocalCamp(user.uid, campId, camp, 'coordinator');
+        addUserCampId(user.uid, campId).catch(console.error);
       }
       setCreatedCamp(camp);
       setShowSuccess(true);

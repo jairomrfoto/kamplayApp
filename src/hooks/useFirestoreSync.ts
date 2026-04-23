@@ -4,26 +4,37 @@
  * On auth state change it:
  *   1. Instantly restores the last camp from localStorage (no network latency).
  *   2. Fetches the latest profile from Firestore and loads the camp if it changed.
- *   3. Starts REST-polling subscriptions for monitores (5s), incidencias (8s),
- *      acampados (10s) — SDK onSnapshot streaming is unavailable in this env.
- *   4. Polls all collections every 15s as a full-refresh safety net.
- *   5. Re-fetches immediately on visibilitychange (tab focus).
+ *   3. Loads ALL camps the user belongs to (campIds[]) and stores them in userCamps.
+ *   4. Starts REST-polling subscriptions for monitores (5s), incidencias (8s),
+ *      acampados (10s) for the ACTIVE camp.
+ *   5. Polls all collections every 15s as a full-refresh safety net.
+ *   6. Re-fetches immediately on visibilitychange (tab focus).
+ *   7. Registers switchCampFn in the store so any component can switch camps.
  */
 import { useEffect, useRef, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo, saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores, getCoordinatorProfile, getDocRest } from '../services/firestore';
+import {
+  getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo,
+  saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores,
+  getCoordinatorProfile, getDocRest, getUserCamps,
+} from '../services/firestore';
 import { useStore } from '../store/store';
-import { getLocalProfile, setLocalProfile, updateLocalCamp } from '../utils/localProfile';
+import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from '../utils/localProfile';
 import type { CampCoordinator } from '../types/camp';
 
 export function useFirestoreSync() {
-  const { loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores, setCurrentMonitor, setCurrentCoordinator } = useStore();
+  const {
+    loadFromFirestore, setCurrentCamp, setIncidencias, setCampers,
+    setMonitores, setCurrentMonitor, setCurrentCoordinator,
+    setUserCamps, addCampToUser, setSwitchCampFn,
+  } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
   const unsubscribeMonitoresRef = useRef<(() => void) | null>(null);
   const loadedCampIdRef = useRef<string | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const currentUidRef = useRef<string | null>(null);
 
   const loadCamp = useCallback(async (campId: string, uid: string, localCamp?: any) => {
     if (!campId || loadedCampIdRef.current === campId) return;
@@ -40,6 +51,7 @@ export function useFirestoreSync() {
 
       if (camp) {
         setCurrentCamp(camp);
+        addCampToUser(camp);
         updateLocalCamp(uid, campId, camp);
 
         if (camp.coordinators?.includes(uid)) {
@@ -68,15 +80,13 @@ export function useFirestoreSync() {
         const famCode = camp.joinCodes?.families;
         if (monCode && famCode) {
           const codeData = await getDocRest(`codigos/${monCode}`).catch(() => null);
-          if (!codeData) {
-            saveJoinCodes(campId, monCode, famCode).catch(() => {});
-          }
+          if (!codeData) saveJoinCodes(campId, monCode, famCode).catch(() => {});
         }
       }
 
       await loadFromFirestore(campId);
 
-      // REST-polling subscriptions (replace broken SDK onSnapshot)
+      // REST-polling subscriptions for the active camp
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
       if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
       if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
@@ -89,7 +99,7 @@ export function useFirestoreSync() {
         if (mine) setCurrentMonitor(mine);
       });
 
-      // Full refresh every 15s (silent — no loading spinner)
+      // Full silent refresh every 15s
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
       pollIntervalRef.current = setInterval(() => {
         loadFromFirestore(campId, true);
@@ -97,9 +107,18 @@ export function useFirestoreSync() {
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }
-  }, [loadFromFirestore, setCurrentCamp, setIncidencias]);
+  }, [loadFromFirestore, setCurrentCamp, setIncidencias, addCampToUser]);
 
-  // Immediate refresh when user returns to the tab
+  // Register switchCamp so any component can call it via useStore().switchCampFn
+  useEffect(() => {
+    setSwitchCampFn((campId: string) => {
+      loadedCampIdRef.current = null;
+      const uid = currentUidRef.current;
+      if (uid) loadCamp(campId, uid);
+    });
+  }, [loadCamp, setSwitchCampFn]);
+
+  // Immediate silent refresh when user returns to the tab
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === 'visible' && loadedCampIdRef.current) {
@@ -115,29 +134,62 @@ export function useFirestoreSync() {
       if (!user) {
         if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
         loadedCampIdRef.current = null;
+        currentUidRef.current = null;
         return;
       }
 
+      currentUidRef.current = user.uid;
+
+      // Step 1: Restore from localStorage immediately (instant, no network)
       const local = getLocalProfile(user.uid);
       if (local?.camp) setCurrentCamp(local.camp);
+      // Restore cached camps into userCamps
+      if (local?.camps) {
+        setUserCamps(Object.values(local.camps));
+      } else if (local?.camp) {
+        setUserCamps([local.camp]);
+      }
       if (local?.campId) loadCamp(local.campId, user.uid, local.camp);
 
+      // Step 2: Verify/refresh profile from Firestore
       try {
         const profile = await getUserProfile(user.uid);
         if (profile) {
           const campId = profile.campId || '';
+          const campIds = profile.campIds || (campId ? [campId] : []);
+
           setLocalProfile(user.uid, {
             role: profile.role as 'coordinator' | 'monitor' | 'parent',
             campId,
+            campIds,
             camp: local?.camp,
+            camps: local?.camps,
           });
+
+          // Load active camp if different from localStorage
           if (campId && campId !== local?.campId) {
             loadedCampIdRef.current = null;
             loadCamp(campId, user.uid, local?.camp);
           }
+
+          // Load ALL user camps in background (for camp switcher)
+          if (campIds.length > 0) {
+            getUserCamps(campIds).then(camps => {
+              setUserCamps(camps);
+              // Update local cache for all camps
+              camps.forEach(c => addLocalCamp(user.uid, c.id, c));
+            }).catch(() => {});
+          }
         } else if (local?.campId) {
           const localRole = local.role || 'coordinator';
-          await saveUserProfile({ uid: user.uid, campId: local.campId, role: localRole, email: user.email || '', nombre: user.displayName || '' });
+          await saveUserProfile({
+            uid: user.uid,
+            campId: local.campId,
+            campIds: local.campIds || [local.campId],
+            role: localRole,
+            email: user.email || '',
+            nombre: user.displayName || '',
+          });
         }
       } catch {
         // Firestore offline — localStorage already handled this
@@ -151,5 +203,5 @@ export function useFirestoreSync() {
       if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
-  }, [loadCamp, setCurrentCamp]);
+  }, [loadCamp, setCurrentCamp, setUserCamps]);
 }

@@ -17,6 +17,7 @@ interface AppState {
   // ── Estado ──────────────────────────────────────────────────────────────
   isLoading: boolean;
   currentCamp?: Camp;
+  userCamps: Camp[];
   campHistory: unknown[];
   campers: Camper[];
   monitores: Monitor[];
@@ -33,6 +34,11 @@ interface AppState {
   // ── Acciones de carga ────────────────────────────────────────────────────
   loadFromFirestore: (campId: string, silent?: boolean) => Promise<void>;
   setCurrentCamp: (camp: Camp) => void;
+  setUserCamps: (camps: Camp[]) => void;
+  addCampToUser: (camp: Camp) => void;
+  /** Registered by useFirestoreSync — switches active camp + restarts polling */
+  switchCampFn: ((campId: string) => void) | null;
+  setSwitchCampFn: (fn: (campId: string) => void) => void;
 
   // ── Incidencias ──────────────────────────────────────────────────────────
   addIncident: (incident: Omit<Incident, 'id'>) => void;
@@ -96,6 +102,8 @@ export const useStore = create<AppState>((set, get) => ({
   // ── Estado inicial ───────────────────────────────────────────────────────
   isLoading: false,
   currentCamp: undefined,
+  userCamps: [],
+  switchCampFn: null,
   campHistory: initialData.campHistory,
   campers: initialData.campers,
   monitores: initialData.monitores,
@@ -122,6 +130,13 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setCurrentCamp: (camp: Camp) => set({ currentCamp: camp }),
+  setUserCamps: (camps) => set({ userCamps: camps }),
+  addCampToUser: (camp) => set((state) => ({
+    userCamps: state.userCamps.some(c => c.id === camp.id)
+      ? state.userCamps.map(c => c.id === camp.id ? camp : c)
+      : [...state.userCamps, camp],
+  })),
+  setSwitchCampFn: (fn) => set({ switchCampFn: fn }),
 
   // ── Incidencias ──────────────────────────────────────────────────────────
   setIncidencias: (incidencias) => set({ incidencias }),

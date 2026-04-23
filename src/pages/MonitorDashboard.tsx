@@ -8,6 +8,7 @@ import CampHistory from '../components/monitor-dashboard/CampHistory';
 import MisAcampados from '../components/monitor-dashboard/MisAcampados';
 import { useAuth } from '../hooks/useAuth';
 import { useStore } from '../store/store';
+import CampSwitcher from '../components/CampSwitcher';
 
 const MonitorDashboard = () => {
   const [activeTab, setActiveTab] = useState('current');
@@ -55,13 +56,7 @@ const MonitorDashboard = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="/join-camp"
-              className="flex items-center gap-1.5 text-sm bg-white text-indigo-600 font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
-            >
-              <PlusCircle size={15} />
-              <span className="hidden sm:inline">Unirme a campamento</span>
-            </Link>
+            <CampSwitcher variant="header" />
 
             <div className="relative">
               <button

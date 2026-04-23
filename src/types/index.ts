@@ -173,7 +173,8 @@ export interface Incident {
 
 export interface UserProfile {
   uid: string;
-  campId: string;
+  campId: string;        // last active camp (kept for backwards compat)
+  campIds?: string[];    // all camps the user belongs to
   role: 'coordinator' | 'monitor' | 'parent';
   email: string;
   nombre: string;

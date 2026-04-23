@@ -30,6 +30,7 @@ import {
   where,
   getDoc,
   writeBatch,
+  arrayUnion,
 } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 
@@ -375,6 +376,32 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
       return data ? (data as unknown as UserProfile) : null;
     }
   );
+}
+
+/** Add campId to the user's campIds array without overwriting other fields. */
+export async function addUserCampId(uid: string, campId: string): Promise<void> {
+  return restFirstWrite(
+    async () => {
+      // REST: read-modify-write (no arrayUnion support in plain REST)
+      const existing = await getDocRest(`usuarios/${uid}`);
+      const ids: string[] = Array.from(new Set([
+        ...((existing?.campIds as string[]) || []),
+        ...(existing?.campId ? [existing.campId as string] : []),
+        campId,
+      ]));
+      await setDocRest(`usuarios/${uid}`, { ...(existing || {}), campId, campIds: ids });
+    },
+    async () => {
+      await updateDoc(doc(db, 'usuarios', uid), { campId, campIds: arrayUnion(campId) })
+        .catch(() => setDoc(doc(db, 'usuarios', uid), { campId, campIds: [campId] }, { merge: true }));
+    }
+  );
+}
+
+/** Fetch all Camp objects for the given IDs (parallel). */
+export async function getUserCamps(campIds: string[]): Promise<Camp[]> {
+  const results = await Promise.all(campIds.map(id => getCampInfo(id).catch(() => null)));
+  return results.filter(Boolean) as Camp[];
 }
 
 // ─── CRUD genérico por colección ─────────────────────────────────────────────

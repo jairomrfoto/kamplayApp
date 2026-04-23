@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  Calendar, 
-  Users, 
-  Package, 
+import {
+  Calendar,
+  Users,
+  Package,
   UserCog,
   UsersRound,
   Tent,
@@ -14,6 +14,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import CampSwitcher from './CampSwitcher';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -42,27 +43,30 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-white min-h-[calc(100vh-4rem)] shadow-lg sticky top-16 z-10 flex-shrink-0">
-      <nav className="p-4">
-        <ul className="space-y-1">
-          {links.map((link) => (
-            <li key={link.to}>
-              <NavLink
-                to={isCoordinator ? link.to.replace('/app', '/coordinator-dashboard') : link.to}
-                className={({ isActive }) => 
-                  `flex items-center gap-2 p-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`
-                }
-              >
-                <link.icon size={18} />
-                <span className="text-sm">{link.text}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <div className="pt-4">
+        <CampSwitcher variant="sidebar" />
+        <nav className="px-4">
+          <ul className="space-y-1">
+            {links.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={isCoordinator ? link.to.replace('/app', '/coordinator-dashboard') : link.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 p-3 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-indigo-50 text-indigo-600'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`
+                  }
+                >
+                  <link.icon size={18} />
+                  <span className="text-sm">{link.text}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </aside>
   );
 };

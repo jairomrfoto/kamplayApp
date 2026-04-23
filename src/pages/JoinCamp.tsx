@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tent, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { getCampByCode, saveUserProfile, firestoreMonitores } from '../services/firestore';
-import { setLocalProfile } from '../utils/localProfile';
+import { getCampByCode, addUserCampId, firestoreMonitores } from '../services/firestore';
+import { addLocalCamp } from '../utils/localProfile';
 import { useStore } from '../store/store';
 
 const JoinCamp = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { setCurrentCamp } = useStore();
+  const { setCurrentCamp, addCampToUser } = useStore();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -44,16 +44,16 @@ const JoinCamp = () => {
 
       const nombre = user.displayName || user.email?.split('@')[0] || 'Monitor';
 
-      // Update store + localStorage immediately — works even for new users with no prior profile
+      // Update store + localStorage immediately
       setCurrentCamp(camp);
-      setLocalProfile(user.uid, { role, campId: camp.id, camp });
+      addCampToUser(camp);
+      addLocalCamp(user.uid, camp.id, camp, role);
 
       if (isMonitor) navigate('/monitor-dashboard');
       else navigate('/parent-dashboard');
 
-      // Sync to Firestore in background
-      const profile = { uid: user.uid, campId: camp.id, role, email: user.email || '', nombre };
-      saveUserProfile(profile).catch(err => console.error('Error saving profile:', err));
+      // Sync to Firestore in background (adds campId to campIds[] without replacing others)
+      addUserCampId(user.uid, camp.id).catch(err => console.error('Error saving profile:', err));
 
       // Register monitor in the camp's monitors subcollection so the coordinator sees them
       if (isMonitor) {

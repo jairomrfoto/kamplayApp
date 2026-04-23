@@ -1,5 +1,4 @@
 import React from 'react';
-import { useStore } from '../store/store';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
@@ -12,11 +11,12 @@ import Monitores from './Monitores';
 import Grupos from './Grupos';
 import Cabanas from './Cabanas';
 import AreaMedica from './AreaMedica';
-import Incidencias from './Incidencias'; 
+import Incidencias from './Incidencias';
 import Menu from './Menu';
 import CoordinatorProfile from '../components/coordinator/CoordinatorProfile';
 import CoordinatorManagement from '../components/coordinator/CoordinatorManagement';
 import CampOverview from '../components/coordinator/CampOverview';
+import MisCampamentos from './MisCampamentos';
 
 const CoordinatorDashboard = () => {
   return (
@@ -27,6 +27,7 @@ const CoordinatorDashboard = () => {
         <main className="flex-1 p-4 lg:p-6">
           <Routes>
             <Route path="/" element={<CampOverview />} />
+            <Route path="/mis-campamentos" element={<MisCampamentos />} />
             <Route path="/profile" element={<CoordinatorProfile />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendario" element={<Calendario />} />

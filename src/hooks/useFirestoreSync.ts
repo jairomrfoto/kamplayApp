@@ -17,7 +17,7 @@ import { auth } from '../config/firebase';
 import {
   getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo,
   saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores,
-  getCoordinatorProfile, getDocRest, getUserCamps,
+  getCoordinatorProfile, getDocRest, getUserCamps, loadCampData,
 } from '../services/firestore';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from '../utils/localProfile';
@@ -28,6 +28,7 @@ export function useFirestoreSync() {
     loadFromFirestore, setCurrentCamp, setIncidencias, setCampers,
     setMonitores, setCurrentMonitor, setCurrentCoordinator,
     setUserCamps, addCampToUser, setSwitchCampFn,
+    setCampCache, applyCampCache,
   } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
@@ -84,7 +85,9 @@ export function useFirestoreSync() {
         }
       }
 
-      await loadFromFirestore(campId);
+      // If we have cached data, apply instantly so the switch feels immediate
+      const hadCache = applyCampCache(campId);
+      await loadFromFirestore(campId, hadCache);
 
       // REST-polling subscriptions for the active camp
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
@@ -107,7 +110,7 @@ export function useFirestoreSync() {
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }
-  }, [loadFromFirestore, setCurrentCamp, setIncidencias, addCampToUser]);
+  }, [loadFromFirestore, setCurrentCamp, setIncidencias, addCampToUser, applyCampCache]);
 
   // Register switchCamp so any component can call it via useStore().switchCampFn
   useEffect(() => {
@@ -172,12 +175,20 @@ export function useFirestoreSync() {
             loadCamp(campId, user.uid, local?.camp);
           }
 
-          // Load ALL user camps in background (for camp switcher)
+          // Load ALL user camps in background (for camp switcher + preload cache)
           if (campIds.length > 0) {
-            getUserCamps(campIds).then(camps => {
+            getUserCamps(campIds).then(async camps => {
               setUserCamps(camps);
-              // Update local cache for all camps
               camps.forEach(c => addLocalCamp(user.uid, c.id, c));
+
+              // Preload data for every camp except the active one so switching is instant
+              const activeCampId = campId || local?.campId;
+              const otherCamps = camps.filter(c => c.id !== activeCampId);
+              for (const camp of otherCamps) {
+                loadCampData(camp.id)
+                  .then(data => setCampCache(camp.id, data))
+                  .catch(() => {});
+              }
             }).catch(() => {});
           }
         } else if (local?.campId) {

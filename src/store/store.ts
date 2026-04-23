@@ -12,6 +12,7 @@ import {
   firestoreHorarios, firestoreMenus, firestoreIncidencias,
   loadCampData, getCampByCode, saveCampInfo, saveCoordinator,
 } from '../services/firestore';
+import type { CampData } from '../services/firestore';
 
 interface AppState {
   // ── Estado ──────────────────────────────────────────────────────────────
@@ -39,6 +40,11 @@ interface AppState {
   /** Registered by useFirestoreSync — switches active camp + restarts polling */
   switchCampFn: ((campId: string) => void) | null;
   setSwitchCampFn: (fn: (campId: string) => void) => void;
+  /** Preloaded data for all user camps — instant switch without network wait */
+  campCache: Record<string, CampData>;
+  setCampCache: (campId: string, data: CampData) => void;
+  /** Instantly apply cached data for campId; returns true if cache hit */
+  applyCampCache: (campId: string) => boolean;
 
   // ── Incidencias ──────────────────────────────────────────────────────────
   addIncident: (incident: Omit<Incident, 'id'>) => void;
@@ -104,6 +110,7 @@ export const useStore = create<AppState>((set, get) => ({
   currentCamp: undefined,
   userCamps: [],
   switchCampFn: null,
+  campCache: {},
   campHistory: initialData.campHistory,
   campers: initialData.campers,
   monitores: initialData.monitores,
@@ -137,6 +144,25 @@ export const useStore = create<AppState>((set, get) => ({
       : [...state.userCamps, camp],
   })),
   setSwitchCampFn: (fn) => set({ switchCampFn: fn }),
+  setCampCache: (campId, data) => set((state) => ({
+    campCache: { ...state.campCache, [campId]: data },
+  })),
+  applyCampCache: (campId) => {
+    const cached = get().campCache[campId];
+    if (!cached) return false;
+    set({
+      campers: cached.campers,
+      monitores: cached.monitores,
+      grupos: cached.grupos,
+      cabanas: cached.cabanas,
+      materiales: cached.materiales,
+      actividades: cached.actividades,
+      horariosDiarios: cached.horariosDiarios,
+      menus: cached.menus,
+      incidencias: cached.incidencias,
+    });
+    return true;
+  },
 
   // ── Incidencias ──────────────────────────────────────────────────────────
   setIncidencias: (incidencias) => set({ incidencias }),

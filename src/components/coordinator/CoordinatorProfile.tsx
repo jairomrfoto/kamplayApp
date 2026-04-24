@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Camera, Upload, Mail, MapPin, PencilLine, X, Calendar, Award, GraduationCap } from 'lucide-react';
 import { useStore } from '../../store/store';
 import type { CampCoordinator } from '../../types/camp';
+import ChangePassword from '../ChangePassword';
 
 const CoordinatorProfile = () => {
   const { currentCoordinator, updateCoordinator } = useStore();
@@ -446,6 +447,8 @@ const CoordinatorProfile = () => {
           </div>
         </div>
       </div>
+
+      <ChangePassword />
     </div>
   );
 };

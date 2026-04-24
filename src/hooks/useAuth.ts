@@ -4,9 +4,14 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  type User
+  signInWithPopup,
+  sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  type User,
 } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { auth, googleProvider } from '../config/firebase';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -37,9 +42,26 @@ export function useAuth() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
+  };
+
+  const sendPasswordReset = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    const u = auth.currentUser;
+    if (!u || !u.email) throw new Error('No hay usuario autenticado');
+    const credential = EmailAuthProvider.credential(u.email, currentPassword);
+    await reauthenticateWithCredential(u, credential);
+    await updatePassword(u, newPassword);
+  };
+
   const signOut = async () => {
     await firebaseSignOut(auth);
   };
 
-  return { user, loading, signInWithEmail, signOut };
+  return { user, loading, signInWithEmail, signInWithGoogle, sendPasswordReset, changePassword, signOut };
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine } from 'lucide-react';
 import { useStore } from '../../store/store';
 import ProfileEditForm from './ProfileEditForm';
+import ChangePassword from '../ChangePassword';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -122,6 +123,8 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      <ChangePassword />
     </div>
   );
 };

@@ -17,7 +17,7 @@ import { auth } from '../config/firebase';
 import {
   getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo,
   saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores,
-  getCoordinatorProfile, getDocRest, getUserCamps, loadCampData,
+  getCoordinatorProfile, getDocRest, getUserCamps, loadCampData, getUserActividades,
 } from '../services/firestore';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from '../utils/localProfile';
@@ -28,7 +28,7 @@ export function useFirestoreSync() {
     loadFromFirestore, setCurrentCamp, setIncidencias, setCampers,
     setMonitores, setCurrentMonitor, setCurrentCoordinator,
     setUserCamps, addCampToUser, setSwitchCampFn,
-    setCampCache, applyCampCache,
+    setCampCache, applyCampCache, setMisActividades,
   } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
@@ -142,6 +142,9 @@ export function useFirestoreSync() {
       }
 
       currentUidRef.current = user.uid;
+
+      // Load personal activity library (non-blocking)
+      getUserActividades(user.uid).then(setMisActividades).catch(() => {});
 
       // Step 1: Restore from localStorage immediately (instant, no network)
       const local = getLocalProfile(user.uid);

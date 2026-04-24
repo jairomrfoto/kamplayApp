@@ -173,9 +173,24 @@ export interface Incident {
 
 export interface UserProfile {
   uid: string;
-  campId: string;        // last active camp (kept for backwards compat)
-  campIds?: string[];    // all camps the user belongs to
+  campId: string;
+  campIds?: string[];
   role: 'coordinator' | 'monitor' | 'parent';
   email: string;
   nombre: string;
+}
+
+export interface ActividadPersonal {
+  id: string;
+  titulo: string;
+  descripcion?: string;
+  categoria: string;
+  duracion: number;
+  edadMinima: number;
+  edadMaxima: number;
+  capacidadMaxima: number;
+  ubicacion: string;
+  campId: string;
+  campNombre: string;
+  fechaGuardado: Date;
 }

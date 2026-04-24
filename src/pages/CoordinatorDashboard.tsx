@@ -17,6 +17,7 @@ import CoordinatorProfile from '../components/coordinator/CoordinatorProfile';
 import CoordinatorManagement from '../components/coordinator/CoordinatorManagement';
 import CampOverview from '../components/coordinator/CampOverview';
 import MisCampamentos from './MisCampamentos';
+import MisActividades from '../components/MisActividades';
 
 const CoordinatorDashboard = () => {
   return (
@@ -41,6 +42,7 @@ const CoordinatorDashboard = () => {
             <Route path="/incidencias" element={<Incidencias />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/coordinadores" element={<CoordinatorManagement />} />
+            <Route path="/mi-biblioteca" element={<MisActividades />} />
           </Routes>
         </main>
       </div>

@@ -25,6 +25,10 @@ service cloud.firestore {
     // ── User profiles — each user manages only their own ──────────────────────
     match /usuarios/{userId} {
       allow read, write: if isOwner(userId);
+      // Personal subcollections (actividades, etc.)
+      match /{subcollection}/{docId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
     // ── Camps ─────────────────────────────────────────────────────────────────

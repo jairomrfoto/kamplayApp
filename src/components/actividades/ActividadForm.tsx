@@ -15,7 +15,7 @@ interface Props {
 }
 
 const ActividadForm = ({ onClose, initialData }: Props) => {
-  const { addActividad, materiales, addMaterial, currentMonitor, actividades } = useStore();
+  const { addActividad, materiales, addMaterial, misActividades, actividades } = useStore();
   const [mode, setMode] = useState<'new' | 'existing'>('new');
   const [showMonitorActivities, setShowMonitorActivities] = useState(false);
   const [formData, setFormData] = useState({
@@ -54,10 +54,10 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
     setFormData(prev => ({
       ...prev,
       titulo: activity.titulo,
-      descripcion: activity.descripcion,
+      descripcion: activity.descripcion || '',
       categoria: activity.categoria,
       duracion: activity.duracion,
-      materialesIds: activity.materiales,
+      materialesIds: [],
       capacidadMaxima: activity.capacidadMaxima,
       edadMinima: activity.edadMinima,
       edadMaxima: activity.edadMaxima,
@@ -138,14 +138,15 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
         )}
       </div>
 
-      {currentMonitor?.actividades && (
+      {misActividades.length > 0 && (
         <div className="mb-6">
           <button
             type="button"
             onClick={() => setShowMonitorActivities(!showMonitorActivities)}
-            className="w-full bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"
+            className="w-full bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 flex items-center justify-between"
           >
-            Usar una de mis actividades anteriores
+            <span>Usar una de mis actividades anteriores</span>
+            <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full">{misActividades.length}</span>
           </button>
 
           {showMonitorActivities && (
@@ -159,14 +160,19 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
                 />
               </div>
               <div className="max-h-60 overflow-y-auto space-y-2">
-                {currentMonitor.actividades.map((activity: any) => (
+                {misActividades.map((activity) => (
                   <div
                     key={activity.id}
                     onClick={() => handleSelectMonitorActivity(activity)}
                     className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
                   >
-                    <h4 className="font-medium">{activity.titulo}</h4>
-                    <p className="text-sm text-gray-600">{activity.descripcion}</p>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">{activity.titulo}</h4>
+                      <span className="text-xs text-gray-400">{activity.campNombre}</span>
+                    </div>
+                    {activity.descripcion && (
+                      <p className="text-sm text-gray-600 mt-0.5 line-clamp-1">{activity.descripcion}</p>
+                    )}
                   </div>
                 ))}
               </div>

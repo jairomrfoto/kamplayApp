@@ -3,7 +3,7 @@ import { initialData } from './initialData';
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
   Actividad, HorarioDiario, MenuItem, Incident,
-  EncuestaMonitor, EvaluacionGrupo, EvaluacionCamper,
+  EncuestaMonitor, EvaluacionGrupo, EvaluacionCamper, ActividadPersonal,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 import {
@@ -11,8 +11,10 @@ import {
   firestoreCabanas, firestoreMateriales, firestoreActividades,
   firestoreHorarios, firestoreMenus, firestoreIncidencias,
   loadCampData, getCampByCode, saveCampInfo, saveCoordinator,
+  saveUserActividad,
 } from '../services/firestore';
 import type { CampData } from '../services/firestore';
+import { auth } from '../config/firebase';
 
 interface AppState {
   // ── Estado ──────────────────────────────────────────────────────────────
@@ -31,6 +33,7 @@ interface AppState {
   horariosDiarios: HorarioDiario[];
   menus: MenuItem[];
   incidencias: Incident[];
+  misActividades: ActividadPersonal[];
 
   // ── Acciones de carga ────────────────────────────────────────────────────
   loadFromFirestore: (campId: string, silent?: boolean) => Promise<void>;
@@ -70,6 +73,8 @@ interface AppState {
 
   // ── Actividades ──────────────────────────────────────────────────────────
   addActividad: (actividad: Actividad) => void;
+  setMisActividades: (actividades: ActividadPersonal[]) => void;
+  addMiActividad: (actividad: ActividadPersonal) => void;
 
   // ── Grupos ───────────────────────────────────────────────────────────────
   addGrupo: (grupo: Grupo) => void;
@@ -123,6 +128,7 @@ export const useStore = create<AppState>((set, get) => ({
   currentMonitor: undefined,
   incidencias: initialData.incidencias,
   currentCoordinator: undefined,
+  misActividades: [],
 
   // ── Carga desde Firestore ────────────────────────────────────────────────
   loadFromFirestore: async (campId: string, silent = false) => {
@@ -306,6 +312,41 @@ export const useStore = create<AppState>((set, get) => ({
     if (currentCamp?.id) {
       firestoreActividades.save(currentCamp.id, actividad).catch(console.error);
     }
+    // Auto-save to personal library
+    const uid = auth.currentUser?.uid;
+    if (uid && currentCamp) {
+      const personal: ActividadPersonal = {
+        id: actividad.id,
+        titulo: actividad.titulo,
+        descripcion: actividad.descripcion,
+        categoria: actividad.categoria,
+        duracion: actividad.duracion,
+        edadMinima: actividad.edadMinima,
+        edadMaxima: actividad.edadMaxima,
+        capacidadMaxima: actividad.capacidadMaxima,
+        ubicacion: actividad.ubicacion,
+        campId: currentCamp.id,
+        campNombre: currentCamp.nombre,
+        fechaGuardado: new Date(),
+      };
+      set((state) => ({
+        misActividades: state.misActividades.some(a => a.id === personal.id)
+          ? state.misActividades
+          : [...state.misActividades, personal],
+      }));
+      saveUserActividad(uid, personal).catch(console.error);
+    }
+  },
+
+  setMisActividades: (actividades) => set({ misActividades: actividades }),
+  addMiActividad: (actividad) => {
+    set((state) => ({
+      misActividades: state.misActividades.some(a => a.id === actividad.id)
+        ? state.misActividades
+        : [...state.misActividades, actividad],
+    }));
+    const uid = auth.currentUser?.uid;
+    if (uid) saveUserActividad(uid, actividad).catch(console.error);
   },
 
   // ── Grupos ───────────────────────────────────────────────────────────────

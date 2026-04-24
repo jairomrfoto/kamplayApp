@@ -165,7 +165,7 @@ function restFirstWrite(
 }
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
-  Actividad, HorarioDiario, MenuItem, Incident, UserProfile,
+  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 
@@ -402,6 +402,28 @@ export async function addUserCampId(uid: string, campId: string): Promise<void> 
 export async function getUserCamps(campIds: string[]): Promise<Camp[]> {
   const results = await Promise.all(campIds.map(id => getCampInfo(id).catch(() => null)));
   return results.filter(Boolean) as Camp[];
+}
+
+// ─── CRUD genérico por colección ─────────────────────────────────────────────
+
+// ─── Biblioteca personal de actividades por usuario ──────────────────────────
+
+export async function saveUserActividad(uid: string, actividad: ActividadPersonal): Promise<void> {
+  const data = toFirestore(actividad as unknown as Record<string, unknown>);
+  return restFirstWrite(
+    () => setDocRest(`usuarios/${uid}/actividades/${actividad.id}`, data),
+    () => setDoc(doc(db, 'usuarios', uid, 'actividades', actividad.id), data)
+  );
+}
+
+export async function getUserActividades(uid: string): Promise<ActividadPersonal[]> {
+  return raceBothReads(
+    async () => {
+      const snap = await getDocs(collection(db, 'usuarios', uid, 'actividades'));
+      return snap.docs.map(d => ({ id: d.id, ...fromFirestore(d.data() as Record<string, unknown>) } as ActividadPersonal));
+    },
+    () => listCollectionRest<ActividadPersonal>(`usuarios/${uid}/actividades`)
+  );
 }
 
 // ─── CRUD genérico por colección ─────────────────────────────────────────────

@@ -12,7 +12,8 @@ import {
   UtensilsCrossed as MenuIcon,
   AlertTriangle,
   Shield,
-  Layers
+  Layers,
+  BookOpen,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import CampSwitcher from './CampSwitcher';
@@ -38,6 +39,7 @@ const Sidebar = () => {
   const coordinatorLinks = [
     { to: "/coordinator-dashboard/mis-campamentos", icon: Layers, text: "Mis Campamentos" },
     ...baseLinks,
+    { to: "/coordinator-dashboard/mi-biblioteca", icon: BookOpen, text: "Mi Biblioteca" },
     { to: "/coordinator-dashboard/coordinadores", icon: Shield, text: "Coordinadores" }
   ];
 

@@ -41,28 +41,25 @@ const Acampados = () => {
     const camper = filteredCampers[index];
     return (
       <div style={style} className="flex items-center border-b border-gray-200">
-        <div 
-          className="flex-1 px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600"
+        <div
+          className="flex-1 px-4 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 text-sm truncate"
           onClick={() => setSelectedCamper(camper.id)}
         >
           {camper.nombre}
         </div>
-        <div className="flex-1 px-6 py-4 whitespace-nowrap">{camper.edad}</div>
-        <div className="flex-1 px-6 py-4 whitespace-nowrap">{camper.grupo}</div>
-        <div className="flex-1 px-6 py-4 whitespace-nowrap">{camper.habitacion}</div>
-        <div className="px-6 py-4 whitespace-nowrap">
+        <div className="w-16 px-4 py-4 whitespace-nowrap text-sm">{camper.edad}</div>
+        <div className="flex-1 px-4 py-4 whitespace-nowrap text-sm truncate">{camper.grupo}</div>
+        <div className="flex-1 px-4 py-4 whitespace-nowrap text-sm truncate hidden sm:block">{camper.habitacion}</div>
+        <div className="w-24 px-4 py-4 whitespace-nowrap">
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setEditingCamper(camper.id)}
-              className="text-blue-600 hover:text-blue-800"
-            >
-              <Edit size={18} />
+            <button onClick={() => setEditingCamper(camper.id)} className="text-blue-600 hover:text-blue-800">
+              <Edit size={16} />
             </button>
             <button
               onClick={() => { if (window.confirm('¿Eliminar acampado?')) deleteCamper(camper.id); }}
               className="text-red-600 hover:text-red-800"
             >
-              <Trash size={18} />
+              <Trash size={16} />
             </button>
           </div>
         </div>
@@ -72,24 +69,24 @@ const Acampados = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">
-          Gestión de Acampados
-        </h2>
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de Acampados</h2>
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setShowImport(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+            className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 flex items-center gap-1.5 text-sm"
           >
-            <FileSpreadsheet size={20} />
-            Importar Excel
+            <FileSpreadsheet size={16} />
+            <span className="hidden sm:inline">Importar Excel</span>
+            <span className="sm:hidden">Excel</span>
           </button>
-          <button 
+          <button
             onClick={() => setShowForm(true)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+            className="bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-1.5 text-sm"
           >
-            <Plus size={20} />
-            Nuevo Acampado
+            <Plus size={16} />
+            <span className="hidden sm:inline">Nuevo Acampado</span>
+            <span className="sm:hidden">Nuevo</span>
           </button>
         </div>
       </div>
@@ -109,21 +106,18 @@ const Acampados = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <div>
+          <div className="min-w-[500px]">
             {/* Header */}
             <div className="flex border-b border-gray-200 bg-gray-50">
-              <div className="flex-1 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</div>
-              <div className="flex-1 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edad</div>
-              <div className="flex-1 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupo</div>
-              <div className="flex-1 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habitación</div>
-              <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</div>
+              <div className="flex-1 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</div>
+              <div className="w-16 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edad</div>
+              <div className="flex-1 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupo</div>
+              <div className="flex-1 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:block">Habitación</div>
+              <div className="w-24 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</div>
             </div>
-            
-            {/* Virtualized List */}
+
             {filteredCampers.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No hay acampados registrados
-              </div>
+              <div className="text-center py-8 text-gray-500">No hay acampados registrados</div>
             ) : (
               <List
                 height={400}

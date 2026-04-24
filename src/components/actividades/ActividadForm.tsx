@@ -96,7 +96,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
   };
 
   return (
-    <div className="bg-white rounded-xl max-w-2xl w-full p-4 lg:p-6 mx-4 lg:mx-0">
+    <div className="bg-white rounded-xl max-w-2xl w-full p-4 lg:p-6 mx-4 lg:mx-0 max-h-[90vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold">Nueva Actividad</h3>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -331,7 +331,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Capacidad Máxima

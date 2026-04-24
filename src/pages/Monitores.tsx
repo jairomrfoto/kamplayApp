@@ -33,8 +33,8 @@ const Monitores = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Equipo de Monitores</h2>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Equipo de Monitores</h2>
         <button
           onClick={handleRefresh}
           disabled={refreshing}

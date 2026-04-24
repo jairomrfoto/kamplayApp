@@ -40,6 +40,10 @@ interface AppState {
   setCurrentCamp: (camp: Camp) => void;
   setUserCamps: (camps: Camp[]) => void;
   addCampToUser: (camp: Camp) => void;
+  /** Mobile sidebar open state */
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
   /** Registered by useFirestoreSync — switches active camp + restarts polling */
   switchCampFn: ((campId: string) => void) | null;
   setSwitchCampFn: (fn: (campId: string) => void) => void;
@@ -112,6 +116,9 @@ interface AppState {
 export const useStore = create<AppState>((set, get) => ({
   // ── Estado inicial ───────────────────────────────────────────────────────
   isLoading: false,
+  sidebarOpen: false,
+  setSidebarOpen: (open) => set({ sidebarOpen: open }),
+  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
   currentCamp: undefined,
   userCamps: [],
   switchCampFn: null,

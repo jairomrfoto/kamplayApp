@@ -27,8 +27,8 @@ const Menu = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Menú del Campamento</h2>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Menú del Campamento</h2>
         {isCoordinator && (
           <div className="flex gap-4">
             {menuDelDia && (

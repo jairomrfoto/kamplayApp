@@ -7,28 +7,30 @@ import MaterialInput from './MaterialInput';
 import { categorias } from '../../utils/actividadesConfig';
 import ActividadSelector from './ActividadSelector';
 import type { Actividad } from '../../types';
+import type { ActividadPlantilla } from '../../data/actividadesEjemplo';
 
 interface Props {
   onClose: () => void;
+  initialData?: Partial<ActividadPlantilla>;
 }
 
-const ActividadForm = ({ onClose }: Props) => {
+const ActividadForm = ({ onClose, initialData }: Props) => {
   const { addActividad, materiales, addMaterial, currentMonitor, actividades } = useStore();
   const [mode, setMode] = useState<'new' | 'existing'>('new');
   const [showMonitorActivities, setShowMonitorActivities] = useState(false);
   const [formData, setFormData] = useState({
-    titulo: '',
-    descripcion: '',
-    inicio: new Date(),
-    fin: new Date(),
-    imagen: '',
-    categoria: '',
-    duracion: 60,
-    materialesIds: [] as string[],
-    capacidadMaxima: 20,
-    edadMinima: 6,
-    edadMaxima: 16,
-    ubicacion: '',
+    titulo:          initialData?.titulo       || '',
+    descripcion:     initialData?.descripcion  || '',
+    inicio:          new Date(),
+    fin:             new Date(),
+    imagen:          '',
+    categoria:       initialData?.categoria    || '',
+    duracion:        initialData?.duracion     || 60,
+    materialesIds:   [] as string[],
+    capacidadMaxima: initialData?.capacidadMaxima ?? 20,
+    edadMinima:      initialData?.edadMinima   ?? 6,
+    edadMaxima:      initialData?.edadMaxima   ?? 16,
+    ubicacion:       initialData?.ubicacion    || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {

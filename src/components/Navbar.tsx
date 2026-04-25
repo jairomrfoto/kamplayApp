@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tent, LogOut, User, ChevronDown, PlusCircle, Menu } from 'lucide-react';
+import { LogOut, User, ChevronDown, PlusCircle, Menu } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useStore } from '../store/store';
@@ -23,7 +23,7 @@ const Navbar = () => {
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <nav className="bg-indigo-600 text-white px-4 py-3 relative sticky top-0 z-30">
+    <nav className="bg-green-800 text-white px-4 py-3 relative sticky top-0 z-30">
       <div className="max-w-full flex justify-between items-center gap-2">
 
         {/* Left: hamburger (mobile) + logo */}
@@ -31,7 +31,7 @@ const Navbar = () => {
           {isCoordinator && (
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-1.5 rounded-lg hover:bg-indigo-700 flex-shrink-0"
+              className="lg:hidden p-1.5 rounded-lg hover:bg-green-700 flex-shrink-0"
               aria-label="Abrir menú"
             >
               <Menu size={22} />
@@ -41,8 +41,8 @@ const Navbar = () => {
             to={isCoordinator ? '/coordinator-dashboard' : isMonitor ? '/monitor-dashboard' : '/parent-dashboard'}
             className="flex items-center gap-2 min-w-0"
           >
-            <Tent size={22} className="flex-shrink-0" />
-            <h1 className="text-base lg:text-lg font-bold truncate">Kamplay</h1>
+            <span className="text-xl flex-shrink-0">🏕️</span>
+            <h1 className="text-base lg:text-lg font-extrabold truncate">Kamplay</h1>
           </Link>
         </div>
 
@@ -50,7 +50,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             to="/join-camp"
-            className="flex items-center gap-1.5 text-sm bg-white text-indigo-600 font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
+            className="flex items-center gap-1.5 text-sm bg-white/15 hover:bg-white/25 text-white font-medium px-3 py-1.5 rounded-lg transition-colors border border-white/20"
           >
             <PlusCircle size={15} />
             <span className="hidden sm:inline">Unirme a campamento</span>
@@ -59,10 +59,10 @@ const Navbar = () => {
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-green-700 transition-colors"
             >
-              <div className="w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-medium">{initial}</span>
+              <div className="w-7 h-7 bg-orange-400 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-bold">{initial}</span>
               </div>
               <span className="text-sm hidden sm:block max-w-[120px] truncate">{displayName}</span>
               <ChevronDown size={14} />
@@ -71,7 +71,7 @@ const Navbar = () => {
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 text-gray-900 z-50">
                 <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="font-medium text-sm truncate">{displayName}</p>
+                  <p className="font-bold text-sm truncate">{displayName}</p>
                   <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                 </div>
 

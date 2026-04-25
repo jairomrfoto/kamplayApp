@@ -96,7 +96,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
             type="email"
             value={formData.email || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           />
         </div>
 
@@ -108,7 +108,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
             type="text"
             value={formData.ubicacion || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, ubicacion: e.target.value }))}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           />
         </div>
 
@@ -120,7 +120,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
             <button
               type="button"
               onClick={addExperiencia}
-              className="text-sm text-indigo-600 hover:text-indigo-700"
+              className="text-sm text-orange-600 hover:text-orange-700"
             >
               Añadir Experiencia
             </button>
@@ -137,7 +137,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
                     newExp[index] = { ...exp, campamento: e.target.value };
                     setFormData(prev => ({ ...prev, experiencia: newExp }));
                   }}
-                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -149,7 +149,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
                       newExp[index] = { ...exp, periodo: e.target.value };
                       setFormData(prev => ({ ...prev, experiencia: newExp }));
                     }}
-                    className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                   <input
                     type="text"
@@ -160,7 +160,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
                       newExp[index] = { ...exp, rol: e.target.value };
                       setFormData(prev => ({ ...prev, experiencia: newExp }));
                     }}
-                    className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                 </div>
               </div>
@@ -176,7 +176,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
             <button
               type="button"
               onClick={addCertificacion}
-              className="text-sm text-indigo-600 hover:text-indigo-700"
+              className="text-sm text-orange-600 hover:text-orange-700"
             >
               Añadir Certificación
             </button>
@@ -193,7 +193,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
                     newCert[index] = { ...cert, nombre: e.target.value };
                     setFormData(prev => ({ ...prev, certificaciones: newCert }));
                   }}
-                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -205,7 +205,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
                       newCert[index] = { ...cert, emisor: e.target.value };
                       setFormData(prev => ({ ...prev, certificaciones: newCert }));
                     }}
-                    className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                   <input
                     type="text"
@@ -216,7 +216,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
                       newCert[index] = { ...cert, fecha: e.target.value };
                       setFormData(prev => ({ ...prev, certificaciones: newCert }));
                     }}
-                    className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                 </div>
               </div>
@@ -235,7 +235,7 @@ const ProfileEditForm = ({ onCancel }: Props) => {
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
         >
           Guardar Cambios
         </button>

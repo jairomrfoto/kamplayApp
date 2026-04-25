@@ -38,8 +38,8 @@ const ParentNavigation = ({ activeSection, onNavigate }: Props) => {
             activeSection === button.section ? 'ring-2 ring-indigo-600' : ''
           }`}
         >
-          <div className="p-3 bg-indigo-50 rounded-full mb-4 group-hover:bg-indigo-100 transition-colors">
-            <button.icon className="text-indigo-600" size={24} />
+          <div className="p-3 bg-orange-50 rounded-full mb-4 group-hover:bg-orange-100 transition-colors">
+            <button.icon className="text-orange-600" size={24} />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2">{button.label}</h3>
           <p className="text-sm text-gray-600 text-center">{button.description}</p>

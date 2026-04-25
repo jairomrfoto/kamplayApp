@@ -15,7 +15,7 @@ const JoinCampButton = () => {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+        className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
       >
         <Plus size={20} />
         <span>Unir a Campamento</span>

@@ -40,7 +40,7 @@ const Materiales = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Inventario de Materiales</h2>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
         >
           <Plus size={20} /> Nuevo Material
         </button>
@@ -52,7 +52,7 @@ const Materiales = () => {
           <input
             type="text"
             placeholder="Buscar materiales..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -68,8 +68,8 @@ const Materiales = () => {
               <div key={material.id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-100 rounded-lg">
-                      <Package className="text-indigo-600" size={20} />
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <Package className="text-orange-600" size={20} />
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800">{material.nombre}</h3>
@@ -105,7 +105,7 @@ const Materiales = () => {
                   value={form.nombre}
                   onChange={e => setForm({ ...form, nombre: e.target.value })}
                   placeholder="Ej: Tiendas de campaña"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
               <div>
@@ -115,7 +115,7 @@ const Materiales = () => {
                   value={form.categoria}
                   onChange={e => setForm({ ...form, categoria: e.target.value })}
                   placeholder="Ej: Alojamiento, Deportes..."
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -125,7 +125,7 @@ const Materiales = () => {
                     type="number" min={1} required
                     value={form.cantidad}
                     onChange={e => setForm({ ...form, cantidad: parseInt(e.target.value) || 1 })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
                 </div>
                 <div>
@@ -133,7 +133,7 @@ const Materiales = () => {
                   <select
                     value={form.estado}
                     onChange={e => setForm({ ...form, estado: e.target.value as Material['estado'] })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   >
                     {ESTADOS.map(s => <option key={s}>{s}</option>)}
                   </select>
@@ -145,7 +145,7 @@ const Materiales = () => {
                   Cancelar
                 </button>
                 <button type="submit" disabled={saving}
-                  className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+                  className="flex-1 bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50">
                   {saving ? 'Guardando...' : 'Añadir'}
                 </button>
               </div>

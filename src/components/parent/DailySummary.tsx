@@ -26,9 +26,9 @@ const DailySummary = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Actividades del día */}
-        <div className="bg-indigo-50 rounded-lg p-4">
+        <div className="bg-orange-50 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
-            <PlayCircle className="text-indigo-600" size={20} />
+            <PlayCircle className="text-orange-600" size={20} />
             <h3 className="font-medium text-gray-900">Actividades</h3>
           </div>
           {todayActivities.length > 0 ? (
@@ -45,7 +45,7 @@ const DailySummary = () => {
                 </li>
               ))}
               {todayActivities.length > 3 && (
-                <li className="text-sm text-indigo-600">
+                <li className="text-sm text-orange-600">
                   +{todayActivities.length - 3} más...
                 </li>
               )}

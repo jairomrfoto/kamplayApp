@@ -30,17 +30,17 @@ const CurrentCamp = () => {
   return (
     <div className="space-y-6 p-4">
       {/* Camp info card */}
-      <div className="bg-indigo-50 rounded-xl p-6">
+      <div className="bg-orange-50 rounded-xl p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{currentCamp.name}</h2>
             <div className="flex flex-wrap gap-4 mt-2 text-gray-600 text-sm">
               <span className="flex items-center gap-1">
-                <MapPin size={14} className="text-indigo-500" />
+                <MapPin size={14} className="text-orange-500" />
                 {currentCamp.location}
               </span>
               <span className="flex items-center gap-1">
-                <Calendar size={14} className="text-indigo-500" />
+                <Calendar size={14} className="text-orange-500" />
                 {formatDate(currentCamp.startDate)} – {formatDate(currentCamp.endDate)}
               </span>
             </div>
@@ -57,7 +57,7 @@ const CurrentCamp = () => {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm p-4 text-center">
-          <Users size={20} className="text-indigo-600 mx-auto mb-1" />
+          <Users size={20} className="text-orange-600 mx-auto mb-1" />
           <p className="text-2xl font-bold text-gray-900">{campers.length}</p>
           <p className="text-xs text-gray-500">Acampados</p>
         </div>
@@ -88,7 +88,7 @@ const CurrentCamp = () => {
             <Link
               key={link.path}
               to={link.path}
-              className="text-center bg-gray-50 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 text-sm font-medium py-2.5 rounded-lg transition-colors"
+              className="text-center bg-gray-50 hover:bg-orange-50 text-gray-700 hover:text-orange-700 text-sm font-medium py-2.5 rounded-lg transition-colors"
             >
               {link.label}
             </Link>

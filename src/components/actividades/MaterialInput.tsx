@@ -38,7 +38,7 @@ const MaterialInput = ({
     <div className="space-y-4">
       <select
         multiple
-        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
         value={selectedMaterials}
         onChange={(e) => onMaterialsChange(
           Array.from(e.target.selectedOptions, option => option.value)
@@ -55,7 +55,7 @@ const MaterialInput = ({
         <button
           type="button"
           onClick={() => setShowNewForm(true)}
-          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700"
+          className="flex items-center gap-2 text-orange-600 hover:text-orange-700"
         >
           <Plus size={18} />
           <span>Añadir nuevo material</span>
@@ -85,7 +85,7 @@ const MaterialInput = ({
                 ...prev,
                 nombre: e.target.value
               }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -103,7 +103,7 @@ const MaterialInput = ({
                   ...prev,
                   cantidad: parseInt(e.target.value) || 1
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               />
             </div>
 
@@ -119,7 +119,7 @@ const MaterialInput = ({
                   ...prev,
                   categoria: e.target.value
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               />
             </div>
           </div>
@@ -128,7 +128,7 @@ const MaterialInput = ({
             <button
               type="button"
               onClick={handleAddNew}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               Añadir Material
             </button>

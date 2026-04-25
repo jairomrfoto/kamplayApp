@@ -111,7 +111,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
             onClick={() => setMode('new')}
             className={`flex-1 py-2 px-4 rounded-lg ${
               mode === 'new'
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -122,7 +122,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
             onClick={() => setMode('existing')}
             className={`flex-1 py-2 px-4 rounded-lg ${
               mode === 'existing'
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -143,10 +143,10 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
           <button
             type="button"
             onClick={() => setShowMonitorActivities(!showMonitorActivities)}
-            className="w-full bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 flex items-center justify-between"
+            className="w-full bg-orange-50 text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-100 flex items-center justify-between"
           >
             <span>Usar una de mis actividades anteriores</span>
-            <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full">{misActividades.length}</span>
+            <span className="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">{misActividades.length}</span>
           </button>
 
           {showMonitorActivities && (
@@ -156,7 +156,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
                 <input
                   type="text"
                   placeholder="Buscar en mis actividades..."
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
               <div className="max-h-60 overflow-y-auto space-y-2">
@@ -188,7 +188,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
           <input
             type="text"
             required
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             value={formData.titulo}
             onChange={(e) => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
           />
@@ -199,7 +199,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
             Descripción
           </label>
           <textarea
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             rows={3}
             value={formData.descripcion}
             onChange={(e) => setFormData(prev => ({ ...prev, descripcion: e.target.value }))}
@@ -249,7 +249,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
             </label>
             <select
               required
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               value={formData.categoria}
               onChange={(e) => setFormData(prev => ({ ...prev, categoria: e.target.value }))}
             >
@@ -269,7 +269,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
               min="15"
               step="15"
               required
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               value={formData.duracion}
               onChange={(e) => setFormData(prev => ({ ...prev, duracion: parseInt(e.target.value) }))}
             />
@@ -295,7 +295,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
               timeFormat="HH:mm"
               timeIntervals={15}
               dateFormat="dd/MM/yyyy HH:mm"
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -311,7 +311,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
               timeIntervals={15}
               dateFormat="dd/MM/yyyy HH:mm"
               minDate={formData.inicio}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
         </div>
@@ -340,7 +340,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
               type="number"
               min="1"
               required
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               value={formData.capacidadMaxima}
               onChange={(e) => setFormData(prev => ({ ...prev, capacidadMaxima: parseInt(e.target.value) }))}
             />
@@ -356,7 +356,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
                 min="6"
                 max="16"
                 required
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 value={formData.edadMinima}
                 onChange={(e) => setFormData(prev => ({ ...prev, edadMinima: parseInt(e.target.value) }))}
               />
@@ -366,7 +366,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
                 min="6"
                 max="16"
                 required
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 value={formData.edadMaxima}
                 onChange={(e) => setFormData(prev => ({ ...prev, edadMaxima: parseInt(e.target.value) }))}
               />
@@ -380,7 +380,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
           </label>
           <input
             type="text"
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             value={formData.ubicacion}
             onChange={(e) => setFormData(prev => ({ ...prev, ubicacion: e.target.value }))}
           />
@@ -396,7 +396,7 @@ const ActividadForm = ({ onClose, initialData }: Props) => {
           </button>
           <button
             type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
           >
             Crear Actividad
           </button>

@@ -35,7 +35,7 @@ const PersonalInfoForm = ({ camper, onSave, onCancel }: Props) => {
               <Camera className="w-12 h-12 text-gray-400" />
             </div>
           )}
-          <label className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700 transition-colors">
+          <label className="absolute bottom-0 right-0 p-2 bg-orange-500 rounded-full text-white cursor-pointer hover:bg-orange-600 transition-colors">
             <input
               type="file"
               accept="image/*"
@@ -67,7 +67,7 @@ const PersonalInfoForm = ({ camper, onSave, onCancel }: Props) => {
           type="text"
           value={formData.nombre}
           onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           required
         />
       </div>
@@ -82,7 +82,7 @@ const PersonalInfoForm = ({ camper, onSave, onCancel }: Props) => {
           max="18"
           value={formData.edad}
           onChange={(e) => setFormData(prev => ({ ...prev, edad: parseInt(e.target.value) || prev.edad }))}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           required
         />
       </div>
@@ -97,7 +97,7 @@ const PersonalInfoForm = ({ camper, onSave, onCancel }: Props) => {
         </button>
         <button
           type="submit"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
         >
           Guardar Cambios
         </button>

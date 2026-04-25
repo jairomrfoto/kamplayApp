@@ -36,7 +36,7 @@ const MenuDiario = ({ menu }: Props) => {
         {/* Desayuno */}
         <div className="border-b pb-4">
           <div className="flex items-center gap-2 mb-2">
-            <Clock size={18} className="text-indigo-600" />
+            <Clock size={18} className="text-orange-600" />
             <span className="font-medium">{formatTime('desayuno')} - Desayuno</span>
           </div>
           <ul className="pl-6 space-y-1">
@@ -49,7 +49,7 @@ const MenuDiario = ({ menu }: Props) => {
         {/* Almuerzo */}
         <div className="border-b pb-4">
           <div className="flex items-center gap-2 mb-2">
-            <Clock size={18} className="text-indigo-600" />
+            <Clock size={18} className="text-orange-600" />
             <span className="font-medium">{formatTime('almuerzo')} - Almuerzo</span>
           </div>
           <div className="space-y-2">
@@ -68,7 +68,7 @@ const MenuDiario = ({ menu }: Props) => {
         {/* Merienda */}
         <div className="border-b pb-4">
           <div className="flex items-center gap-2 mb-2">
-            <Clock size={18} className="text-indigo-600" />
+            <Clock size={18} className="text-orange-600" />
             <span className="font-medium">{formatTime('merienda')} - Merienda</span>
           </div>
           <ul className="pl-6 space-y-1">
@@ -81,7 +81,7 @@ const MenuDiario = ({ menu }: Props) => {
         {/* Cena */}
         <div className="pb-4">
           <div className="flex items-center gap-2 mb-2">
-            <Clock size={18} className="text-indigo-600" />
+            <Clock size={18} className="text-orange-600" />
             <span className="font-medium">{formatTime('cena')} - Cena</span>
           </div>
           <div className="space-y-2">

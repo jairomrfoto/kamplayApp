@@ -65,8 +65,8 @@ const Benefits = () => {
           {benefits.map((benefit, index) => (
             <div key={index} className="bg-gray-50 rounded-xl p-8">
               <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 bg-indigo-100 rounded-lg">
-                  <benefit.icon className="h-8 w-8 text-indigo-600" />
+                <div className="p-3 bg-orange-100 rounded-lg">
+                  <benefit.icon className="h-8 w-8 text-orange-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">
                   {benefit.title}
@@ -75,7 +75,7 @@ const Benefits = () => {
               <ul className="space-y-3">
                 {benefit.points.map((point, idx) => (
                   <li key={idx} className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-indigo-600 rounded-full" />
+                    <span className="w-2 h-2 bg-orange-500 rounded-full" />
                     <span className="text-gray-600">{point}</span>
                   </li>
                 ))}
@@ -84,25 +84,25 @@ const Benefits = () => {
           ))}
         </div>
 
-        <div className="mt-16 bg-indigo-50 rounded-2xl p-8">
+        <div className="mt-16 bg-orange-50 rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
             ¿Por qué enviar a tu hijo a un campamento?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600 mb-2">95%</p>
+              <p className="text-4xl font-bold text-orange-600 mb-2">95%</p>
               <p className="text-gray-600">
                 de los niños dicen que hacer nuevos amigos en el campamento les ayudó a sentirse bien consigo mismos
               </p>
             </div>
             <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600 mb-2">93%</p>
+              <p className="text-4xl font-bold text-orange-600 mb-2">93%</p>
               <p className="text-gray-600">
                 de los padres dicen que el campamento ayudó a sus hijos a desarrollar habilidades sociales
               </p>
             </div>
             <div className="text-center">
-              <p className="text-4xl font-bold text-indigo-600 mb-2">70%</p>
+              <p className="text-4xl font-bold text-orange-600 mb-2">70%</p>
               <p className="text-gray-600">
                 de los padres informan que sus hijos ganaron confianza en sí mismos después del campamento
               </p>

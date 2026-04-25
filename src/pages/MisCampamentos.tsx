@@ -51,7 +51,7 @@ const MisCampamentos = () => {
           </button>
           <button
             onClick={() => navigate('/create-camp')}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors"
           >
             <Plus size={16} />
             Nuevo campamento
@@ -66,7 +66,7 @@ const MisCampamentos = () => {
           <p className="text-gray-400 text-sm mb-6">Crea uno nuevo o únete con un código</p>
           <button
             onClick={() => navigate('/create-camp')}
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+            className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
           >
             Crear mi primer campamento
           </button>
@@ -83,7 +83,7 @@ const MisCampamentos = () => {
               <div
                 key={camp.id}
                 className={`bg-white rounded-xl shadow-sm border-2 transition-all ${
-                  isActive ? 'border-indigo-400' : 'border-transparent hover:border-indigo-200'
+                  isActive ? 'border-indigo-400' : 'border-transparent hover:border-orange-200'
                 }`}
               >
                 {/* Header */}
@@ -154,14 +154,14 @@ const MisCampamentos = () => {
                   {isActive ? (
                     <button
                       onClick={() => navigate('/coordinator-dashboard')}
-                      className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-2 rounded-lg text-sm hover:bg-indigo-700 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors"
                     >
                       Gestionar <ChevronRight size={15} />
                     </button>
                   ) : (
                     <button
                       onClick={() => handleSwitch(camp.id)}
-                      className="w-full flex items-center justify-center gap-2 border border-indigo-300 text-indigo-600 py-2 rounded-lg text-sm hover:bg-indigo-50 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 border border-indigo-300 text-orange-600 py-2 rounded-lg text-sm hover:bg-orange-50 transition-colors"
                     >
                       Cambiar a este campamento <ChevronRight size={15} />
                     </button>

@@ -146,7 +146,7 @@ const CampForm = () => {
           onChange={(e) => handleChange('name', e.target.value)}
           onBlur={() => handleBlur('name')}
           maxLength={50}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
         />
       </FormField>
 
@@ -160,7 +160,7 @@ const CampForm = () => {
             selected={formData.startDate}
             onChange={(date) => handleChange('startDate', date)}
             onBlur={() => handleBlur('startDate')}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             dateFormat="dd/MM/yyyy"
             minDate={new Date()}
           />
@@ -175,7 +175,7 @@ const CampForm = () => {
             selected={formData.endDate}
             onChange={(date) => handleChange('endDate', date)}
             onBlur={() => handleBlur('endDate')}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             dateFormat="dd/MM/yyyy"
             minDate={formData.startDate || new Date()}
           />
@@ -194,7 +194,7 @@ const CampForm = () => {
             value={formData.monitorsCount}
             onChange={(e) => handleChange('monitorsCount', parseInt(e.target.value) || 1)}
             onBlur={() => handleBlur('monitorsCount')}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           />
         </FormField>
 
@@ -208,7 +208,7 @@ const CampForm = () => {
             value={formData.location}
             onChange={(e) => handleChange('location', e.target.value)}
             onBlur={() => handleBlur('location')}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           />
         </FormField>
       </div>
@@ -224,7 +224,7 @@ const CampForm = () => {
           value={formData.maxCampers}
           onChange={(e) => handleChange('maxCampers', parseInt(e.target.value) || 1)}
           onBlur={() => handleBlur('maxCampers')}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
         />
       </FormField>
 
@@ -241,7 +241,7 @@ const CampForm = () => {
           value={adminEmail}
           onChange={(e) => setAdminEmail(e.target.value)}
           required
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
         />
       </div>
 
@@ -249,14 +249,14 @@ const CampForm = () => {
         <button
           type="button"
           onClick={handleSaveDraft}
-          className="px-6 py-2 text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2 rounded-lg hover:bg-indigo-50 transition-colors"
+          className="px-6 py-2 text-orange-600 hover:text-orange-700 font-medium flex items-center gap-2 rounded-lg hover:bg-orange-50 transition-colors"
         >
           <Save size={20} />
           Guardar borrador
         </button>
         <button
           type="submit"
-          className="bg-indigo-600 text-white px-8 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
           Crear Campamento
         </button>

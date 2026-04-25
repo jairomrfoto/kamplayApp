@@ -28,7 +28,7 @@ const PlantillaCard = ({ plantilla, onUsar }: Props) => {
             {plantilla.dificultad}
           </span>
         </div>
-        <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">
+        <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
           {categoria?.nombre}
         </span>
       </div>
@@ -41,7 +41,7 @@ const PlantillaCard = ({ plantilla, onUsar }: Props) => {
 
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs text-indigo-500 hover:text-indigo-700 flex items-center gap-1"
+          className="text-xs text-orange-500 hover:text-orange-700 flex items-center gap-1"
         >
           {expanded ? <><ChevronUp size={12} /> Ver menos</> : <><ChevronDown size={12} /> Ver más</>}
         </button>
@@ -79,7 +79,7 @@ const PlantillaCard = ({ plantilla, onUsar }: Props) => {
       <div className="p-4 pt-0">
         <button
           onClick={() => onUsar(plantilla)}
-          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm py-2 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 rounded-lg transition-colors"
         >
           <Copy size={14} />
           Usar como plantilla

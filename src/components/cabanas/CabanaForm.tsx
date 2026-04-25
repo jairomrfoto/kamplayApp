@@ -59,7 +59,7 @@ const CabanaForm = ({ cabana, onClose }: Props) => {
               required
               value={formData.numero}
               onChange={(e) => setFormData(prev => ({ ...prev, numero: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -73,7 +73,7 @@ const CabanaForm = ({ cabana, onClose }: Props) => {
               required
               value={formData.capacidad}
               onChange={(e) => setFormData(prev => ({ ...prev, capacidad: parseInt(e.target.value) }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -84,7 +84,7 @@ const CabanaForm = ({ cabana, onClose }: Props) => {
             <select
               value={formData.monitorEncargado}
               onChange={(e) => setFormData(prev => ({ ...prev, monitorEncargado: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               <option value="">Sin monitor asignado</option>
               {monitores.map(monitor => (
@@ -103,7 +103,7 @@ const CabanaForm = ({ cabana, onClose }: Props) => {
               required
               value={formData.estado}
               onChange={(e) => setFormData(prev => ({ ...prev, estado: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               <option value="Limpia">Limpia</option>
               <option value="Necesita Revisión">Necesita Revisión</option>
@@ -121,7 +121,7 @@ const CabanaForm = ({ cabana, onClose }: Props) => {
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               {cabana ? 'Guardar Cambios' : 'Crear Cabaña'}
             </button>

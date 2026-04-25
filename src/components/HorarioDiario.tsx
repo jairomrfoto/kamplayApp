@@ -39,7 +39,7 @@ const HorarioDiario = ({ fecha }: { fecha: Date }) => {
                 key={actividad.id} 
                 className={`p-4 rounded-lg border-l-4 ${
                   actividad.tipo === 'especial' 
-                    ? 'border-l-indigo-500 bg-indigo-50' 
+                    ? 'border-l-indigo-500 bg-orange-50' 
                     : 'border-l-gray-500 bg-gray-50'
                 }`}
               >

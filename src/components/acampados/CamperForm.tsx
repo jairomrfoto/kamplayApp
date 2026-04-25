@@ -57,7 +57,7 @@ const CamperForm = ({ onClose, parentProfile }: Props) => {
               required
               value={formData.nombre}
               onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -72,7 +72,7 @@ const CamperForm = ({ onClose, parentProfile }: Props) => {
               required
               value={formData.edad}
               onChange={(e) => setFormData(prev => ({ ...prev, edad: parseInt(e.target.value) }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -84,7 +84,7 @@ const CamperForm = ({ onClose, parentProfile }: Props) => {
               required
               value={formData.grupo}
               onChange={(e) => setFormData(prev => ({ ...prev, grupo: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               <option value="">Seleccionar grupo</option>
               {grupos.map(grupo => (
@@ -103,7 +103,7 @@ const CamperForm = ({ onClose, parentProfile }: Props) => {
               type="text"
               value={formData.cabana}
               onChange={(e) => setFormData(prev => ({ ...prev, cabana: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -118,7 +118,7 @@ const CamperForm = ({ onClose, parentProfile }: Props) => {
                 infoMedica: { ...prev.infoMedica, notas: e.target.value }
               }))}
               rows={3}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Información médica relevante..."
             />
           </div>
@@ -133,7 +133,7 @@ const CamperForm = ({ onClose, parentProfile }: Props) => {
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               Añadir Acampado
             </button>

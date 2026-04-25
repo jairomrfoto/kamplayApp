@@ -31,7 +31,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
                 <span className="text-sm font-medium">Email:</span>
                 <button 
                   onClick={() => copyToClipboard(adminEmail)}
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-orange-600 hover:text-orange-700"
                 >
                   <Copy size={16} />
                 </button>
@@ -47,7 +47,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
                 <span className="text-sm font-medium">Código:</span>
                 <button 
                   onClick={() => copyToClipboard(camp.joinCodes.monitors)}
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-orange-600 hover:text-orange-700"
                 >
                   <Copy size={16} />
                 </button>
@@ -64,7 +64,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
                 <span className="text-sm font-medium">Código:</span>
                 <button 
                   onClick={() => copyToClipboard(camp.joinCodes.families)}
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-orange-600 hover:text-orange-700"
                 >
                   <Copy size={16} />
                 </button>
@@ -82,7 +82,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
         <div className="mt-6">
           <button
             onClick={onClose}
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+            className="w-full bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
           >
             Entendido
           </button>

@@ -85,7 +85,7 @@ const Incidencias = () => {
             onClick={() => setViewMode('active')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
               viewMode === 'active' 
-                ? 'bg-indigo-600 text-white' 
+                ? 'bg-orange-500 text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -96,7 +96,7 @@ const Incidencias = () => {
             onClick={() => setViewMode('history')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
               viewMode === 'history' 
-                ? 'bg-indigo-600 text-white' 
+                ? 'bg-orange-500 text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -111,7 +111,7 @@ const Incidencias = () => {
             <input
               type="text"
               placeholder="Buscar incidencias..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -122,7 +122,7 @@ const Incidencias = () => {
             <select
               value={selectedCamper || ''}
               onChange={(e) => setSelectedCamper(e.target.value || null)}
-              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             >
               <option value="">Todos los acampados</option>
               {campers.map(camper => (
@@ -138,7 +138,7 @@ const Incidencias = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             >
               <option value="todas">Todas las categorías</option>
               <option value="medica">Médica</option>
@@ -155,7 +155,7 @@ const Incidencias = () => {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             >
               <option value="todas">Todas</option>
               <option value="pendiente">Pendientes</option>
@@ -233,7 +233,7 @@ const Incidencias = () => {
                 <div className="mt-4 flex justify-end">
                   <button
                     onClick={() => setShowFollowUpForm(incidencia.id)}
-                    className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700"
+                    className="flex items-center gap-2 text-orange-600 hover:text-orange-700"
                   >
                     <MessageCircle size={18} />
                     <span>Añadir seguimiento</span>

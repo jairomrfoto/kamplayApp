@@ -100,7 +100,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
             <DatePicker
               selected={formData.fecha}
               onChange={(date) => setFormData(prev => ({ ...prev, fecha: date || new Date() }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               dateFormat="dd/MM/yyyy"
             />
           </div>
@@ -114,7 +114,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
               <button
                 type="button"
                 onClick={() => addArrayItem('desayuno')}
-                className="text-indigo-600 hover:text-indigo-700"
+                className="text-orange-600 hover:text-orange-700"
               >
                 <Plus size={20} />
               </button>
@@ -125,7 +125,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                   type="text"
                   value={item}
                   onChange={(e) => handleArrayChange('desayuno', index, e.target.value)}
-                  className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   placeholder="Añadir elemento del desayuno"
                 />
                 <button
@@ -158,7 +158,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                     }
                   }
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 placeholder="Primer plato"
               />
               <input
@@ -174,7 +174,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                     }
                   }
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 placeholder="Segundo plato"
               />
               <input
@@ -190,7 +190,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                     }
                   }
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 placeholder="Postre"
               />
             </div>
@@ -205,7 +205,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
               <button
                 type="button"
                 onClick={() => addArrayItem('merienda')}
-                className="text-indigo-600 hover:text-indigo-700"
+                className="text-orange-600 hover:text-orange-700"
               >
                 <Plus size={20} />
               </button>
@@ -216,7 +216,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                   type="text"
                   value={item}
                   onChange={(e) => handleArrayChange('merienda', index, e.target.value)}
-                  className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   placeholder="Añadir elemento de la merienda"
                 />
                 <button
@@ -249,7 +249,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                     }
                   }
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 placeholder="Primer plato"
               />
               <input
@@ -265,7 +265,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                     }
                   }
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 placeholder="Segundo plato"
               />
               <input
@@ -281,7 +281,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
                     }
                   }
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                 placeholder="Postre"
               />
             </div>
@@ -295,7 +295,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
               value={formData.observaciones}
               onChange={(e) => setFormData(prev => ({ ...prev, observaciones: e.target.value }))}
               rows={3}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Observaciones adicionales..."
             />
           </div>
@@ -310,7 +310,7 @@ const MenuForm = ({ menu, onClose }: Props) => {
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               {menu ? 'Guardar Cambios' : 'Crear Menú'}
             </button>

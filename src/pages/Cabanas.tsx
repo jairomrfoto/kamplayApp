@@ -32,7 +32,7 @@ const Cabanas = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de Cabañas</h2>
         <button 
           onClick={() => setShowForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
         >
           <Plus size={20} />
           Nueva Cabaña
@@ -72,7 +72,7 @@ const Cabanas = () => {
 
                     <div className="border-t pt-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <UserCog size={18} className="text-indigo-600" />
+                        <UserCog size={18} className="text-orange-600" />
                         <span className="font-medium">Monitor Encargado</span>
                       </div>
                       <div className="pl-6">
@@ -89,7 +89,7 @@ const Cabanas = () => {
 
                     <div className="border-t pt-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Users size={18} className="text-indigo-600" />
+                        <Users size={18} className="text-orange-600" />
                         <span className="font-medium">Ocupantes</span>
                       </div>
                       <div className="pl-6">
@@ -101,7 +101,7 @@ const Cabanas = () => {
 
                     <div className="border-t pt-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <ClipboardCheck size={18} className="text-indigo-600" />
+                        <ClipboardCheck size={18} className="text-orange-600" />
                         <span className="font-medium">Última Revisión</span>
                       </div>
                       <div className="pl-6">
@@ -113,7 +113,7 @@ const Cabanas = () => {
                             e.stopPropagation();
                             setAddingNote(cabana.id);
                           }}
-                          className="mt-2 text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                          className="mt-2 text-sm text-orange-600 hover:text-orange-700 flex items-center gap-1"
                         >
                           <Plus size={16} />
                           Añadir nota

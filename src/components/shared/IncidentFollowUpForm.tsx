@@ -42,7 +42,7 @@ const IncidentFollowUpForm = ({ incidentId, onClose }: Props) => {
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
               rows={4}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Escribe tu comentario de seguimiento..."
             />
           </div>
@@ -57,7 +57,7 @@ const IncidentFollowUpForm = ({ incidentId, onClose }: Props) => {
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               Añadir Seguimiento
             </button>

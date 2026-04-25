@@ -61,13 +61,13 @@ const MisActividades = () => {
             placeholder="Buscar actividades..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
         </div>
         <select
           value={catFilter}
           onChange={e => setCatFilter(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
         >
           <option value="todas">Todas las categorías</option>
           {categorias.map(c => (
@@ -83,7 +83,7 @@ const MisActividades = () => {
           <div key={a.id} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between gap-2 mb-2">
               <h3 className="font-semibold text-gray-800 line-clamp-2 flex-1">{a.titulo}</h3>
-              <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+              <span className="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full whitespace-nowrap">
                 {categorias.find(c => c.id === a.categoria)?.nombre || a.categoria}
               </span>
             </div>
@@ -108,7 +108,7 @@ const MisActividades = () => {
               {currentCamp && (
                 <button
                   onClick={() => handleAddToCamp(a)}
-                  className="flex items-center gap-1 text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-2.5 py-1 rounded-lg"
+                  className="flex items-center gap-1 text-xs bg-orange-50 text-orange-700 hover:bg-orange-100 px-2.5 py-1 rounded-lg"
                 >
                   <Plus size={12} />
                   Añadir al campamento

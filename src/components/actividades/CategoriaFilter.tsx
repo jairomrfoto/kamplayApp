@@ -13,7 +13,7 @@ const CategoriaFilter = ({ categoriaSeleccionada, onCategoriaChange }: Props) =>
         onClick={() => onCategoriaChange('todas')}
         className={`px-3 py-1 rounded-full text-sm ${
           categoriaSeleccionada === 'todas'
-            ? 'bg-indigo-600 text-white'
+            ? 'bg-orange-500 text-white'
             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
         }`}
       >
@@ -25,7 +25,7 @@ const CategoriaFilter = ({ categoriaSeleccionada, onCategoriaChange }: Props) =>
           onClick={() => onCategoriaChange(categoria.id)}
           className={`px-3 py-1 rounded-full text-sm ${
             categoriaSeleccionada === categoria.id
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-orange-500 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >

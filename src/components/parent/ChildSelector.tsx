@@ -18,7 +18,7 @@ const ChildSelector = ({ children, selectedChild, onSelectChild, onAddChild }: P
           onClick={() => onSelectChild(child)}
           className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
             selectedChild?.id === child.id
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-orange-500 text-white'
               : 'bg-white text-gray-700 hover:bg-gray-50'
           }`}
         >
@@ -37,7 +37,7 @@ const ChildSelector = ({ children, selectedChild, onSelectChild, onAddChild }: P
       
       <button
         onClick={onAddChild}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors"
       >
         <Plus size={20} />
         <span className="whitespace-nowrap">Añadir hijo</span>

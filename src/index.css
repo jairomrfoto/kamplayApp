@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html { font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif; }
+  body { background-color: #FAFAF8; color: #1C1917; }
+  * { -webkit-font-smoothing: antialiased; }
+}
+
+@layer components {
+  .btn-primary   { @apply bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold rounded-2xl px-5 py-2.5 transition-all duration-200 shadow-sm hover:shadow-md; }
+  .btn-secondary { @apply bg-green-700 hover:bg-green-800 active:scale-95 text-white font-bold rounded-2xl px-5 py-2.5 transition-all duration-200; }
+  .btn-ghost     { @apply border-2 border-orange-400 text-orange-600 hover:bg-orange-50 active:scale-95 font-bold rounded-2xl px-5 py-2.5 transition-all duration-200; }
+  .card          { @apply bg-white rounded-2xl shadow-sm border border-stone-100; }
+  .input-base    { @apply w-full border border-stone-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition; }
+}
+
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }

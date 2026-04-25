@@ -24,7 +24,7 @@ const EditableChildInfo = ({ camper, onUpdate }: Props) => {
           {!editingPersonal && (
           <button
             onClick={() => setEditingPersonal(!editingPersonal)}
-            className="text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+            className="text-orange-600 hover:text-orange-800 flex items-center gap-2"
           >
             {editingPersonal ? (
               <>
@@ -94,7 +94,7 @@ const EditableChildInfo = ({ camper, onUpdate }: Props) => {
           <h2 className="text-lg font-semibold text-gray-900">Información Médica</h2>
           <button
             onClick={() => setEditingMedical(!editingMedical)}
-            className="text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+            className="text-orange-600 hover:text-orange-800 flex items-center gap-2"
           >
             {editingMedical ? (
               <>
@@ -174,7 +174,7 @@ const EditableChildInfo = ({ camper, onUpdate }: Props) => {
           <h2 className="text-lg font-semibold text-gray-900">Información Adicional</h2>
           <button
             onClick={() => setEditingAdditional(!editingAdditional)}
-            className="text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+            className="text-orange-600 hover:text-orange-800 flex items-center gap-2"
           >
             {editingAdditional ? (
               <>

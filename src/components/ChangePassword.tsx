@@ -50,7 +50,7 @@ const ChangePassword = () => {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Lock size={18} className="text-indigo-600" />
+        <Lock size={18} className="text-orange-600" />
         <h3 className="font-semibold text-gray-800">Cambiar contraseña</h3>
       </div>
 
@@ -68,7 +68,7 @@ const ChangePassword = () => {
               required
               value={current}
               onChange={e => { setCurrent(e.target.value); setSuccess(false); }}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
           </div>
           <div>
@@ -80,7 +80,7 @@ const ChangePassword = () => {
               value={next}
               onChange={e => setNext(e.target.value)}
               placeholder="Mínimo 6 caracteres"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
           </div>
           <div>
@@ -90,7 +90,7 @@ const ChangePassword = () => {
               required
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
           </div>
 
@@ -101,7 +101,7 @@ const ChangePassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
             {loading && <Loader size={14} className="animate-spin" />}
             Guardar nueva contraseña

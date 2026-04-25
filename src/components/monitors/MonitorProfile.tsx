@@ -12,14 +12,14 @@ interface Props {
 const MonitorProfile = ({ monitor, onEdit, onManagePermissions, extraActions }: Props) => {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-      <div className="relative h-32 bg-indigo-600">
+      <div className="relative h-32 bg-orange-500">
         <div className="absolute top-4 right-4 flex items-center gap-2">
           {onManagePermissions && (
             <button
               onClick={onManagePermissions}
               className="bg-white p-2 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2"
             >
-              <Shield size={18} className="text-indigo-600" />
+              <Shield size={18} className="text-orange-600" />
               <span>Permisos</span>
             </button>
           )}
@@ -54,7 +54,7 @@ const MonitorProfile = ({ monitor, onEdit, onManagePermissions, extraActions }: 
 
         <div className="mt-20 text-center">
           <h2 className="text-2xl font-bold text-gray-900">{monitor.nombre}</h2>
-          <p className="text-indigo-600 font-medium">{monitor.especialidad}</p>
+          <p className="text-orange-600 font-medium">{monitor.especialidad}</p>
         </div>
 
         <div className="mt-6 space-y-4">
@@ -74,7 +74,7 @@ const MonitorProfile = ({ monitor, onEdit, onManagePermissions, extraActions }: 
             <div className="space-y-4">
               {monitor.experiencia.map((exp, index) => (
                 <div key={index} className="flex gap-3">
-                  <Calendar className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                  <Calendar className="w-5 h-5 text-orange-600 flex-shrink-0" />
                   <div>
                     <p className="font-medium text-gray-900">{exp.campamento}</p>
                     <p className="text-sm text-gray-600">{exp.periodo}</p>
@@ -92,7 +92,7 @@ const MonitorProfile = ({ monitor, onEdit, onManagePermissions, extraActions }: 
             <div className="space-y-4">
               {monitor.certificaciones.map((cert, index) => (
                 <div key={index} className="flex gap-3">
-                  <Award className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                  <Award className="w-5 h-5 text-orange-600 flex-shrink-0" />
                   <div>
                     <p className="font-medium text-gray-900">{cert.nombre}</p>
                     <p className="text-sm text-gray-600">{cert.emisor}</p>

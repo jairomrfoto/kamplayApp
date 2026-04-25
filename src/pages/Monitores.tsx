@@ -38,7 +38,7 @@ const Monitores = () => {
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+          className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50"
         >
           <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
           {refreshing ? 'Actualizando...' : 'Actualizar'}
@@ -52,7 +52,7 @@ const Monitores = () => {
             <input
               type="text"
               placeholder="Buscar monitores..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

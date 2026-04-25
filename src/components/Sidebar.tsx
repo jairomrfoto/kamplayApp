@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  Calendar, Users, Package, UserCog, UsersRound, Tent,
+  Calendar, Users, Package, UserCog, UsersRound,
   HeartPulse, LayoutDashboard, UtensilsCrossed as MenuIcon,
   AlertTriangle, Shield, Layers, BookOpen, X,
 } from 'lucide-react';
@@ -41,10 +41,10 @@ const NavLinks = ({ links, isCoordinator, onClose }: {
           to={isCoordinator ? link.to.replace('/app', '/coordinator-dashboard') : link.to}
           onClick={onClose}
           className={({ isActive }) =>
-            `flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors ${
               isActive
-                ? 'bg-indigo-50 text-indigo-600 font-medium'
-                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                ? 'bg-orange-50 text-orange-600 font-bold'
+                : 'text-gray-600 hover:bg-stone-50 hover:text-gray-900'
             }`
           }
         >
@@ -66,7 +66,7 @@ const Sidebar = () => {
   return (
     <>
       {/* ── DESKTOP sidebar: static in document flow, hidden on mobile ── */}
-      <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white shadow-lg sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white border-r border-stone-100 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="pt-3">
           <CampSwitcher variant="sidebar" />
         </div>
@@ -90,9 +90,9 @@ const Sidebar = () => {
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
-              <div className="flex items-center gap-2 text-indigo-600 font-bold">
-                <Tent size={18} />
-                <span>Menú</span>
+              <div className="flex items-center gap-2 text-green-800 font-extrabold">
+                <span className="text-lg">🏕️</span>
+                <span>Kamplay</span>
               </div>
               <button
                 onClick={close}

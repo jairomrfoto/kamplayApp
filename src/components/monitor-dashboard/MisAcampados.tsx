@@ -41,7 +41,7 @@ const CamperCard = ({ camper, canSeeMedical }: { camper: Camper; canSeeMedical: 
         className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50"
         onClick={() => setOpen(!open)}
       >
-        <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-semibold text-sm shrink-0">
+        <div className="w-9 h-9 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 font-semibold text-sm shrink-0">
           {camper.nombre.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ const MisAcampados = () => {
         value={search}
         onChange={e => setSearch(e.target.value)}
         placeholder="Buscar acampado..."
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
       />
 
       {/* List */}

@@ -20,7 +20,7 @@ const Grupos = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Grupos de Campamento</h2>
         <button 
           onClick={() => setShowNewGrupoForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
         >
           <Plus size={20} />
           Nuevo Grupo
@@ -48,7 +48,7 @@ const Grupos = () => {
 
                   <div className="border-t pt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Users size={18} className="text-indigo-600" />
+                      <Users size={18} className="text-orange-600" />
                       <span className="font-medium">Acampados</span>
                     </div>
                     <div className="pl-6">
@@ -66,7 +66,7 @@ const Grupos = () => {
                                     setSelectedCamper(acampadoId);
                                     setShowCamperEval(true);
                                   }}
-                                  className="text-sm text-indigo-600 hover:text-indigo-800"
+                                  className="text-sm text-orange-600 hover:text-orange-800"
                                 >
                                   Evaluar
                                 </button>
@@ -80,7 +80,7 @@ const Grupos = () => {
 
                   <div className="border-t pt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <UserCog size={18} className="text-indigo-600" />
+                      <UserCog size={18} className="text-orange-600" />
                       <span className="font-medium">Monitores</span>
                     </div>
                     <div className="pl-6">
@@ -100,7 +100,7 @@ const Grupos = () => {
                         setSelectedGrupo(grupo.id);
                         setShowGrupoEval(true);
                       }}
-                      className="w-full bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100"
+                      className="w-full bg-orange-50 text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-100"
                     >
                       Evaluar Grupo
                     </button>

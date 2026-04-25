@@ -63,13 +63,13 @@ const MedicalInfoForm = ({ camper, onSave, onCancel }: Props) => {
               type="text"
               value={newAlergia}
               onChange={(e) => setNewAlergia(e.target.value)}
-              className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Nueva alergia..."
             />
             <button
               type="button"
               onClick={addAlergia}
-              className="text-indigo-600 hover:text-indigo-800"
+              className="text-orange-600 hover:text-orange-800"
             >
               <Plus size={20} />
             </button>
@@ -100,13 +100,13 @@ const MedicalInfoForm = ({ camper, onSave, onCancel }: Props) => {
               type="text"
               value={newMedicacion}
               onChange={(e) => setNewMedicacion(e.target.value)}
-              className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Nueva medicación..."
             />
             <button
               type="button"
               onClick={addMedicacion}
-              className="text-indigo-600 hover:text-indigo-800"
+              className="text-orange-600 hover:text-orange-800"
             >
               <Plus size={20} />
             </button>
@@ -123,7 +123,7 @@ const MedicalInfoForm = ({ camper, onSave, onCancel }: Props) => {
           value={notas}
           onChange={(e) => setNotas(e.target.value)}
           rows={4}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           placeholder="Información médica adicional..."
         />
       </div>
@@ -139,7 +139,7 @@ const MedicalInfoForm = ({ camper, onSave, onCancel }: Props) => {
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
         >
           Guardar Cambios
         </button>

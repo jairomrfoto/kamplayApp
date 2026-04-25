@@ -15,7 +15,7 @@ const Profile = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="relative">
-        <div className="h-32 bg-indigo-600 rounded-t-xl">
+        <div className="h-32 bg-orange-500 rounded-t-xl">
           <button
             onClick={() => setIsEditing(true)}
             className="absolute top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2"
@@ -44,7 +44,7 @@ const Profile = () => {
 
           <div className="mt-20 text-center">
             <h2 className="text-2xl font-bold text-gray-900">{currentMonitor?.nombre}</h2>
-            <p className="text-indigo-600 font-medium">{currentMonitor?.especialidad}</p>
+            <p className="text-orange-600 font-medium">{currentMonitor?.especialidad}</p>
           </div>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -61,7 +61,7 @@ const Profile = () => {
 
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-indigo-600" />
+                <Award className="w-5 h-5 text-orange-600" />
                 <span className="font-medium">Certificaciones</span>
               </div>
               {currentMonitor?.certificaciones?.map((cert, index) => (
@@ -76,7 +76,7 @@ const Profile = () => {
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Briefcase className="w-5 h-5 text-indigo-600" />
+                <Briefcase className="w-5 h-5 text-orange-600" />
                 <span className="font-medium">Experiencia</span>
               </div>
               {currentMonitor?.experiencia?.map((exp, index) => (
@@ -90,7 +90,7 @@ const Profile = () => {
 
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <GraduationCap className="w-5 h-5 text-indigo-600" />
+                <GraduationCap className="w-5 h-5 text-orange-600" />
                 <span className="font-medium">Formación</span>
               </div>
               {currentMonitor?.formacion?.map((form, index) => (
@@ -106,14 +106,14 @@ const Profile = () => {
           {currentMonitor?.habilidades && currentMonitor.habilidades.length > 0 && (
             <div className="mt-8">
               <div className="flex items-center gap-2 mb-4">
-                <Heart className="w-5 h-5 text-indigo-600" />
+                <Heart className="w-5 h-5 text-orange-600" />
                 <span className="font-medium">Habilidades</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {currentMonitor.habilidades.map((hab, index) => (
                   <span
                     key={index}
-                    className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm"
+                    className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm"
                   >
                     {hab}
                   </span>

@@ -51,7 +51,7 @@ const CoordinatorManagement = ({ onClose }: Props) => {
         <h2 className="text-lg font-semibold text-gray-900">Gestión de Coordinadores</h2>
         <button
           onClick={() => setShowInviteForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
         >
           <UserPlus size={20} />
           Invitar Coordinador
@@ -78,7 +78,7 @@ const CoordinatorManagement = ({ onClose }: Props) => {
                   required
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   placeholder="ejemplo@email.com"
                 />
               </div>
@@ -93,7 +93,7 @@ const CoordinatorManagement = ({ onClose }: Props) => {
                 </button>
                 <button
                   type="submit"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+                  className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
                 >
                   Enviar Invitación
                 </button>
@@ -112,8 +112,8 @@ const CoordinatorManagement = ({ onClose }: Props) => {
               <div className="border rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-100 rounded-lg">
-                      <Shield className="text-indigo-600" size={20} />
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <Shield className="text-orange-600" size={20} />
                     </div>
                     <div>
                       <h4 className="font-medium text-gray-900">

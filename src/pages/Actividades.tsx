@@ -65,7 +65,7 @@ const Actividades = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Actividades</h2>
         <button
           onClick={() => { setPlantillaInicial(undefined); setShowForm(true); }}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
         >
           <Plus size={20} />
           Nueva Actividad
@@ -77,13 +77,13 @@ const Actividades = () => {
         <button
           onClick={() => setTab('campamento')}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            tab === 'campamento' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
+            tab === 'campamento' ? 'bg-white text-orange-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
           }`}
         >
           <Layers size={16} />
           Del campamento
           {actividades.length > 0 && (
-            <span className="ml-1 bg-indigo-100 text-indigo-700 text-xs px-1.5 py-0.5 rounded-full">
+            <span className="ml-1 bg-orange-100 text-orange-700 text-xs px-1.5 py-0.5 rounded-full">
               {actividades.length}
             </span>
           )}
@@ -91,7 +91,7 @@ const Actividades = () => {
         <button
           onClick={() => setTab('banco')}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-            tab === 'banco' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
+            tab === 'banco' ? 'bg-white text-orange-700 shadow-sm' : 'text-gray-600 hover:text-gray-800'
           }`}
         >
           <BookOpen size={16} />
@@ -122,7 +122,7 @@ const Actividades = () => {
             </p>
             <button
               onClick={() => setTab('banco')}
-              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium underline"
+              className="text-orange-600 hover:text-orange-800 text-sm font-medium underline"
             >
               Ver banco de actividades →
             </button>

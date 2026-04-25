@@ -86,7 +86,7 @@ const JoinCamp = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex items-center justify-center gap-3 mb-8">
-          <Tent className="h-10 w-10 text-indigo-600" />
+          <Tent className="h-10 w-10 text-orange-600" />
           <h1 className="text-2xl font-bold text-gray-900">Kamplay</h1>
         </div>
 
@@ -114,7 +114,7 @@ const JoinCamp = () => {
                 value={code}
                 onChange={e => setCode(e.target.value.toUpperCase())}
                 placeholder="MON-XXXXXX  o  PAD-XXXXXX"
-                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-center text-xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-center text-xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-400 uppercase"
               />
               <p className="text-xs text-gray-400 mt-1">
                 Monitores: código MON-&nbsp;&nbsp;·&nbsp;&nbsp;Padres/tutores: código PAD-
@@ -128,7 +128,7 @@ const JoinCamp = () => {
             <button
               type="submit"
               disabled={loading || code.length < 4}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               {loading ? <><Loader size={18} className="animate-spin" /> Verificando...</> : 'Unirme al campamento'}
             </button>

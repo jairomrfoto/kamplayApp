@@ -35,7 +35,7 @@ const AdditionalInfoForm = ({ camper, onSave, onCancel }: Props) => {
           value={intereses}
           onChange={(e) => setIntereses(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           placeholder="Deportes, música, arte..."
         />
       </div>
@@ -48,7 +48,7 @@ const AdditionalInfoForm = ({ camper, onSave, onCancel }: Props) => {
           value={restriccionesDieteticas}
           onChange={(e) => setRestriccionesDieteticas(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           placeholder="Preferencias alimentarias, restricciones..."
         />
       </div>
@@ -61,7 +61,7 @@ const AdditionalInfoForm = ({ camper, onSave, onCancel }: Props) => {
           value={notasComportamiento}
           onChange={(e) => setNotasComportamiento(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           placeholder="Aspectos importantes sobre el comportamiento..."
         />
       </div>
@@ -76,7 +76,7 @@ const AdditionalInfoForm = ({ camper, onSave, onCancel }: Props) => {
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
         >
           Guardar Cambios
         </button>

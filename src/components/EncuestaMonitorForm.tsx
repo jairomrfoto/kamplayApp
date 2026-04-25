@@ -87,7 +87,7 @@ const EncuestaMonitorForm = ({ monitorId, onSubmit }: Props) => {
               ...prev,
               desafios: e.target.value
             }))}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             rows={3}
           />
         </div>
@@ -102,7 +102,7 @@ const EncuestaMonitorForm = ({ monitorId, onSubmit }: Props) => {
               ...prev,
               logros: e.target.value
             }))}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             rows={3}
           />
         </div>
@@ -117,7 +117,7 @@ const EncuestaMonitorForm = ({ monitorId, onSubmit }: Props) => {
               ...prev,
               necesidades: e.target.value
             }))}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             rows={3}
           />
         </div>
@@ -132,7 +132,7 @@ const EncuestaMonitorForm = ({ monitorId, onSubmit }: Props) => {
               ...prev,
               observaciones: e.target.value
             }))}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             rows={3}
           />
         </div>
@@ -141,7 +141,7 @@ const EncuestaMonitorForm = ({ monitorId, onSubmit }: Props) => {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
         >
           Guardar Encuesta
         </button>

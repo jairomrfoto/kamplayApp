@@ -77,7 +77,7 @@ const CoordinatorProfile = () => {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="h-32 bg-indigo-600" />
+        <div className="h-32 bg-orange-500" />
 
         <div className="px-6 pb-6">
           <div className="relative flex justify-center">
@@ -95,7 +95,7 @@ const CoordinatorProfile = () => {
                       <Camera className="w-8 h-8 text-gray-400" />
                     </div>
                   )}
-                  <label className="absolute bottom-0 right-0 p-2 bg-indigo-600 rounded-full text-white cursor-pointer hover:bg-indigo-700">
+                  <label className="absolute bottom-0 right-0 p-2 bg-orange-500 rounded-full text-white cursor-pointer hover:bg-orange-600">
                     <input
                       type="file"
                       accept="image/*"
@@ -144,7 +144,7 @@ const CoordinatorProfile = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                 </div>
 
@@ -156,7 +156,7 @@ const CoordinatorProfile = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                 </div>
 
@@ -168,7 +168,7 @@ const CoordinatorProfile = () => {
                     type="text"
                     value={formData.location}
                     onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                   />
                 </div>
                 
@@ -180,7 +180,7 @@ const CoordinatorProfile = () => {
                     <button
                       type="button"
                       onClick={addExperiencia}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-orange-600 hover:text-orange-700"
                     >
                       Añadir Experiencia
                     </button>
@@ -197,7 +197,7 @@ const CoordinatorProfile = () => {
                             newExp[index] = { ...exp, campamento: e.target.value };
                             setFormData(prev => ({ ...prev, experiencia: newExp }));
                           }}
-                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                         />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input
@@ -209,7 +209,7 @@ const CoordinatorProfile = () => {
                               newExp[index] = { ...exp, periodo: e.target.value };
                               setFormData(prev => ({ ...prev, experiencia: newExp }));
                             }}
-                            className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                           />
                           <input
                             type="text"
@@ -220,7 +220,7 @@ const CoordinatorProfile = () => {
                               newExp[index] = { ...exp, rol: e.target.value };
                               setFormData(prev => ({ ...prev, experiencia: newExp }));
                             }}
-                            className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                           />
                         </div>
                       </div>
@@ -236,7 +236,7 @@ const CoordinatorProfile = () => {
                     <button
                       type="button"
                       onClick={addCertificacion}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-orange-600 hover:text-orange-700"
                     >
                       Añadir Certificación
                     </button>
@@ -253,7 +253,7 @@ const CoordinatorProfile = () => {
                             newCert[index] = { ...cert, nombre: e.target.value };
                             setFormData(prev => ({ ...prev, certificaciones: newCert }));
                           }}
-                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                         />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input
@@ -265,7 +265,7 @@ const CoordinatorProfile = () => {
                               newCert[index] = { ...cert, emisor: e.target.value };
                               setFormData(prev => ({ ...prev, certificaciones: newCert }));
                             }}
-                            className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                           />
                           <input
                             type="text"
@@ -276,7 +276,7 @@ const CoordinatorProfile = () => {
                               newCert[index] = { ...cert, fecha: e.target.value };
                               setFormData(prev => ({ ...prev, certificaciones: newCert }));
                             }}
-                            className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                           />
                         </div>
                       </div>
@@ -292,7 +292,7 @@ const CoordinatorProfile = () => {
                     <button
                       type="button"
                       onClick={addFormacion}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-orange-600 hover:text-orange-700"
                     >
                       Añadir Formación
                     </button>
@@ -309,7 +309,7 @@ const CoordinatorProfile = () => {
                             newForm[index] = { ...form, titulo: e.target.value };
                             setFormData(prev => ({ ...prev, formacion: newForm }));
                           }}
-                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                         />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input
@@ -321,7 +321,7 @@ const CoordinatorProfile = () => {
                               newForm[index] = { ...form, institucion: e.target.value };
                               setFormData(prev => ({ ...prev, formacion: newForm }));
                             }}
-                            className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                           />
                           <input
                             type="text"
@@ -332,7 +332,7 @@ const CoordinatorProfile = () => {
                               newForm[index] = { ...form, año: e.target.value };
                               setFormData(prev => ({ ...prev, formacion: newForm }));
                             }}
-                            className="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
                           />
                         </div>
                       </div>
@@ -351,7 +351,7 @@ const CoordinatorProfile = () => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
                   >
                     <PencilLine size={18} />
                     Guardar Cambios
@@ -363,7 +363,7 @@ const CoordinatorProfile = () => {
                 <h2 className="text-2xl font-bold text-gray-900">
                   {currentCoordinator.name || 'Sin nombre'}
                 </h2>
-                <p className="text-indigo-600 font-medium">Coordinador Principal</p>
+                <p className="text-orange-600 font-medium">Coordinador Principal</p>
                 
                 <div className="flex justify-center gap-6 text-gray-600">
                   <div className="flex items-center gap-2">
@@ -385,7 +385,7 @@ const CoordinatorProfile = () => {
                     <div className="space-y-4">
                       {currentCoordinator.experiencia.map((exp, index) => (
                         <div key={index} className="flex gap-3">
-                          <Calendar className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                          <Calendar className="w-5 h-5 text-orange-600 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-900">{exp.campamento}</p>
                             <p className="text-sm text-gray-600">{exp.periodo}</p>
@@ -403,7 +403,7 @@ const CoordinatorProfile = () => {
                     <div className="space-y-4">
                       {currentCoordinator.certificaciones.map((cert, index) => (
                         <div key={index} className="flex gap-3">
-                          <Award className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                          <Award className="w-5 h-5 text-orange-600 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-900">{cert.nombre}</p>
                             <p className="text-sm text-gray-600">{cert.emisor}</p>
@@ -421,7 +421,7 @@ const CoordinatorProfile = () => {
                     <div className="space-y-4">
                       {currentCoordinator.formacion.map((form, index) => (
                         <div key={index} className="flex gap-3">
-                          <GraduationCap className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                          <GraduationCap className="w-5 h-5 text-orange-600 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-gray-900">{form.titulo}</p>
                             <p className="text-sm text-gray-600">{form.institucion}</p>
@@ -436,7 +436,7 @@ const CoordinatorProfile = () => {
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors"
                   >
                     <PencilLine size={18} />
                     <span>Editar Perfil</span>

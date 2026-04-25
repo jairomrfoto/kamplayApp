@@ -34,7 +34,7 @@ const Login = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader size={32} className="animate-spin text-indigo-600" />
+        <Loader size={32} className="animate-spin text-orange-600" />
       </div>
     );
   }
@@ -91,10 +91,10 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link to="/" className="flex items-center justify-center gap-3 mb-8">
-          <Tent className="h-12 w-12 text-indigo-600" />
+          <Tent className="h-12 w-12 text-orange-600" />
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900">Kamplay</h1>
-            <p className="text-indigo-600 font-medium">Tu pasión, su felicidad</p>
+            <p className="text-orange-600 font-medium">Tu pasión, su felicidad</p>
           </div>
         </Link>
         <h2 className="text-center text-3xl font-bold text-gray-900">Entrar a Kamplay</h2>
@@ -139,7 +139,7 @@ const Login = () => {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="tu@correo.com"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
 
@@ -151,7 +151,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => { setShowReset(true); setResetEmail(email); setError(''); }}
-                    className="text-xs text-indigo-600 hover:text-indigo-800"
+                    className="text-xs text-orange-600 hover:text-orange-800"
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
@@ -163,7 +163,7 @@ const Login = () => {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
 
@@ -174,7 +174,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <><Loader size={18} className="animate-spin" /> Entrando...</>
@@ -203,7 +203,7 @@ const Login = () => {
                     value={resetEmail}
                     onChange={e => setResetEmail(e.target.value)}
                     placeholder="tu@correo.com"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
                   {resetError && (
                     <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{resetError}</p>
@@ -211,7 +211,7 @@ const Login = () => {
                   <button
                     type="submit"
                     disabled={resetLoading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {resetLoading ? <Loader size={16} className="animate-spin" /> : null}
                     Enviar enlace

@@ -160,7 +160,7 @@ const ImportCampersModal = ({ onImport, onClose }: Props) => {
               type="button"
               onClick={handleImport}
               disabled={preview.length === 0}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Importar {preview.length} Acampados
             </button>

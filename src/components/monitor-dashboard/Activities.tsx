@@ -23,7 +23,7 @@ const Activities = () => {
         <h2 className="text-xl font-semibold text-gray-900">Mis Actividades</h2>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
         >
           <Plus size={20} />
           Nueva Actividad
@@ -35,7 +35,7 @@ const Activities = () => {
         <input
           type="text"
           placeholder="Buscar actividades..."
-          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

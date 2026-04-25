@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { UserCircle, Tent, Calendar, History, PlusCircle, LogOut, ChevronDown, Users, BookOpen } from 'lucide-react';
+import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
 import Activities from '../components/monitor-dashboard/Activities';
@@ -50,12 +50,12 @@ const MonitorDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
-      <header className="bg-indigo-600 text-white p-4">
+      <header className="bg-green-800 text-white p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Tent size={22} />
-            <span className="text-lg font-bold">Kamplay</span>
-            <span className="text-indigo-300 text-sm hidden sm:inline">· Panel de Monitor</span>
+            <span className="text-xl">🏕️</span>
+            <span className="text-lg font-extrabold">Kamplay</span>
+            <span className="text-green-300 text-sm hidden sm:inline">· Panel de Monitor</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -64,9 +64,9 @@ const MonitorDashboard = () => {
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-indigo-700"
+                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-green-700 transition-colors"
               >
-                <div className="w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center text-sm font-medium">
+                <div className="w-7 h-7 bg-orange-400 rounded-full flex items-center justify-center text-sm font-bold">
                   {initial}
                 </div>
                 <ChevronDown size={14} />
@@ -119,7 +119,7 @@ const MonitorDashboard = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-orange-500 text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
               }`}
             >

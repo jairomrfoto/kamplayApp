@@ -46,7 +46,7 @@ const About = () => {
             {features.map((feature, index) => (
               <div key={index} className="flex gap-4">
                 <div className="flex-shrink-0">
-                  <feature.icon className="h-8 w-8 text-indigo-600" />
+                  <feature.icon className="h-8 w-8 text-orange-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -64,25 +64,25 @@ const About = () => {
             </h2>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <span className="text-indigo-600 font-bold">01.</span>
+                <span className="text-orange-600 font-bold">01.</span>
                 <p className="text-gray-600">
                   Interfaz intuitiva y fácil de usar para padres y monitores
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-indigo-600 font-bold">02.</span>
+                <span className="text-orange-600 font-bold">02.</span>
                 <p className="text-gray-600">
                   Seguimiento en tiempo real de actividades y progreso
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-indigo-600 font-bold">03.</span>
+                <span className="text-orange-600 font-bold">03.</span>
                 <p className="text-gray-600">
                   Gestión eficiente de recursos y personal
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-indigo-600 font-bold">04.</span>
+                <span className="text-orange-600 font-bold">04.</span>
                 <p className="text-gray-600">
                   Comunicación directa y transparente
                 </p>

@@ -34,14 +34,14 @@ const Menu = () => {
             {menuDelDia && (
               <button
                 onClick={handleEditMenu}
-                className="bg-white border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50"
+                className="bg-white border border-orange-500 text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50"
               >
                 Editar Menú
               </button>
             )}
             <button
               onClick={() => setShowForm(true)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
             >
               <Plus size={20} />
               Nuevo Menú
@@ -51,12 +51,12 @@ const Menu = () => {
       </div>
 
       <div className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm">
-        <Calendar className="text-indigo-600" size={20} />
+        <Calendar className="text-orange-600" size={20} />
         <DatePicker
           selected={selectedDate}
           onChange={(date) => setSelectedDate(date || new Date())}
           dateFormat="dd/MM/yyyy"
-          className="border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          className="border-gray-300 rounded-md focus:ring-orange-400 focus:border-orange-500"
         />
       </div>
 

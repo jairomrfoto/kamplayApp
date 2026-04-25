@@ -42,7 +42,7 @@ const Acampados = () => {
     return (
       <div style={style} className="flex items-center border-b border-gray-200">
         <div
-          className="flex-1 px-4 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 text-sm truncate"
+          className="flex-1 px-4 py-4 whitespace-nowrap cursor-pointer hover:text-orange-600 text-sm truncate"
           onClick={() => setSelectedCamper(camper.id)}
         >
           {camper.nombre}
@@ -82,7 +82,7 @@ const Acampados = () => {
           </button>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-1.5 text-sm"
+            className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-1.5 text-sm"
           >
             <Plus size={16} />
             <span className="hidden sm:inline">Nuevo Acampado</span>
@@ -98,7 +98,7 @@ const Acampados = () => {
             <input
               type="text"
               placeholder="Buscar acampados..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

@@ -52,7 +52,7 @@ const IncidentForm = ({ onClose }: Props) => {
             <select
               value={formData.tipo}
               onChange={(e) => setFormData(prev => ({ ...prev, tipo: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               <option value="leve">Leve</option>
               <option value="moderada">Moderada</option>
@@ -69,7 +69,7 @@ const IncidentForm = ({ onClose }: Props) => {
               value={formData.descripcion}
               onChange={(e) => setFormData(prev => ({ ...prev, descripcion: e.target.value }))}
               rows={3}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Describe lo sucedido..."
             />
           </div>
@@ -82,7 +82,7 @@ const IncidentForm = ({ onClose }: Props) => {
               type="text"
               value={formData.ubicacion}
               onChange={(e) => setFormData(prev => ({ ...prev, ubicacion: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Lugar donde ocurrió..."
             />
           </div>
@@ -98,7 +98,7 @@ const IncidentForm = ({ onClose }: Props) => {
                 ...prev,
                 acampadosAfectados: Array.from(e.target.selectedOptions, option => option.value)
               }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               {campers.map(camper => (
                 <option key={camper.id} value={camper.id}>
@@ -119,7 +119,7 @@ const IncidentForm = ({ onClose }: Props) => {
               value={formData.accionesTomadas}
               onChange={(e) => setFormData(prev => ({ ...prev, accionesTomadas: e.target.value }))}
               rows={2}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Medidas tomadas o a tomar..."
             />
           </div>

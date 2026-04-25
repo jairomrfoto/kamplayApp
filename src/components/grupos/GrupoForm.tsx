@@ -50,7 +50,7 @@ const GrupoForm = ({ onClose }: Props) => {
               required
               value={formData.nombre}
               onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             />
           </div>
 
@@ -69,7 +69,7 @@ const GrupoForm = ({ onClose }: Props) => {
                   ...prev, 
                   edadMinima: parseInt(e.target.value) 
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               />
             </div>
 
@@ -87,7 +87,7 @@ const GrupoForm = ({ onClose }: Props) => {
                   ...prev, 
                   edadMaxima: parseInt(e.target.value) 
                 }))}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               />
             </div>
           </div>
@@ -103,7 +103,7 @@ const GrupoForm = ({ onClose }: Props) => {
                 ...prev,
                 monitores: Array.from(e.target.selectedOptions, option => option.value)
               }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               {monitores.map(monitor => (
                 <option key={monitor.id} value={monitor.id}>
@@ -126,7 +126,7 @@ const GrupoForm = ({ onClose }: Props) => {
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               Crear Grupo
             </button>

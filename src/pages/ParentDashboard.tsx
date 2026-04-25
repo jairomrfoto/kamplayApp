@@ -74,7 +74,7 @@ const MedicalEditor = ({ child, campId, onClose }: MedicalEditorProps) => {
                 type="text" value={newAlergia} onChange={e => setNewAlergia(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && newAlergia.trim()) { setAlergias([...alergias, newAlergia.trim()]); setNewAlergia(''); } }}
                 placeholder="Ej: cacahuetes, penicilina..."
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
               <button
                 onClick={() => { if (newAlergia.trim()) { setAlergias([...alergias, newAlergia.trim()]); setNewAlergia(''); } }}
@@ -102,7 +102,7 @@ const MedicalEditor = ({ child, campId, onClose }: MedicalEditorProps) => {
                 type="text" value={newMed} onChange={e => setNewMed(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && newMed.trim()) { setMedicacion([...medicacion, newMed.trim()]); setNewMed(''); } }}
                 placeholder="Ej: Ventolín (asma), Insulina..."
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
               <button
                 onClick={() => { if (newMed.trim()) { setMedicacion([...medicacion, newMed.trim()]); setNewMed(''); } }}
@@ -118,7 +118,7 @@ const MedicalEditor = ({ child, campId, onClose }: MedicalEditorProps) => {
             <textarea
               value={notas} onChange={e => setNotas(e.target.value)}
               rows={3} placeholder="Ej: Lleva epipen en la mochila. Diabético tipo 1..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"
             />
           </div>
         </div>
@@ -126,7 +126,7 @@ const MedicalEditor = ({ child, campId, onClose }: MedicalEditorProps) => {
         <div className="p-5 border-t border-gray-100">
           <button
             onClick={handleSave} disabled={loading || saved}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+            className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
             {saved ? <><Check size={18} /> Guardado</> : loading ? <><Loader size={18} className="animate-spin" /> Guardando...</> : 'Guardar info médica'}
           </button>
           <p className="text-xs text-gray-400 text-center mt-2">
@@ -188,7 +188,7 @@ const AddChildForm = ({ campId, parentUid, onSave, onCancel }: AddChildFormProps
           <input
             type="text" required value={nombre} onChange={e => setNombre(e.target.value)}
             placeholder="Ej: María García"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
         </div>
         <div>
@@ -196,7 +196,7 @@ const AddChildForm = ({ campId, parentUid, onSave, onCancel }: AddChildFormProps
           <input
             type="number" required min={1} max={18} value={edad} onChange={e => setEdad(e.target.value)}
             placeholder="Ej: 10"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
         </div>
         {error && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
@@ -206,7 +206,7 @@ const AddChildForm = ({ campId, parentUid, onSave, onCancel }: AddChildFormProps
             Cancelar
           </button>
           <button type="submit" disabled={loading}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white py-2.5 rounded-xl flex items-center justify-center gap-2">
+            className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-2.5 rounded-xl flex items-center justify-center gap-2">
             {loading ? <><Loader size={16} className="animate-spin" /> Guardando...</> : 'Guardar'}
           </button>
         </div>
@@ -253,18 +253,18 @@ const JoinCampForm = ({ user, onJoined }: JoinCampFormProps) => {
   return (
     <div className="max-w-md mx-auto mt-8">
       <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-        <Tent size={40} className="text-indigo-400 mx-auto mb-4" />
+        <Tent size={40} className="text-orange-400 mx-auto mb-4" />
         <h2 className="text-xl font-bold text-gray-900 mb-2">Únete a un campamento</h2>
         <p className="text-gray-500 text-sm mb-6">Introduce el código PAD- que te ha dado el coordinador</p>
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <input
             type="text" required value={code} onChange={e => setCode(e.target.value.toUpperCase())}
             placeholder="PAD-XXXXXX"
-            className="w-full border border-gray-300 rounded-lg px-3 py-3 text-center text-xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
+            className="w-full border border-gray-300 rounded-lg px-3 py-3 text-center text-xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-400 uppercase"
           />
           {error && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
           <button type="submit" disabled={loading || code.length < 4}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
+            className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2">
             {loading ? <><Loader size={18} className="animate-spin" /> Verificando...</> : 'Acceder al campamento'}
           </button>
         </form>
@@ -299,7 +299,7 @@ const MenuCalendar = () => {
     <div className="space-y-3">
       {upcomingMenus.map(menu => (
         <div key={menu.id} className="border border-gray-200 rounded-xl p-4">
-          <p className="text-sm font-semibold text-indigo-700 capitalize mb-3">{formatDay(menu.fecha)}</p>
+          <p className="text-sm font-semibold text-orange-700 capitalize mb-3">{formatDay(menu.fecha)}</p>
           <div className="grid grid-cols-2 gap-2 text-xs">
             {menu.comidas.desayuno && (
               <div className="bg-yellow-50 rounded-lg p-2">
@@ -356,25 +356,25 @@ const ParentDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-indigo-600 text-white p-4">
+      <header className="bg-orange-500 text-white p-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Tent size={22} />
             <span className="text-lg font-bold">Kamplay</span>
-            <span className="text-indigo-300 text-sm hidden sm:inline">· Familias</span>
+            <span className="text-orange-200 text-sm hidden sm:inline">· Familias</span>
           </div>
           <div className="flex items-center gap-3">
             {activeCampId && (
               <Link to="/join-camp"
-                className="flex items-center gap-1.5 text-sm bg-white text-indigo-600 font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-50">
+                className="flex items-center gap-1.5 text-sm bg-white text-orange-600 font-medium px-3 py-1.5 rounded-lg hover:bg-orange-50">
                 <PlusCircle size={15} />
                 <span className="hidden sm:inline">Otro campamento</span>
               </Link>
             )}
             <div className="relative">
               <button onClick={() => setShowMenu(!showMenu)}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-indigo-700">
-                <div className="w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center text-sm font-medium">
+                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-orange-600">
+                <div className="w-7 h-7 bg-orange-400 rounded-full flex items-center justify-center text-sm font-medium">
                   {initial}
                 </div>
                 <ChevronDown size={14} />
@@ -414,10 +414,10 @@ const ParentDashboard = () => {
                 <h2 className="text-lg font-bold text-gray-900 mb-3">{currentCamp.name}</h2>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                   <span className="flex items-center gap-1.5">
-                    <MapPin size={14} className="text-indigo-500" /> {currentCamp.location}
+                    <MapPin size={14} className="text-orange-500" /> {currentCamp.location}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Calendar size={14} className="text-indigo-500" />
+                    <Calendar size={14} className="text-orange-500" />
                     {formatDate(currentCamp.startDate)} – {formatDate(currentCamp.endDate)}
                   </span>
                 </div>
@@ -428,12 +428,12 @@ const ParentDashboard = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveTab('children')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'children' ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'children' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                 <Baby size={15} /> Mis hijos
               </button>
               <button
                 onClick={() => setActiveTab('menu')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'menu' ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'menu' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                 <UtensilsCrossed size={15} /> Menú
               </button>
             </div>
@@ -442,7 +442,7 @@ const ParentDashboard = () => {
             {activeTab === 'menu' && (
               <div className="bg-white rounded-xl shadow-sm p-5">
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <UtensilsCrossed size={18} className="text-indigo-500" /> Menú del campamento
+                  <UtensilsCrossed size={18} className="text-orange-500" /> Menú del campamento
                 </h3>
                 <MenuCalendar />
               </div>
@@ -461,11 +461,11 @@ const ParentDashboard = () => {
               <div className="bg-white rounded-xl shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <Baby size={18} className="text-indigo-500" />
+                    <Baby size={18} className="text-orange-500" />
                     Mis hijos en este campamento
                   </h3>
                   <button onClick={() => setAddingChild(true)}
-                    className="flex items-center gap-1.5 text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700">
+                    className="flex items-center gap-1.5 text-sm bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600">
                     <PlusCircle size={14} /> Añadir hijo
                   </button>
                 </div>
@@ -475,7 +475,7 @@ const ParentDashboard = () => {
                     <Baby size={32} className="text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500 text-sm mb-4">Aún no has añadido ningún hijo a este campamento.</p>
                     <button onClick={() => setAddingChild(true)}
-                      className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm hover:bg-indigo-700">
+                      className="bg-orange-500 text-white px-5 py-2.5 rounded-xl text-sm hover:bg-orange-600">
                       Añadir mi primer hijo
                     </button>
                   </div>
@@ -485,8 +485,8 @@ const ParentDashboard = () => {
                       <div key={child.id} className="border border-gray-200 rounded-xl overflow-hidden">
                         {/* Child header */}
                         <div className="flex items-center gap-4 p-4 bg-gray-50">
-                          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                            <User size={18} className="text-indigo-600" />
+                          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center shrink-0">
+                            <User size={18} className="text-orange-600" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-gray-900">{child.nombre}</p>
@@ -530,7 +530,7 @@ const ParentDashboard = () => {
                         {!child.infoMedica.alergias.length && !child.infoMedica.medicacion.length && !child.infoMedica.notas && (
                           <div className="px-4 py-3">
                             <button onClick={() => setEditingMedical(child)}
-                              className="flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-800">
+                              className="flex items-center gap-1.5 text-xs text-orange-600 hover:text-orange-800">
                               <Pencil size={12} /> Añadir información médica
                             </button>
                           </div>

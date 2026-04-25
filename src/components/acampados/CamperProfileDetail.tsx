@@ -22,8 +22,8 @@ const CamperProfileDetail = ({ camperId, onClose }: Props) => {
       <div className="bg-white rounded-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-100 rounded-full">
-              <User className="w-8 h-8 text-indigo-600" />
+            <div className="p-3 bg-orange-100 rounded-full">
+              <User className="w-8 h-8 text-orange-600" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{camper.nombre}</h2>
@@ -41,14 +41,14 @@ const CamperProfileDetail = ({ camperId, onClose }: Props) => {
             <h3 className="text-lg font-semibold mb-4">Información General</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Users className="text-indigo-600" />
+                <Users className="text-orange-600" />
                 <div>
                   <p className="font-medium">Grupo</p>
                   <p className="text-gray-600">{grupo?.nombre || 'Sin asignar'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Home className="text-indigo-600" />
+                <Home className="text-orange-600" />
                 <div>
                   <p className="font-medium">Cabaña</p>
                   <p className="text-gray-600">{cabana?.numero || 'Sin asignar'}</p>
@@ -56,7 +56,7 @@ const CamperProfileDetail = ({ camperId, onClose }: Props) => {
               </div>
               {camper.contacto && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="text-indigo-600" />
+                  <MapPin className="text-orange-600" />
                   <div>
                     <p className="font-medium">Contacto</p>
                     <p className="text-gray-600">{camper.contacto}</p>
@@ -118,7 +118,7 @@ const CamperProfileDetail = ({ camperId, onClose }: Props) => {
                 {camper.evaluaciones.map((evaluacion, index) => (
                   <div key={index} className="bg-white rounded-lg p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="text-indigo-600" size={18} />
+                      <Calendar className="text-orange-600" size={18} />
                       <span className="text-sm text-gray-500">
                         {new Date(evaluacion.fecha).toLocaleDateString()}
                       </span>

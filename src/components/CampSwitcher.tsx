@@ -36,7 +36,7 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
       <div ref={ref} className="relative">
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 px-3 py-1.5 rounded-lg text-white text-sm transition-colors"
+          className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 px-3 py-1.5 rounded-lg text-white text-sm transition-colors"
         >
           <Tent size={14} />
           <span className="max-w-[140px] truncate">{campName}</span>
@@ -52,7 +52,7 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
                   onClick={() => handleSwitch(camp.id)}
                   className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
                     camp.id === currentCamp?.id
-                      ? 'bg-indigo-50 text-indigo-700'
+                      ? 'bg-orange-50 text-orange-700'
                       : 'hover:bg-gray-50 text-gray-700'
                   }`}
                 >
@@ -64,7 +64,7 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
             <div className="border-t p-2">
               <button
                 onClick={() => { setOpen(false); navigate('/join-camp'); }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-indigo-600 text-sm transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-orange-600 text-sm transition-colors"
               >
                 <Plus size={14} />
                 Unirse a otro campamento
@@ -81,15 +81,15 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
     <div ref={ref} className="relative px-4 pb-3">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-2 bg-indigo-50 hover:bg-indigo-100 px-3 py-2.5 rounded-lg transition-colors group"
+        className="w-full flex items-center justify-between gap-2 bg-orange-50 hover:bg-orange-100 px-3 py-2.5 rounded-lg transition-colors group"
       >
         <div className="flex items-center gap-2 min-w-0">
-          <Tent size={16} className="text-indigo-600 flex-shrink-0" />
-          <span className="text-sm font-medium text-indigo-700 truncate">{campName}</span>
+          <Tent size={16} className="text-orange-600 flex-shrink-0" />
+          <span className="text-sm font-medium text-orange-700 truncate">{campName}</span>
         </div>
         <ChevronDown
           size={14}
-          className={`text-indigo-500 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`text-orange-500 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -102,7 +102,7 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
                 onClick={() => handleSwitch(camp.id)}
                 className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
                   camp.id === currentCamp?.id
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-orange-50 text-orange-700'
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
@@ -114,14 +114,14 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
           <div className="border-t p-1.5">
             <button
               onClick={() => { setOpen(false); navigate('/join-camp'); }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-indigo-600 text-sm transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-orange-600 text-sm transition-colors"
             >
               <Plus size={14} />
               Unirse a otro campamento
             </button>
             <button
               onClick={() => { setOpen(false); navigate('/create-camp'); }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-indigo-600 text-sm transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-orange-600 text-sm transition-colors"
             >
               <Plus size={14} />
               Crear campamento

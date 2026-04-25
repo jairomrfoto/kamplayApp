@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/store';
-import { Users, Tent, Package, AlertTriangle, Clock } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import HorarioDiario from '../components/HorarioDiario';
 import IncidentForm from '../components/shared/IncidentForm';
 
@@ -12,56 +12,65 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: "Total Acampados",
+      emoji: '👦',
+      title: 'Acampados',
       value: campers.length,
-      icon: Users,
-      color: "bg-blue-500",
+      bg: 'bg-orange-50',
+      border: 'border-orange-100',
+      text: 'text-orange-600',
+      valueText: 'text-orange-700',
     },
     {
-      title: "Monitores Activos",
+      emoji: '⭐',
+      title: 'Monitores',
       value: monitores.length,
-      icon: Tent,
-      color: "bg-green-500",
+      bg: 'bg-green-50',
+      border: 'border-green-100',
+      text: 'text-green-600',
+      valueText: 'text-green-700',
     },
     {
-      title: "Material Disponible",
+      emoji: '📦',
+      title: 'Material disponible',
       value: materiales.filter(m => m.estado === 'Disponible').length,
-      icon: Package,
-      color: "bg-purple-500",
+      bg: 'bg-amber-50',
+      border: 'border-amber-100',
+      text: 'text-amber-600',
+      valueText: 'text-amber-700',
     },
     {
-      title: "Incidencias Pendientes",
-      value: pendingIncidents.length.toString(),
-      icon: AlertTriangle,
-      color: "bg-yellow-500",
+      emoji: '⚠️',
+      title: 'Incidencias pendientes',
+      value: pendingIncidents.length,
+      bg: pendingIncidents.length > 0 ? 'bg-red-50' : 'bg-stone-50',
+      border: pendingIncidents.length > 0 ? 'border-red-100' : 'border-stone-100',
+      text: pendingIncidents.length > 0 ? 'text-red-500' : 'text-stone-400',
+      valueText: pendingIncidents.length > 0 ? 'text-red-600' : 'text-stone-500',
     },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Panel de Control</h2>
+        <div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-gray-800">Panel de control 🏕️</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Resumen de hoy en tu campamento</p>
+        </div>
         <button
           onClick={() => setShowIncidentForm(true)}
-          className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all w-full sm:w-auto shadow-sm"
         >
-          <AlertTriangle size={18} />
-          <span>Reportar Incidencia</span>
+          <AlertTriangle size={16} />
+          Reportar incidencia
         </button>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <div key={stat.title} className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold mt-1">{stat.value}</p>
-              </div>
-              <div className={`${stat.color} p-3 rounded-lg`}>
-                <stat.icon className="text-white" size={24} />
-              </div>
-            </div>
+          <div key={stat.title} className={`${stat.bg} border ${stat.border} rounded-2xl p-4 sm:p-5`}>
+            <div className="text-3xl mb-2">{stat.emoji}</div>
+            <p className={`text-xs font-semibold uppercase tracking-wide ${stat.text} mb-1`}>{stat.title}</p>
+            <p className={`text-3xl font-extrabold ${stat.valueText}`}>{stat.value}</p>
           </div>
         ))}
       </div>
@@ -69,19 +78,19 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <HorarioDiario fecha={new Date()} />
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold mb-4">Estado de Habitaciones</h3>
+        <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6">
+          <h3 className="text-base font-bold text-gray-800 mb-4">🏠 Estado de habitaciones</h3>
           <div className="space-y-4">
-            <p className="text-gray-600">No hay revisiones pendientes</p>
+            <p className="text-sm text-gray-500">No hay revisiones pendientes</p>
           </div>
         </div>
       </div>
-      
+
       {showIncidentForm && (
         <IncidentForm onClose={() => setShowIncidentForm(false)} />
       )}
     </div>
   );
-}
+};
 
 export default Dashboard;

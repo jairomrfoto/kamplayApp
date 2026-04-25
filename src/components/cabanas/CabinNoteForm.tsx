@@ -61,7 +61,7 @@ const CabinNoteForm = ({ cabanaId, onClose }: Props) => {
                 ...prev,
                 fecha: date || new Date()
               }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               dateFormat="dd/MM/yyyy"
               maxDate={new Date()}
             />
@@ -83,7 +83,7 @@ const CabinNoteForm = ({ cabanaId, onClose }: Props) => {
                 }))}
                 className="flex-1"
               />
-              <span className="text-lg font-semibold text-indigo-600 min-w-[2.5rem] text-center">
+              <span className="text-lg font-semibold text-orange-600 min-w-[2.5rem] text-center">
                 {formData.valoracion}
               </span>
             </div>
@@ -100,7 +100,7 @@ const CabinNoteForm = ({ cabanaId, onClose }: Props) => {
                 ...prev,
                 estadoLimpieza: e.target.value as CabinNote['estadoLimpieza']
               }))}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
             >
               <option value="Excelente">Excelente</option>
               <option value="Bueno">Bueno</option>
@@ -120,7 +120,7 @@ const CabinNoteForm = ({ cabanaId, onClose }: Props) => {
                 observaciones: e.target.value
               }))}
               rows={4}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
               placeholder="Detalles sobre la limpieza, mantenimiento necesario, etc..."
             />
           </div>
@@ -135,7 +135,7 @@ const CabinNoteForm = ({ cabanaId, onClose }: Props) => {
             </button>
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
             >
               Guardar Nota
             </button>

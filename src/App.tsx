@@ -25,8 +25,38 @@ import JoinCamp from './pages/JoinCamp';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 
-function App() {
-  // Sincroniza automáticamente los datos con Firestore cuando el usuario inicia sesión
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-8 max-w-md w-full text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Algo salió mal</h2>
+            <p className="text-sm text-gray-500 mb-4">Recarga la página para continuar.</p>
+            <pre className="text-xs text-left bg-gray-50 rounded-lg p-3 overflow-auto text-red-600 mb-4">
+              {(this.state.error as Error).message}
+            </pre>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-colors"
+            >
+              Recargar página
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function AppRoutes() {
   useFirestoreSync();
 
   return (
@@ -71,6 +101,14 @@ function App() {
         />
       </Routes>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <AppRoutes />
+    </ErrorBoundary>
   );
 }
 

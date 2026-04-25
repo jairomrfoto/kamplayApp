@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  Calendar, Users, Package, UserCog, UsersRound,
+  Calendar, Users, Package, UserCog, UsersRound, Tent,
   HeartPulse, LayoutDashboard, UtensilsCrossed as MenuIcon,
   AlertTriangle, Shield, Layers, BookOpen, X,
 } from 'lucide-react';

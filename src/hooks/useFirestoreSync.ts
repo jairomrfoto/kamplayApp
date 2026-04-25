@@ -18,6 +18,7 @@ import {
   getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo,
   saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores,
   getCoordinatorProfile, getDocRest, getUserCamps, loadCampData, getUserActividades,
+  subscribeToNovedades,
 } from '../services/firestore';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from '../utils/localProfile';
@@ -28,11 +29,12 @@ export function useFirestoreSync() {
     loadFromFirestore, setCurrentCamp, setIncidencias, setCampers,
     setMonitores, setCurrentMonitor, setCurrentCoordinator,
     setUserCamps, addCampToUser, setSwitchCampFn,
-    setCampCache, applyCampCache, setMisActividades,
+    setCampCache, applyCampCache, setMisActividades, setNovedades,
   } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
   const unsubscribeMonitoresRef = useRef<(() => void) | null>(null);
+  const unsubscribeNovedadesRef = useRef<(() => void) | null>(null);
   const loadedCampIdRef = useRef<string | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const currentUidRef = useRef<string | null>(null);
@@ -93,6 +95,7 @@ export function useFirestoreSync() {
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
       if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
       if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
+      if (unsubscribeNovedadesRef.current) unsubscribeNovedadesRef.current();
 
       unsubscribeIncidenciasRef.current = subscribeToIncidencias(campId, setIncidencias);
       unsubscribeCampersRef.current = subscribeToCampers(campId, setCampers);
@@ -101,6 +104,7 @@ export function useFirestoreSync() {
         const mine = monitores.find(m => m.id === uid);
         if (mine) setCurrentMonitor(mine);
       });
+      unsubscribeNovedadesRef.current = subscribeToNovedades(campId, setNovedades);
 
       // Full silent refresh every 15s
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
@@ -215,6 +219,7 @@ export function useFirestoreSync() {
       if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
       if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
       if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
+      if (unsubscribeNovedadesRef.current) unsubscribeNovedadesRef.current();
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
   }, [loadCamp, setCurrentCamp, setUserCamps]);

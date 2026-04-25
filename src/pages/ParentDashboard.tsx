@@ -7,9 +7,10 @@ import { updateLocalCamp } from '../utils/localProfile';
 import {
   Tent, LogOut, ChevronDown, PlusCircle, MapPin, Calendar,
   User, Loader, ArrowLeft, Baby, Heart, Pencil, X, Plus, Check,
-  UtensilsCrossed, Baby as ChildIcon,
+  UtensilsCrossed, Baby as ChildIcon, Newspaper,
 } from 'lucide-react';
 import type { Camper } from '../types';
+import NovedadesFeed from '../components/novedades/NovedadesFeed';
 
 // ─── Medical Info Editor ──────────────────────────────────────────────────────
 interface MedicalEditorProps {
@@ -340,7 +341,7 @@ const ParentDashboard = () => {
   const { user, signOut } = useAuth();
   const { currentCamp, campers, addCamper } = useStore();
   const [showMenu, setShowMenu] = useState(false);
-  const [activeTab, setActiveTab] = useState<'children' | 'menu'>('children');
+  const [activeTab, setActiveTab] = useState<'children' | 'novedades' | 'menu'>('novedades');
   const [addingChild, setAddingChild] = useState(false);
   const [editingMedical, setEditingMedical] = useState<Camper | null>(null);
   const [joinedCampId, setJoinedCampId] = useState<string | null>(null);
@@ -356,12 +357,12 @@ const ParentDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-orange-500 text-white p-4">
+      <header className="bg-green-800 text-white p-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Tent size={22} />
-            <span className="text-lg font-bold">Kamplay</span>
-            <span className="text-orange-200 text-sm hidden sm:inline">· Familias</span>
+            <span className="text-xl">🏕️</span>
+            <span className="text-lg font-extrabold">Kamplay</span>
+            <span className="text-green-300 text-sm hidden sm:inline">· Familias</span>
           </div>
           <div className="flex items-center gap-3">
             {activeCampId && (
@@ -425,18 +426,28 @@ const ParentDashboard = () => {
             )}
 
             {/* Tabs */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <button
+                onClick={() => setActiveTab('novedades')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'novedades' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <Newspaper size={15} /> Novedades
+              </button>
               <button
                 onClick={() => setActiveTab('children')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'children' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'children' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                 <Baby size={15} /> Mis hijos
               </button>
               <button
                 onClick={() => setActiveTab('menu')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'menu' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'menu' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                 <UtensilsCrossed size={15} /> Menú
               </button>
             </div>
+
+            {/* Novedades tab */}
+            {activeTab === 'novedades' && (
+              <NovedadesFeed rol="parent" />
+            )}
 
             {/* Menu tab */}
             {activeTab === 'menu' && (

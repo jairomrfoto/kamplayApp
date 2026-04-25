@@ -165,7 +165,7 @@ function restFirstWrite(
 }
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
-  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal,
+  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal, Novedad,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 
@@ -245,12 +245,13 @@ export interface CampData {
   horariosDiarios: HorarioDiario[];
   menus: MenuItem[];
   incidencias: Incident[];
+  novedades: Novedad[];
 }
 
 export async function loadCampData(campId: string): Promise<CampData> {
   const [
     campers, monitores, grupos, cabanas, materiales,
-    actividades, horariosDiarios, menus, incidencias,
+    actividades, horariosDiarios, menus, incidencias, novedades,
   ] = await Promise.all([
     loadCollection<Camper>(campId, 'acampados'),
     loadCollection<Monitor>(campId, 'monitores'),
@@ -261,9 +262,10 @@ export async function loadCampData(campId: string): Promise<CampData> {
     loadCollection<HorarioDiario>(campId, 'horarios'),
     loadCollection<MenuItem>(campId, 'menus'),
     loadCollection<Incident>(campId, 'incidencias'),
+    loadCollection<Novedad>(campId, 'novedades'),
   ]);
 
-  return { campers, monitores, grupos, cabanas, materiales, actividades, horariosDiarios, menus, incidencias };
+  return { campers, monitores, grupos, cabanas, materiales, actividades, horariosDiarios, menus, incidencias, novedades };
 }
 
 // ─── Suscripcion en tiempo real via REST polling ──────────────────────────────
@@ -288,6 +290,13 @@ export function subscribeToIncidencias(
   callback: (incidencias: Incident[]) => void
 ): () => void {
   return subscribeRestPoll<Incident>(`campamentos/${campId}/incidencias`, callback, 8_000);
+}
+
+export function subscribeToNovedades(
+  campId: string,
+  callback: (novedades: Novedad[]) => void
+): () => void {
+  return subscribeRestPoll<Novedad>(`campamentos/${campId}/novedades`, callback, 10_000);
 }
 
 export function subscribeToCampers(
@@ -460,6 +469,7 @@ export const firestoreActividades = makeCrud<Actividad>('actividades');
 export const firestoreHorarios   = makeCrud<HorarioDiario>('horarios');
 export const firestoreMenus      = makeCrud<MenuItem>('menus');
 export const firestoreIncidencias = makeCrud<Incident>('incidencias');
+export const firestoreNovedades   = makeCrud<Novedad>('novedades');
 
 // ─── Coordinador ─────────────────────────────────────────────────────────────
 // Saved as a camp subcollection so Firestore rules allow access.

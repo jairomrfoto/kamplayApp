@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent } from 'lucide-react';
+import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
 import Activities from '../components/monitor-dashboard/Activities';
@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useStore } from '../store/store';
 import CampSwitcher from '../components/CampSwitcher';
 import MisActividades from '../components/MisActividades';
+import NovedadesFeed from '../components/novedades/NovedadesFeed';
 
 const MonitorDashboard = () => {
   const [activeTab, setActiveTab] = useState('current');
@@ -27,23 +28,25 @@ const MonitorDashboard = () => {
   const initial = displayName.charAt(0).toUpperCase();
 
   const tabs = [
-    { id: 'current', label: 'Campamento', icon: Tent },
-    { id: 'acampados', label: 'Mis Acampados', icon: Users },
-    { id: 'activities', label: 'Actividades', icon: Calendar },
-    { id: 'mis-actividades', label: 'Mi Biblioteca', icon: BookOpen },
-    { id: 'profile', label: 'Mi Perfil', icon: UserCircle },
-    { id: 'history', label: 'Historial', icon: History },
+    { id: 'current',         label: 'Campamento',   icon: Tent },
+    { id: 'novedades',       label: 'Novedades',    icon: Newspaper },
+    { id: 'acampados',       label: 'Mis Acampados',icon: Users },
+    { id: 'activities',      label: 'Actividades',  icon: Calendar },
+    { id: 'mis-actividades', label: 'Mi Biblioteca',icon: BookOpen },
+    { id: 'profile',         label: 'Mi Perfil',    icon: UserCircle },
+    { id: 'history',         label: 'Historial',    icon: History },
   ];
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'current': return <CurrentCamp />;
-      case 'acampados': return <MisAcampados />;
-      case 'activities': return <Activities />;
+      case 'current':         return <CurrentCamp />;
+      case 'novedades':       return <NovedadesFeed rol="monitor" />;
+      case 'acampados':       return <MisAcampados />;
+      case 'activities':      return <Activities />;
       case 'mis-actividades': return <MisActividades />;
-      case 'profile': return <Profile />;
-      case 'history': return <CampHistory />;
-      default: return null;
+      case 'profile':         return <Profile />;
+      case 'history':         return <CampHistory />;
+      default:                return null;
     }
   };
 

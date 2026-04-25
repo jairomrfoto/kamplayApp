@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   Calendar, Users, Package, UserCog, UsersRound, Tent,
   HeartPulse, LayoutDashboard, UtensilsCrossed as MenuIcon,
-  AlertTriangle, Shield, Layers, BookOpen, X,
+  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper,
 } from 'lucide-react';
 import CampSwitcher from './CampSwitcher';
 import { useStore } from '../store/store';
@@ -23,10 +23,11 @@ const baseLinks = [
 ];
 
 const coordinatorLinks = [
-  { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,   text: 'Mis Campamentos' },
+  { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,    text: 'Mis Campamentos' },
+  { to: '/coordinator-dashboard/novedades',       icon: Newspaper, text: 'Novedades' },
   ...baseLinks,
-  { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen, text: 'Mi Biblioteca' },
-  { to: '/coordinator-dashboard/coordinadores',  icon: Shield,   text: 'Coordinadores' },
+  { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,  text: 'Mi Biblioteca' },
+  { to: '/coordinator-dashboard/coordinadores',  icon: Shield,    text: 'Coordinadores' },
 ];
 
 const NavLinks = ({ links, isCoordinator, onClose }: {

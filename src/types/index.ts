@@ -149,6 +149,19 @@ export interface MenuItem {
   observaciones?: string;
 }
 
+export interface Novedad {
+  id: string;
+  campId: string;
+  texto: string;
+  autor: string;
+  autorId: string;
+  rol: 'coordinator' | 'monitor';
+  fecha: Date;
+  emoji?: string;
+  imagenUrl?: string;
+  grupo?: string;
+}
+
 export interface Incident {
   id: string;
   tipo: 'leve' | 'moderada' | 'grave';

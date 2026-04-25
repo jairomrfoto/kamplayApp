@@ -3,13 +3,13 @@ import { initialData } from './initialData';
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
   Actividad, HorarioDiario, MenuItem, Incident,
-  EncuestaMonitor, EvaluacionGrupo, EvaluacionCamper, ActividadPersonal,
+  EncuestaMonitor, EvaluacionGrupo, EvaluacionCamper, ActividadPersonal, Novedad,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 import {
   firestoreCampers, firestoreMonitores, firestoreGrupos,
   firestoreCabanas, firestoreMateriales, firestoreActividades,
-  firestoreHorarios, firestoreMenus, firestoreIncidencias,
+  firestoreHorarios, firestoreMenus, firestoreIncidencias, firestoreNovedades,
   loadCampData, getCampByCode, saveCampInfo, saveCoordinator,
   saveUserActividad,
 } from '../services/firestore';
@@ -34,6 +34,7 @@ interface AppState {
   menus: MenuItem[];
   incidencias: Incident[];
   misActividades: ActividadPersonal[];
+  novedades: Novedad[];
 
   // ── Acciones de carga ────────────────────────────────────────────────────
   loadFromFirestore: (campId: string, silent?: boolean) => Promise<void>;
@@ -79,6 +80,11 @@ interface AppState {
   addActividad: (actividad: Actividad) => void;
   setMisActividades: (actividades: ActividadPersonal[]) => void;
   addMiActividad: (actividad: ActividadPersonal) => void;
+
+  // ── Novedades ────────────────────────────────────────────────────────────
+  setNovedades: (novedades: Novedad[]) => void;
+  addNovedad: (novedad: Omit<Novedad, 'id'>) => void;
+  deleteNovedad: (novedadId: string) => void;
 
   // ── Grupos ───────────────────────────────────────────────────────────────
   addGrupo: (grupo: Grupo) => void;
@@ -136,6 +142,7 @@ export const useStore = create<AppState>((set, get) => ({
   incidencias: initialData.incidencias,
   currentCoordinator: undefined,
   misActividades: [],
+  novedades: [],
 
   // ── Carga desde Firestore ────────────────────────────────────────────────
   loadFromFirestore: async (campId: string, silent = false) => {
@@ -173,6 +180,7 @@ export const useStore = create<AppState>((set, get) => ({
       horariosDiarios: cached.horariosDiarios,
       menus: cached.menus,
       incidencias: cached.incidencias,
+      novedades: cached.novedades ?? [],
     });
     return true;
   },
@@ -354,6 +362,24 @@ export const useStore = create<AppState>((set, get) => ({
     }));
     const uid = auth.currentUser?.uid;
     if (uid) saveUserActividad(uid, actividad).catch(console.error);
+  },
+
+  // ── Novedades ────────────────────────────────────────────────────────────
+  setNovedades: (novedades) => set({ novedades }),
+  addNovedad: (novedad) => {
+    const newNovedad: Novedad = { id: crypto.randomUUID(), ...novedad };
+    set((state) => ({ novedades: [newNovedad, ...state.novedades] }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      firestoreNovedades.save(currentCamp.id, newNovedad).catch(console.error);
+    }
+  },
+  deleteNovedad: (novedadId) => {
+    set((state) => ({ novedades: state.novedades.filter(n => n.id !== novedadId) }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      firestoreNovedades.delete(currentCamp.id, novedadId).catch(console.error);
+    }
   },
 
   // ── Grupos ───────────────────────────────────────────────────────────────

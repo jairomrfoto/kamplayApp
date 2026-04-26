@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { saveUserProfile, saveCampInfo, saveJoinCodes } from '../../services/firestore';
 import { generateJoinCode } from '../../utils/generateJoinCode';
 import { updateLocalCamp } from '../../utils/localProfile';
-import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle } from 'lucide-react';
+import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle, RefreshCw } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
 import type { Camp } from '../../types/camp';
 import type { UserProfile } from '../../types';
@@ -16,6 +16,7 @@ const CampOverview = () => {
   const [copiedMonitor, setCopiedMonitor] = useState(false);
   const [copiedParent, setCopiedParent] = useState(false);
   const [copiedTeacher, setCopiedTeacher] = useState(false);
+  const [generatingTeacher, setGeneratingTeacher] = useState(false);
 
   // Camp creation form state
   const [creating, setCreating] = useState(false);
@@ -38,6 +39,20 @@ const CampOverview = () => {
       setCopiedParent(true);
       setTimeout(() => setCopiedParent(false), 2000);
     }
+  };
+
+  const handleGenerateTeacherCode = async () => {
+    if (!currentCamp) return;
+    setGeneratingTeacher(true);
+    const teacherCode = generateJoinCode('PROF');
+    const updatedCamp: Camp = {
+      ...currentCamp,
+      joinCodes: { ...currentCamp.joinCodes, teachers: teacherCode },
+    };
+    await saveCampInfo(updatedCamp).catch(console.error);
+    setCurrentCamp(updatedCamp);
+    updateLocalCamp(user?.uid || '', updatedCamp.id, updatedCamp);
+    setGeneratingTeacher(false);
   };
 
   const handleCreateCamp = async (e: React.FormEvent) => {
@@ -266,7 +281,7 @@ const CampOverview = () => {
           Códigos de acceso al campamento
         </h2>
         <p className="text-sm text-gray-500 mb-4">
-          Comparte estos códigos para que monitores y familias puedan acceder a la app.
+          Comparte estos códigos para que monitores, familias y profesores puedan acceder a la app.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4">
@@ -301,11 +316,11 @@ const CampOverview = () => {
               </button>
             </div>
           </div>
-          {currentCamp.joinCodes.teachers && (
-            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 sm:col-span-2">
-              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                🎓 Código para profesores
-              </p>
+          <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 sm:col-span-2">
+            <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
+              🎓 Código para profesores
+            </p>
+            {currentCamp.joinCodes.teachers ? (
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xl font-mono font-bold text-green-900 tracking-widest">
                   {currentCamp.joinCodes.teachers}
@@ -317,8 +332,22 @@ const CampOverview = () => {
                   {copiedTeacher ? <><Check size={12} /> Copiado</> : <><Copy size={12} /> Copiar</>}
                 </button>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm text-gray-500">Este campamento aún no tiene código para profesores.</p>
+                <button
+                  onClick={handleGenerateTeacherCode}
+                  disabled={generatingTeacher}
+                  className="flex items-center gap-1.5 text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors shrink-0 whitespace-nowrap"
+                >
+                  {generatingTeacher
+                    ? <><Loader size={12} className="animate-spin" /> Generando...</>
+                    : <><RefreshCw size={12} /> Generar código</>
+                  }
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

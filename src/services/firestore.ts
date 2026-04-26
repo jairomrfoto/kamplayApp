@@ -166,7 +166,7 @@ function restFirstWrite(
 }
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
-  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal, Novedad, ProfesorDoc,
+  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal, Novedad, ProfesorDoc, Asistencia,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 
@@ -482,6 +482,7 @@ export const firestoreMenus      = makeCrud<MenuItem>('menus');
 export const firestoreIncidencias = makeCrud<Incident>('incidencias');
 export const firestoreNovedades    = makeCrud<Novedad>('novedades');
 export const firestoreProfesorDocs = makeCrud<ProfesorDoc>('profesorDocs');
+export const firestoreAsistencia   = makeCrud<Asistencia>('asistencia');
 
 // ─── Coordinador ─────────────────────────────────────────────────────────────
 // Saved as a camp subcollection so Firestore rules allow access.

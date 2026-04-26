@@ -22,6 +22,7 @@ const CampForm = () => {
   const [adminEmail, setAdminEmail] = useState('');
   const [createdCamp, setCreatedCamp] = useState<Camp | null>(null);
   const [inscriptionFeeEuros, setInscriptionFeeEuros] = useState('');
+  const [campType, setCampType] = useState<'campamento' | 'campus'>('campamento');
   const [formData, setFormData] = useState<CampFormData>({
     name: '',
     monitorsCount: 1,
@@ -104,6 +105,7 @@ const CampForm = () => {
     const camp: Camp = {
       id: campId,
       ...formData,
+      type: campType,
       joinCodes: {
         monitors: generateJoinCode('MON'),
         families: generateJoinCode('PAD'),
@@ -140,6 +142,42 @@ const CampForm = () => {
         <p className="mt-1 text-sm text-gray-500">
           Completa todos los campos necesarios para crear tu campamento
         </p>
+      </div>
+
+      <div>
+        <p className="text-sm font-medium text-gray-700 mb-3">Tipo de programa</p>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setCampType('campamento')}
+            className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+              campType === 'campamento'
+                ? 'border-orange-500 bg-orange-50'
+                : 'border-gray-200 hover:border-orange-200 hover:bg-orange-50/40'
+            }`}
+          >
+            <span className="text-3xl">🏕️</span>
+            <div className="text-center">
+              <p className="font-bold text-sm text-gray-900">Campamento</p>
+              <p className="text-xs text-gray-500">Con cabañas y pernocta</p>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCampType('campus')}
+            className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+              campType === 'campus'
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50/40'
+            }`}
+          >
+            <span className="text-3xl">🏫</span>
+            <div className="text-center">
+              <p className="font-bold text-sm text-gray-900">Campus</p>
+              <p className="text-xs text-gray-500">Actividades diurnas</p>
+            </div>
+          </button>
+        </div>
       </div>
 
       <FormField

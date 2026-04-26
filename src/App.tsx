@@ -23,6 +23,7 @@ import Menu from './pages/Menu';
 import CreateCamp from './pages/CreateCamp';
 import Onboarding from './pages/Onboarding';
 import JoinCamp from './pages/JoinCamp';
+import Asistencia from './pages/Asistencia';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 
@@ -95,6 +96,7 @@ function AppRoutes() {
                     <Route path="/area-medica" element={<AreaMedica />} />
                     <Route path="/incidencias" element={<Incidencias />} />
                     <Route path="/menu" element={<Menu />} />
+                    <Route path="/asistencia" element={<Asistencia />} />
                   </Routes>
                 </main>
               </div>

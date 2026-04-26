@@ -1,6 +1,7 @@
 export interface Camp {
   id: string;
   name: string;
+  type?: 'campamento' | 'campus';
   startDate: Date;
   endDate: Date;
   location: string;

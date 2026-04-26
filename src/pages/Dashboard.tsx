@@ -5,15 +5,16 @@ import HorarioDiario from '../components/HorarioDiario';
 import IncidentForm from '../components/shared/IncidentForm';
 
 const Dashboard = () => {
-  const { campers, monitores, materiales, incidencias } = useStore();
+  const { campers, monitores, materiales, incidencias, currentCamp } = useStore();
   const [showIncidentForm, setShowIncidentForm] = useState(false);
 
+  const isCampus = currentCamp?.type === 'campus';
   const pendingIncidents = incidencias.filter(inc => inc.estado === 'pendiente');
 
   const stats = [
     {
-      emoji: '👦',
-      title: 'Acampados',
+      emoji: isCampus ? '🧑‍🎓' : '👦',
+      title: isCampus ? 'Participantes' : 'Acampados',
       value: campers.length,
       bg: 'bg-orange-50',
       border: 'border-orange-100',
@@ -53,8 +54,12 @@ const Dashboard = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-gray-800">Panel de control 🏕️</h2>
-          <p className="text-sm text-gray-500 mt-0.5">Resumen de hoy en tu campamento</p>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-gray-800">
+            {isCampus ? 'Panel de control 🏫' : 'Panel de control 🏕️'}
+          </h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {isCampus ? 'Resumen de hoy en tu campus' : 'Resumen de hoy en tu campamento'}
+          </p>
         </div>
         <button
           onClick={() => setShowIncidentForm(true)}
@@ -78,12 +83,14 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <HorarioDiario fecha={new Date()} />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6">
-          <h3 className="text-base font-bold text-gray-800 mb-4">🏠 Estado de habitaciones</h3>
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">No hay revisiones pendientes</p>
+        {!isCampus && (
+          <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6">
+            <h3 className="text-base font-bold text-gray-800 mb-4">🏠 Estado de habitaciones</h3>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500">No hay revisiones pendientes</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {showIncidentForm && (

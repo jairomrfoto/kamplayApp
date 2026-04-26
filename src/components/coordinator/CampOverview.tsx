@@ -22,6 +22,7 @@ const CampOverview = () => {
   const [creating, setCreating] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState('');
+  const [newCampType, setNewCampType] = useState<'campamento' | 'campus'>('campamento');
   const [campData, setCampData] = useState({
     name: '', location: '', startDate: '', endDate: '',
     maxCampers: 30, monitorsCount: 3,
@@ -70,6 +71,7 @@ const CampOverview = () => {
     const camp: Camp = {
       id: campId,
       name: campData.name,
+      type: newCampType,
       location: campData.location,
       startDate: new Date(campData.startDate),
       endDate: new Date(campData.endDate),
@@ -145,6 +147,25 @@ const CampOverview = () => {
             <p className="text-sm text-gray-500 mb-5">Rellena los datos básicos del campamento</p>
 
             <form onSubmit={handleCreateCamp} className="space-y-4">
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Tipo de programa</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" onClick={() => setNewCampType('campamento')}
+                    className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-left ${
+                      newCampType === 'campamento' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'
+                    }`}>
+                    <span className="text-xl">🏕️</span>
+                    <div><p className="font-semibold text-xs text-gray-900">Campamento</p><p className="text-xs text-gray-400">Con pernocta</p></div>
+                  </button>
+                  <button type="button" onClick={() => setNewCampType('campus')}
+                    className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-left ${
+                      newCampType === 'campus' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200'
+                    }`}>
+                    <span className="text-xl">🏫</span>
+                    <div><p className="font-semibold text-xs text-gray-900">Campus</p><p className="text-xs text-gray-400">Actividades diurnas</p></div>
+                  </button>
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del campamento</label>
                 <input type="text" required value={campData.name}

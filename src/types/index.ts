@@ -213,6 +213,20 @@ export interface ProfesorDoc {
   fecha: Date;
 }
 
+export interface RegistroAsistencia {
+  acampadoId: string;
+  nombre: string;
+  presente: boolean;
+  nota?: string;
+}
+
+export interface Asistencia {
+  id: string;
+  campId: string;
+  fecha: string; // YYYY-MM-DD
+  registros: RegistroAsistencia[];
+}
+
 export interface ActividadPersonal {
   id: string;
   titulo: string;

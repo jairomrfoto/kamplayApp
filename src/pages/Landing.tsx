@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Tent } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 const features = [
-  { emoji: '👥', title: 'Gestión de acampados', desc: 'Fichas completas con información médica, alergias y medicación programada.' },
-  { emoji: '📅', title: 'Horarios y actividades', desc: 'Planifica actividades, crea horarios diarios y gestiona el calendario del campamento.' },
+  { emoji: '👥', title: 'Gestión de participantes', desc: 'Fichas completas con información médica, alergias y medicación programada.' },
+  { emoji: '📅', title: 'Horarios y actividades', desc: 'Planifica actividades, crea horarios diarios y gestiona el calendario.' },
   { emoji: '🏥', title: 'Área médica', desc: 'Control de incidencias, seguimiento médico y alertas para situaciones urgentes.' },
-  { emoji: '🏕️', title: 'Grupos y cabañas', desc: 'Organiza acampados por grupos de edad y asigna monitores a cada cabaña.' },
-  { emoji: '📚', title: 'Banco de actividades', desc: 'Biblioteca personal de actividades reutilizables entre campamentos.' },
-  { emoji: '🌐', title: 'Multi-campamento', desc: 'Gestiona varios campamentos a la vez y cambia entre ellos al instante.' },
+  { emoji: '📋', title: 'Asistencia diaria', desc: 'Pasa lista cada día y registra ausencias con notas para campus y colonias.' },
+  { emoji: '📚', title: 'Banco de actividades', desc: 'Biblioteca personal de actividades reutilizables entre campamentos y campus.' },
+  { emoji: '🌐', title: 'Multi-programa', desc: 'Gestiona varios campamentos y campus a la vez y cambia entre ellos al instante.' },
 ];
 
 const steps = [
@@ -97,14 +97,14 @@ const Landing = () => {
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-32 text-center">
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-bold px-4 py-2 rounded-full mb-8 uppercase tracking-wider">
-            <span>✨</span> La app para gestionar tu campamento
+            <span>✨</span> Para campamentos y campus
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-            El campamento,<br className="hidden sm:block" /> en tus manos 🏕️
+            Campamentos y campus,<br className="hidden sm:block" /> en tus manos 🏕️
           </h1>
           <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto mb-10">
             Kamplay es la plataforma todo-en-uno para coordinadores, monitores y familias.
-            Gestiona acampados, actividades, área médica y mucho más desde un solo lugar.
+            Gestiona participantes, actividades, asistencia y mucho más desde un solo lugar.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -112,7 +112,7 @@ const Landing = () => {
               to="/create-camp"
               className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white text-orange-600 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
             >
-              🏕️ Crear mi campamento
+              🏕️ Crear campamento o campus
             </Link>
             <Link
               to="/login"
@@ -217,6 +217,59 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* ── Campamento vs Campus ── */}
+      <section className="py-20 bg-stone-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-14">
+            <span className="inline-block text-blue-600 font-bold text-sm uppercase tracking-wider mb-3">Modalidades</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Campamento o Campus 🏕️🏫</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              Una sola plataforma adaptada a los dos modelos. Elige el que mejor encaja con tu proyecto.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden">
+              <div className="bg-gradient-to-br from-orange-400 to-amber-500 px-6 py-6">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl">🏕️</span>
+                  <div>
+                    <h3 className="text-white font-extrabold text-xl">Campamento</h3>
+                    <p className="text-orange-100 text-sm">Con pernocta en cabañas</p>
+                  </div>
+                </div>
+              </div>
+              <ul className="px-6 py-5 space-y-3">
+                {['Gestión de cabañas y habitaciones', 'Seguimiento médico 24h', 'Actividades y horario completo', 'Grupos por edad y monitor asignado', 'Novedades para familias'].map(p => (
+                  <li key={p} className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xs font-bold">✓</span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
+              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 px-6 py-6">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl">🏫</span>
+                  <div>
+                    <h3 className="text-white font-extrabold text-xl">Campus</h3>
+                    <p className="text-blue-100 text-sm">Actividades diurnas sin pernocta</p>
+                  </div>
+                </div>
+              </div>
+              <ul className="px-6 py-5 space-y-3">
+                {['Asistencia diaria con registro de ausencias', 'Actividades y calendario', 'Grupos y monitores asignados', 'Área médica y incidencias', 'Portal para profesores de colegio'].map(p => (
+                  <li key={p} className="flex items-start gap-2.5 text-sm text-gray-600">
+                    <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">✓</span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA final ── */}
       <section className="py-20 bg-gradient-to-br from-green-600 to-green-800 text-white relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none select-none opacity-10">
@@ -230,7 +283,7 @@ const Landing = () => {
             ¿Listo para empezar?
           </h2>
           <p className="text-green-200 text-lg mb-10">
-            Crea tu campamento en minutos o entra con el código que te han dado.
+            Crea tu campamento o campus en minutos, o entra con el código que te han dado.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -238,7 +291,7 @@ const Landing = () => {
               to="/create-camp"
               className="flex items-center justify-center gap-3 bg-white text-green-700 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
             >
-              🏕️ Crear campamento gratis
+              🏕️ Crear campamento o campus
             </Link>
             <Link
               to="/login"

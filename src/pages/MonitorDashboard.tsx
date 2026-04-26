@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper } from 'lucide-react';
+import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
 import Activities from '../components/monitor-dashboard/Activities';
@@ -11,6 +11,7 @@ import { useStore } from '../store/store';
 import CampSwitcher from '../components/CampSwitcher';
 import MisActividades from '../components/MisActividades';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
+import Asistencia from './Asistencia';
 
 const MonitorDashboard = () => {
   const [activeTab, setActiveTab] = useState('current');
@@ -27,10 +28,13 @@ const MonitorDashboard = () => {
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'Monitor';
   const initial = displayName.charAt(0).toUpperCase();
 
+  const isCampus = currentCamp?.type === 'campus';
+
   const tabs = [
-    { id: 'current',         label: 'Campamento',   icon: Tent },
+    { id: 'current',         label: isCampus ? 'Campus' : 'Campamento', icon: isCampus ? Users : Tent },
     { id: 'novedades',       label: 'Novedades',    icon: Newspaper },
     { id: 'acampados',       label: 'Mis Acampados',icon: Users },
+    ...(isCampus ? [{ id: 'asistencia', label: 'Asistencia', icon: ClipboardList }] : []),
     { id: 'activities',      label: 'Actividades',  icon: Calendar },
     { id: 'mis-actividades', label: 'Mi Biblioteca',icon: BookOpen },
     { id: 'profile',         label: 'Mi Perfil',    icon: UserCircle },
@@ -42,6 +46,7 @@ const MonitorDashboard = () => {
       case 'current':         return <CurrentCamp />;
       case 'novedades':       return <NovedadesFeed rol="monitor" />;
       case 'acampados':       return <MisAcampados />;
+      case 'asistencia':      return <Asistencia />;
       case 'activities':      return <Activities />;
       case 'mis-actividades': return <MisActividades />;
       case 'profile':         return <Profile />;

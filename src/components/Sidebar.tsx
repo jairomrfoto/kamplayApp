@@ -3,35 +3,49 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   Calendar, Users, Package, UserCog, UsersRound, Tent,
   HeartPulse, LayoutDashboard, UtensilsCrossed as MenuIcon,
-  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper,
+  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper, ClipboardList,
 } from 'lucide-react';
 import CampSwitcher from './CampSwitcher';
 import { useStore } from '../store/store';
 
-const baseLinks = [
-  { to: '/app/dashboard',   icon: LayoutDashboard, text: 'Dashboard' },
-  { to: '/app/calendario',  icon: Calendar,        text: 'Calendario' },
-  { to: '/app/actividades', icon: Users,           text: 'Actividades' },
-  { to: '/app/acampados',   icon: Users,           text: 'Acampados' },
-  { to: '/app/materiales',  icon: Package,         text: 'Materiales' },
-  { to: '/app/monitores',   icon: UserCog,         text: 'Monitores' },
-  { to: '/app/grupos',      icon: UsersRound,      text: 'Grupos' },
-  { to: '/app/cabanas',     icon: Tent,            text: 'Cabañas' },
-  { to: '/app/area-medica', icon: HeartPulse,      text: 'Área Médica' },
-  { to: '/app/incidencias', icon: AlertTriangle,   text: 'Incidencias' },
-  { to: '/app/menu',        icon: MenuIcon,        text: 'Menú' },
-];
+type LinkDef = { to: string; icon: React.ElementType; text: string };
 
-const coordinatorLinks = [
-  { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,    text: 'Mis Campamentos' },
-  { to: '/coordinator-dashboard/novedades',       icon: Newspaper, text: 'Novedades' },
-  ...baseLinks,
-  { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,  text: 'Mi Biblioteca' },
-  { to: '/coordinator-dashboard/coordinadores',  icon: Shield,    text: 'Coordinadores' },
-];
+function getBaseLinks(isCampus: boolean): LinkDef[] {
+  const links: LinkDef[] = [
+    { to: '/app/dashboard',   icon: LayoutDashboard, text: 'Dashboard' },
+    { to: '/app/calendario',  icon: Calendar,        text: 'Calendario' },
+    { to: '/app/actividades', icon: Users,           text: 'Actividades' },
+    { to: '/app/acampados',   icon: Users,           text: 'Acampados' },
+    { to: '/app/materiales',  icon: Package,         text: 'Materiales' },
+    { to: '/app/monitores',   icon: UserCog,         text: 'Monitores' },
+    { to: '/app/grupos',      icon: UsersRound,      text: 'Grupos' },
+  ];
+  if (!isCampus) {
+    links.push({ to: '/app/cabanas', icon: Tent, text: 'Cabañas' });
+  }
+  if (isCampus) {
+    links.push({ to: '/app/asistencia', icon: ClipboardList, text: 'Asistencia' });
+  }
+  links.push(
+    { to: '/app/area-medica', icon: HeartPulse,      text: 'Área Médica' },
+    { to: '/app/incidencias', icon: AlertTriangle,   text: 'Incidencias' },
+    { to: '/app/menu',        icon: MenuIcon,        text: 'Menú' },
+  );
+  return links;
+}
+
+function getCoordinatorLinks(isCampus: boolean): LinkDef[] {
+  return [
+    { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,    text: 'Mis Campamentos' },
+    { to: '/coordinator-dashboard/novedades',       icon: Newspaper, text: 'Novedades' },
+    ...getBaseLinks(isCampus),
+    { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,  text: 'Mi Biblioteca' },
+    { to: '/coordinator-dashboard/coordinadores',  icon: Shield,    text: 'Coordinadores' },
+  ];
+}
 
 const NavLinks = ({ links, isCoordinator, onClose }: {
-  links: typeof baseLinks;
+  links: LinkDef[];
   isCoordinator: boolean;
   onClose?: () => void;
 }) => (
@@ -60,8 +74,9 @@ const NavLinks = ({ links, isCoordinator, onClose }: {
 const Sidebar = () => {
   const location = useLocation();
   const isCoordinator = location.pathname.includes('/coordinator-dashboard');
-  const { sidebarOpen, setSidebarOpen } = useStore();
-  const links = isCoordinator ? coordinatorLinks : baseLinks;
+  const { sidebarOpen, setSidebarOpen, currentCamp } = useStore();
+  const isCampus = currentCamp?.type === 'campus';
+  const links = isCoordinator ? getCoordinatorLinks(isCampus) : getBaseLinks(isCampus);
   const close = () => setSidebarOpen(false);
 
   return (

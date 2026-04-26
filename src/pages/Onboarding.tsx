@@ -5,11 +5,12 @@ import { useAuth } from '../hooks/useAuth';
 import { saveUserProfile, getUserProfile } from '../services/firestore';
 import { getLocalProfile, setLocalProfile } from '../utils/localProfile';
 
-type Role = 'coordinator' | 'monitor' | 'parent';
+type Role = 'coordinator' | 'monitor' | 'parent' | 'profesor';
 
 function redirectByRole(role: Role, navigate: (path: string) => void) {
   if (role === 'coordinator') navigate('/coordinator-dashboard');
   else if (role === 'monitor') navigate('/monitor-dashboard');
+  else if (role === 'profesor') navigate('/join-camp');
   else navigate('/parent-dashboard');
 }
 
@@ -100,6 +101,14 @@ const Onboarding = () => {
       desc: 'Sigo el día a día de mi hijo',
       bg: 'bg-amber-50 hover:bg-amber-100 border-amber-200 hover:border-amber-400',
       dot: 'bg-amber-500',
+    },
+    {
+      role: 'profesor' as Role,
+      emoji: '🎓',
+      label: 'Profesor / Profesora',
+      desc: 'Accedo al campamento de mi colegio',
+      bg: 'bg-blue-50 hover:bg-blue-100 border-blue-200 hover:border-blue-400',
+      dot: 'bg-blue-500',
     },
   ];
 

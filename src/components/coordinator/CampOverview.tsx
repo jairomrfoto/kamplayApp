@@ -15,6 +15,7 @@ const CampOverview = () => {
   const [showIncidentForm, setShowIncidentForm] = useState(false);
   const [copiedMonitor, setCopiedMonitor] = useState(false);
   const [copiedParent, setCopiedParent] = useState(false);
+  const [copiedTeacher, setCopiedTeacher] = useState(false);
 
   // Camp creation form state
   const [creating, setCreating] = useState(false);
@@ -25,11 +26,14 @@ const CampOverview = () => {
     maxCampers: 30, monitorsCount: 3,
   });
 
-  const copyToClipboard = async (text: string, type: 'monitor' | 'parent') => {
+  const copyToClipboard = async (text: string, type: 'monitor' | 'parent' | 'teacher') => {
     await navigator.clipboard.writeText(text);
     if (type === 'monitor') {
       setCopiedMonitor(true);
       setTimeout(() => setCopiedMonitor(false), 2000);
+    } else if (type === 'teacher') {
+      setCopiedTeacher(true);
+      setTimeout(() => setCopiedTeacher(false), 2000);
     } else {
       setCopiedParent(true);
       setTimeout(() => setCopiedParent(false), 2000);
@@ -46,6 +50,7 @@ const CampOverview = () => {
     const codes = {
       monitors: generateJoinCode('MON'),
       families: generateJoinCode('PAD'),
+      teachers: generateJoinCode('PROF'),
     };
     const camp: Camp = {
       id: campId,
@@ -296,6 +301,24 @@ const CampOverview = () => {
               </button>
             </div>
           </div>
+          {currentCamp.joinCodes.teachers && (
+            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 sm:col-span-2">
+              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
+                🎓 Código para profesores
+              </p>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xl font-mono font-bold text-green-900 tracking-widest">
+                  {currentCamp.joinCodes.teachers}
+                </span>
+                <button
+                  onClick={() => copyToClipboard(currentCamp.joinCodes.teachers!, 'teacher')}
+                  className="flex items-center gap-1 text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 transition-colors shrink-0"
+                >
+                  {copiedTeacher ? <><Check size={12} /> Copiado</> : <><Copy size={12} /> Copiar</>}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -24,6 +24,7 @@ import CreateCamp from './pages/CreateCamp';
 import Onboarding from './pages/Onboarding';
 import JoinCamp from './pages/JoinCamp';
 import Asistencia from './pages/Asistencia';
+import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 
@@ -71,6 +72,7 @@ function AppRoutes() {
         <Route path="/create-camp" element={<CreateCamp />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/join-camp" element={<JoinCamp />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/parent-dashboard/*" element={<ParentDashboard />} />
         <Route path="/coordinator-dashboard/*" element={<CoordinatorDashboard />} />
         <Route path="/monitor-dashboard/*" element={<MonitorDashboard />} />

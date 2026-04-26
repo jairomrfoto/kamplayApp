@@ -7,6 +7,8 @@ import { getLocalProfile, setLocalProfile } from '../utils/localProfile';
 
 type Role = 'coordinator' | 'monitor' | 'parent' | 'profesor';
 
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
+
 function redirectByRole(role: Role, navigate: (path: string) => void) {
   if (role === 'coordinator') navigate('/coordinator-dashboard');
   else if (role === 'monitor') navigate('/monitor-dashboard');
@@ -24,6 +26,12 @@ const Onboarding = () => {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate('/login'); return; }
+
+    // Admin shortcut — bypass normal role selection
+    if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
+      navigate('/admin');
+      return;
+    }
 
     const cached = getLocalProfile(user.uid);
     if (cached?.role) {

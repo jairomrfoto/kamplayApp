@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import type { Camper } from '../types';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
+import CampPaymentButton from '../components/stripe/CampPaymentButton';
 
 // ─── Medical Info Editor ──────────────────────────────────────────────────────
 interface MedicalEditorProps {
@@ -411,8 +412,8 @@ const ParentDashboard = () => {
         {activeCampId && (
           <div className="space-y-6">
             {currentCamp && (
-              <div className="bg-white rounded-xl shadow-sm p-5">
-                <h2 className="text-lg font-bold text-gray-900 mb-3">{currentCamp.name}</h2>
+              <div className="bg-white rounded-xl shadow-sm p-5 space-y-3">
+                <h2 className="text-lg font-bold text-gray-900">{currentCamp.name}</h2>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                   <span className="flex items-center gap-1.5">
                     <MapPin size={14} className="text-orange-500" /> {currentCamp.location}
@@ -422,6 +423,13 @@ const ParentDashboard = () => {
                     {formatDate(currentCamp.startDate)} – {formatDate(currentCamp.endDate)}
                   </span>
                 </div>
+                {currentCamp.inscriptionFee && currentCamp.inscriptionFee > 0 && (
+                  <CampPaymentButton
+                    campId={currentCamp.id}
+                    campName={currentCamp.name}
+                    inscriptionFee={currentCamp.inscriptionFee}
+                  />
+                )}
               </div>
             )}
 

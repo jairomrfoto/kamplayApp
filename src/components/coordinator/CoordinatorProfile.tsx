@@ -3,9 +3,13 @@ import { Camera, Upload, Mail, MapPin, PencilLine, X, Calendar, Award, Graduatio
 import { useStore } from '../../store/store';
 import type { CampCoordinator } from '../../types/camp';
 import ChangePassword from '../ChangePassword';
+import SubscriptionBanner from '../stripe/SubscriptionBanner';
+import ConnectStripeButton from '../stripe/ConnectStripeButton';
+import { useUserProfile } from '../../hooks/useUserProfile';
 
 const CoordinatorProfile = () => {
   const { currentCoordinator, updateCoordinator } = useStore();
+  const { profile: userProfile } = useUserProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: currentCoordinator?.name ?? '',
@@ -76,6 +80,13 @@ const CoordinatorProfile = () => {
 
   return (
     <div className="space-y-6">
+      {userProfile && (
+        <div className="space-y-3">
+          <SubscriptionBanner profile={userProfile} />
+          <ConnectStripeButton profile={userProfile} />
+        </div>
+      )}
+
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="h-32 bg-orange-500" />
 

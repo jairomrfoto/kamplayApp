@@ -16,6 +16,22 @@ service cloud.firestore {
         get(/databases/$(database)/documents/campamentos/$(campId)).data.mainCoordinator == request.auth.uid;
     }
 
+    // Stripe-managed fields that only Cloud Functions (Admin SDK) may write
+    function touchesStripeFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'subscriptionStatus',
+        'stripeCustomerId',
+        'stripeSubscriptionId',
+        'stripeConnectId',
+        'connectOnboarded',
+      ]);
+    }
+
+    // Coordinator has an active Kamplay subscription
+    function hasActiveSubscription(uid) {
+      return get(/databases/$(database)/documents/usuarios/$(uid)).data.subscriptionStatus == 'active';
+    }
+
     // ── Join codes — any authenticated user can look up a code to join ────────
     match /codigos/{code} {
       allow read: if isAuth();
@@ -24,7 +40,11 @@ service cloud.firestore {
 
     // ── User profiles — each user manages only their own ──────────────────────
     match /usuarios/{userId} {
-      allow read, write: if isOwner(userId);
+      // Read own profile
+      allow read: if isOwner(userId);
+      // Write own profile — but never touch Stripe-controlled fields from client
+      allow create: if isOwner(userId) && !touchesStripeFields();
+      allow update: if isOwner(userId) && !touchesStripeFields();
       // Personal subcollections (actividades, etc.)
       match /{subcollection}/{docId} {
         allow read, write: if isOwner(userId);
@@ -35,8 +55,8 @@ service cloud.firestore {
     match /campamentos/{campId} {
       // Any authenticated user can read camp info (to join with a code)
       allow read: if isAuth();
-      // Only authenticated users can create a camp
-      allow create: if isAuth();
+      // Only subscribed coordinators can create a camp
+      allow create: if isAuth() && hasActiveSubscription(request.auth.uid);
       // Only the main coordinator can update or delete
       allow update, delete: if isAuth() &&
         resource.data.mainCoordinator == request.auth.uid;
@@ -49,6 +69,16 @@ service cloud.firestore {
         allow read: if isAuth();
         allow write: if isAuth();
       }
+    }
+
+    // ── Pagos — read by payer or camp coordinator; writes via Cloud Functions ──
+    match /pagos/{pagoId} {
+      allow read: if isAuth() && (
+        resource.data.parentUid == request.auth.uid ||
+        isCoordinator(resource.data.campId)
+      );
+      // Clients must not write payment records directly
+      allow write: if false;
     }
   }
 }

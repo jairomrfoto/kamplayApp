@@ -191,6 +191,12 @@ export interface UserProfile {
   role: 'coordinator' | 'monitor' | 'parent';
   email: string;
   nombre: string;
+  // Stripe — written only by Cloud Functions (Admin SDK)
+  subscriptionStatus?: 'active' | 'past_due' | 'canceled' | 'trialing' | string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  stripeConnectId?: string;
+  connectOnboarded?: boolean;
 }
 
 export interface ActividadPersonal {

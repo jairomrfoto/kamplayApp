@@ -12,6 +12,7 @@ export interface Camp {
   };
   coordinators: string[];
   mainCoordinator: string;
+  inscriptionFee?: number; // en céntimos (ej. 5000 = 50 €)
 }
 
 export interface CampCoordinator {

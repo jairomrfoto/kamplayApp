@@ -21,13 +21,17 @@ const CampForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
   const [createdCamp, setCreatedCamp] = useState<Camp | null>(null);
+  const [inscriptionFeeEuros, setInscriptionFeeEuros] = useState('');
   const [formData, setFormData] = useState<CampFormData>({
     name: '',
     monitorsCount: 1,
     startDate: null,
     endDate: null,
     location: '',
-    maxCampers: 1
+    maxCampers: 1,
+    coordinators: [],
+    mainCoordinator: '',
+    joinCodes: { monitors: '', families: '' },
   });
 
   const [errors, setErrors] = useState<Partial<CampFormData>>({});
@@ -96,6 +100,7 @@ const CampForm = () => {
     if (!isFormValid()) return;
 
     const campId = crypto.randomUUID();
+    const feeEuros = parseFloat(inscriptionFeeEuros);
     const camp: Camp = {
       id: campId,
       ...formData,
@@ -105,6 +110,7 @@ const CampForm = () => {
       },
       coordinators: user ? [user.uid] : [],
       mainCoordinator: user?.uid || '',
+      ...(feeEuros > 0 ? { inscriptionFee: Math.round(feeEuros * 100) } : {}),
     };
 
     try {
@@ -226,6 +232,24 @@ const CampForm = () => {
           onBlur={() => handleBlur('maxCampers')}
           className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
         />
+      </FormField>
+
+      <FormField
+        label="Cuota de inscripción (€) — opcional"
+      >
+        <div className="relative">
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            value={inscriptionFeeEuros}
+            onChange={(e) => setInscriptionFeeEuros(e.target.value)}
+            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400 pr-10"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">€</span>
+        </div>
+        <p className="text-xs text-gray-400 mt-1">Déjalo en blanco si el campamento es gratuito.</p>
       </FormField>
 
       <div className="border-t pt-6">

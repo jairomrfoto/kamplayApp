@@ -100,9 +100,9 @@ const JoinCamp = () => {
             <ArrowLeft size={16} /> Volver
           </button>
 
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Unirme a un campamento</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Unirme con código</h2>
           <p className="text-sm text-gray-500 mb-6">
-            Introduce el código que te ha dado el coordinador del campamento.
+            Introduce el código que te ha dado el coordinador del campamento o campus.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -132,7 +132,7 @@ const JoinCamp = () => {
               disabled={loading || code.length < 4}
               className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
-              {loading ? <><Loader size={18} className="animate-spin" /> Verificando...</> : 'Unirme al campamento'}
+              {loading ? <><Loader size={18} className="animate-spin" /> Verificando...</> : 'Acceder con código'}
             </button>
           </form>
         </div>

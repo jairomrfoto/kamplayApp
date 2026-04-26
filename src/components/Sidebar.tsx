@@ -36,7 +36,7 @@ function getBaseLinks(isCampus: boolean): LinkDef[] {
 
 function getCoordinatorLinks(isCampus: boolean): LinkDef[] {
   return [
-    { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,    text: 'Mis Campamentos' },
+    { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,    text: 'Mis programas' },
     { to: '/coordinator-dashboard/novedades',       icon: Newspaper, text: 'Novedades' },
     ...getBaseLinks(isCampus),
     { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,  text: 'Mi Biblioteca' },

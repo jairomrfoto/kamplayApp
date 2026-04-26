@@ -1,53 +1,44 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Check } from 'lucide-react';
 
 const features = [
-  { emoji: '👥', title: 'Gestión de participantes', desc: 'Fichas completas con información médica, alergias y medicación programada.' },
-  { emoji: '📅', title: 'Horarios y actividades', desc: 'Planifica actividades, crea horarios diarios y gestiona el calendario.' },
-  { emoji: '🏥', title: 'Área médica', desc: 'Control de incidencias, seguimiento médico y alertas para situaciones urgentes.' },
-  { emoji: '📋', title: 'Asistencia diaria', desc: 'Pasa lista cada día y registra ausencias con notas para campus y colonias.' },
-  { emoji: '📚', title: 'Banco de actividades', desc: 'Biblioteca personal de actividades reutilizables entre campamentos y campus.' },
-  { emoji: '🌐', title: 'Multi-programa', desc: 'Gestiona varios campamentos y campus a la vez y cambia entre ellos al instante.' },
-];
-
-const steps = [
-  { emoji: '✏️', step: '1', title: 'Crea tu campamento', desc: 'Regístrate y configura tu campamento en menos de 5 minutos.' },
-  { emoji: '👋', step: '2', title: 'Invita a tu equipo', desc: 'Comparte el código único con monitores y familias para que se unan.' },
-  { emoji: '🚀', step: '3', title: '¡Listo para empezar!', desc: 'Gestiona actividades, acampados y más desde el panel de control.' },
+  { title: 'Gestión de participantes', desc: 'Fichas completas con información médica, alergias y medicación programada. Todo en un solo lugar.' },
+  { title: 'Calendario y actividades', desc: 'Planifica cada día, crea horarios y gestiona el programa con tu equipo en tiempo real.' },
+  { title: 'Área médica', desc: 'Seguimiento médico, control de incidencias y alertas para situaciones que no pueden esperar.' },
+  { title: 'Asistencia diaria', desc: 'Para campus: pasa lista cada mañana, registra ausencias y añade notas en segundos.' },
+  { title: 'Banco de actividades', desc: 'Guarda tus actividades favoritas y reutilízalas en cada programa sin empezar de cero.' },
+  { title: 'Multi-programa', desc: 'Gestiona varios campamentos o campus desde una sola cuenta y cambia entre ellos al instante.' },
 ];
 
 const roles = [
   {
-    emoji: '🛡️',
     role: 'Coordinadores',
     color: 'bg-orange-500',
     ringColor: 'ring-orange-200',
     textColor: 'text-orange-700',
     bgLight: 'bg-orange-50',
     points: [
-      'Crea y gestiona múltiples campamentos',
-      'Supervisa monitores y acampados',
+      'Crea y gestiona campamentos y campus',
+      'Supervisa monitores y participantes',
       'Controla materiales y recursos',
-      'Reportes e incidencias en tiempo real',
+      'Códigos de acceso para cada perfil',
     ],
   },
   {
-    emoji: '⭐',
     role: 'Monitores',
     color: 'bg-green-600',
     ringColor: 'ring-green-200',
     textColor: 'text-green-700',
     bgLight: 'bg-green-50',
     points: [
-      'Accede a tu grupo y acampados',
+      'Accede a tu grupo y participantes',
       'Anota evaluaciones y observaciones',
       'Lleva tu biblioteca de actividades',
-      'Comunícate con el equipo',
+      'Pasa lista en campus con un clic',
     ],
   },
   {
-    emoji: '❤️',
     role: 'Padres y tutores',
     color: 'bg-amber-500',
     ringColor: 'ring-amber-200',
@@ -55,9 +46,9 @@ const roles = [
     bgLight: 'bg-amber-50',
     points: [
       'Sigue el día a día de tu hijo',
-      'Consulta el menú y actividades',
-      'Revisa el historial médico',
-      'Accede con el código del campamento',
+      'Consulta el menú y las actividades',
+      'Revisa información médica',
+      'Accede con el código del programa',
     ],
   },
 ];
@@ -86,25 +77,23 @@ const Landing = () => {
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 text-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
-          <span className="absolute top-8 left-8 text-5xl opacity-20">🌲</span>
-          <span className="absolute top-16 right-12 text-4xl opacity-20">⛺</span>
-          <span className="absolute bottom-12 left-16 text-4xl opacity-20">🌻</span>
-          <span className="absolute bottom-8 right-8 text-5xl opacity-15">🏔️</span>
-          <span className="absolute top-1/2 left-4 text-3xl opacity-10">🦋</span>
-          <span className="absolute top-1/3 right-4 text-3xl opacity-10">🌿</span>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-15">
+          <span className="absolute top-8 left-8 text-5xl">🌲</span>
+          <span className="absolute top-16 right-12 text-4xl">⛺</span>
+          <span className="absolute bottom-16 left-16 text-4xl">🌻</span>
+          <span className="absolute bottom-8 right-8 text-5xl">🏔️</span>
         </div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-32 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-bold px-4 py-2 rounded-full mb-8 uppercase tracking-wider">
-            <span>✨</span> Para campamentos y campus
+          <div className="inline-block bg-white/20 border border-white/30 text-white text-xs font-bold px-4 py-1.5 rounded-full mb-8 uppercase tracking-wider">
+            Campamentos y campus
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-            Campamentos y campus,<br className="hidden sm:block" /> en tus manos 🏕️
+            Organiza tu campamento<br className="hidden sm:block" /> o campus sin estrés
           </h1>
           <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto mb-10">
-            Kamplay es la plataforma todo-en-uno para coordinadores, monitores y familias.
-            Gestiona participantes, actividades, asistencia y mucho más desde un solo lugar.
+            La plataforma que coordinadores, monitores y familias necesitaban.
+            Todo lo que pasa en el campamento, en la palma de tu mano.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -112,7 +101,7 @@ const Landing = () => {
               to="/create-camp"
               className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white text-orange-600 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
             >
-              🏕️ Crear campamento o campus
+              Crear mi programa
             </Link>
             <Link
               to="/login"
@@ -127,7 +116,6 @@ const Landing = () => {
           </p>
         </div>
 
-        {/* Wave divider */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 60L60 50C120 40 240 20 360 15C480 10 600 20 720 25C840 30 960 30 1080 25C1200 20 1320 10 1380 5L1440 0V60H0Z" fill="white"/>
@@ -135,21 +123,85 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Cómo funciona ── */}
+      {/* ── Campamento o Campus ── */}
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
-            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">¿Cómo funciona?</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Tres pasos y listo 🎉</h2>
+            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Dos modalidades, una sola app</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">¿Campamento o campus?</h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+              Da igual si los niños se quedan a dormir o solo vienen de día. Kamplay se adapta a los dos.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-2xl border-2 border-orange-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-5 flex items-center gap-4">
+                <span className="text-4xl">🏕️</span>
+                <div>
+                  <h3 className="text-white font-extrabold text-xl">Campamento</h3>
+                  <p className="text-orange-100 text-sm">Con pernocta en cabañas</p>
+                </div>
+              </div>
+              <ul className="px-6 py-5 space-y-3 bg-orange-50/30">
+                {[
+                  'Gestión de cabañas y revisión de estado',
+                  'Seguimiento médico las 24 horas',
+                  'Actividades, horarios y calendario',
+                  'Grupos por edad con monitor asignado',
+                  'Novedades en tiempo real para las familias',
+                ].map(p => (
+                  <li key={p} className="flex items-start gap-2.5 text-sm text-gray-700">
+                    <span className="mt-0.5 shrink-0"><Check size={16} className="text-orange-500" /></span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border-2 border-blue-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-5 flex items-center gap-4">
+                <span className="text-4xl">🏫</span>
+                <div>
+                  <h3 className="text-white font-extrabold text-xl">Campus</h3>
+                  <p className="text-blue-100 text-sm">Actividades diurnas sin pernocta</p>
+                </div>
+              </div>
+              <ul className="px-6 py-5 space-y-3 bg-blue-50/30">
+                {[
+                  'Asistencia diaria: pasa lista en segundos',
+                  'Registro de ausencias con motivo',
+                  'Actividades, calendario y menú',
+                  'Grupos y monitores asignados',
+                  'Portal para profesores del colegio',
+                ].map(p => (
+                  <li key={p} className="flex items-start gap-2.5 text-sm text-gray-700">
+                    <span className="mt-0.5 shrink-0"><Check size={16} className="text-blue-500" /></span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Cómo funciona ── */}
+      <section className="py-20 bg-stone-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-14">
+            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Tres pasos</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Empezar es muy fácil</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {steps.map(({ emoji, step, title, desc }) => (
-              <div key={step} className="relative bg-orange-50 rounded-2xl p-7 text-center border border-orange-100">
-                <div className="w-10 h-10 bg-orange-500 text-white font-extrabold text-lg rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+            {[
+              { step: '1', title: 'Crea tu programa', desc: 'Regístrate, elige entre campamento o campus y configúralo en menos de 5 minutos.' },
+              { step: '2', title: 'Invita a tu equipo', desc: 'Comparte los códigos con monitores, familias y profesores para que se unan al instante.' },
+              { step: '3', title: 'Gestiona sin papeles', desc: 'Controla actividades, participantes, área médica y mucho más desde un panel limpio y rápido.' },
+            ].map(({ step, title, desc }) => (
+              <div key={step} className="bg-white rounded-2xl p-7 text-center border border-stone-100 shadow-sm">
+                <div className="w-10 h-10 bg-orange-500 text-white font-extrabold text-lg rounded-full flex items-center justify-center mx-auto mb-5 shadow-md">
                   {step}
                 </div>
-                <div className="text-4xl mb-3">{emoji}</div>
                 <h3 className="font-extrabold text-gray-900 text-lg mb-2">{title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
               </div>
@@ -159,24 +211,21 @@ const Landing = () => {
       </section>
 
       {/* ── Para quién ── */}
-      <section className="py-20 bg-stone-50">
+      <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <span className="inline-block text-green-600 font-bold text-sm uppercase tracking-wider mb-3">Roles</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Diseñado para cada miembro 👨‍👩‍👧‍👦</h2>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Diseñado para todos los que importan</h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">
-              Cada rol tiene su propio acceso y herramientas adaptadas a lo que realmente necesita.
+              Cada rol tiene su propio acceso con las herramientas que realmente necesita.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {roles.map(({ emoji, role, color, ringColor, textColor, bgLight, points }) => (
+            {roles.map(({ role, color, ringColor, textColor, bgLight, points }) => (
               <div key={role} className={`bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden ring-1 ${ringColor}`}>
                 <div className={`${color} px-6 py-5`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{emoji}</span>
-                    <h3 className="text-white font-extrabold text-xl">{role}</h3>
-                  </div>
+                  <h3 className="text-white font-extrabold text-xl">{role}</h3>
                 </div>
                 <ul className="px-6 py-5 space-y-3">
                   {points.map(p => (
@@ -193,20 +242,20 @@ const Landing = () => {
       </section>
 
       {/* ── Funcionalidades ── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-stone-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Funcionalidades</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Todo lo que necesitas 🎒</h2>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Todo lo que necesitas, nada que sobre</h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">
-              Kamplay reúne en una sola app todas las herramientas esenciales para un campamento moderno.
+              Kamplay reúne en una sola app las herramientas esenciales para gestionar tu programa.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {features.map(({ emoji, title, desc }) => (
-              <div key={title} className="flex gap-4 p-5 rounded-2xl border border-stone-100 hover:border-orange-200 hover:bg-orange-50/40 transition-all duration-200">
-                <span className="flex-shrink-0 text-3xl leading-none mt-0.5">{emoji}</span>
+            {features.map(({ title, desc }) => (
+              <div key={title} className="flex gap-4 p-5 rounded-2xl bg-white border border-stone-100 hover:border-orange-200 hover:shadow-sm transition-all duration-200">
+                <span className="flex-shrink-0 w-2 h-2 rounded-full bg-orange-400 mt-2" />
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">{title}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
@@ -217,55 +266,21 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Campamento vs Campus ── */}
-      <section className="py-20 bg-stone-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <span className="inline-block text-blue-600 font-bold text-sm uppercase tracking-wider mb-3">Modalidades</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Campamento o Campus 🏕️🏫</h2>
-            <p className="text-gray-500 mt-3 max-w-xl mx-auto">
-              Una sola plataforma adaptada a los dos modelos. Elige el que mejor encaja con tu proyecto.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden">
-              <div className="bg-gradient-to-br from-orange-400 to-amber-500 px-6 py-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-4xl">🏕️</span>
-                  <div>
-                    <h3 className="text-white font-extrabold text-xl">Campamento</h3>
-                    <p className="text-orange-100 text-sm">Con pernocta en cabañas</p>
-                  </div>
-                </div>
+      {/* ── Social proof ── */}
+      <section className="py-16 bg-white border-y border-stone-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-8">Por qué los coordinadores eligen Kamplay</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {[
+              { value: '5 min', label: 'para configurar tu primer programa' },
+              { value: '100%', label: 'sin papel ni hojas de cálculo' },
+              { value: '1 app', label: 'para coordinadores, monitores y familias' },
+            ].map(({ value, label }) => (
+              <div key={label}>
+                <p className="text-4xl font-extrabold text-orange-500 mb-2">{value}</p>
+                <p className="text-sm text-gray-500">{label}</p>
               </div>
-              <ul className="px-6 py-5 space-y-3">
-                {['Gestión de cabañas y habitaciones', 'Seguimiento médico 24h', 'Actividades y horario completo', 'Grupos por edad y monitor asignado', 'Novedades para familias'].map(p => (
-                  <li key={p} className="flex items-start gap-2.5 text-sm text-gray-600">
-                    <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xs font-bold">✓</span>
-                    {p}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
-              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 px-6 py-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-4xl">🏫</span>
-                  <div>
-                    <h3 className="text-white font-extrabold text-xl">Campus</h3>
-                    <p className="text-blue-100 text-sm">Actividades diurnas sin pernocta</p>
-                  </div>
-                </div>
-              </div>
-              <ul className="px-6 py-5 space-y-3">
-                {['Asistencia diaria con registro de ausencias', 'Actividades y calendario', 'Grupos y monitores asignados', 'Área médica y incidencias', 'Portal para profesores de colegio'].map(p => (
-                  <li key={p} className="flex items-start gap-2.5 text-sm text-gray-600">
-                    <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">✓</span>
-                    {p}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -278,9 +293,8 @@ const Landing = () => {
           <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl">⛺</span>
         </div>
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <div className="text-5xl mb-6">🏕️</div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            ¿Listo para empezar?
+            ¿Listo para dejar los papeles atrás?
           </h2>
           <p className="text-green-200 text-lg mb-10">
             Crea tu campamento o campus en minutos, o entra con el código que te han dado.
@@ -291,7 +305,7 @@ const Landing = () => {
               to="/create-camp"
               className="flex items-center justify-center gap-3 bg-white text-green-700 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
             >
-              🏕️ Crear campamento o campus
+              Crear campamento o campus
             </Link>
             <Link
               to="/login"

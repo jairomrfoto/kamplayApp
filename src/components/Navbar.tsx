@@ -53,7 +53,7 @@ const Navbar = () => {
             className="flex items-center gap-1.5 text-sm bg-white/15 hover:bg-white/25 text-white font-medium px-3 py-1.5 rounded-lg transition-colors border border-white/20"
           >
             <PlusCircle size={15} />
-            <span className="hidden sm:inline">Unirme a campamento</span>
+            <span className="hidden sm:inline">Unirme con código</span>
           </Link>
 
           <div className="relative">

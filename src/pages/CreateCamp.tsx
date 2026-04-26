@@ -30,18 +30,17 @@ const CreateCamp = () => {
         <SubscriptionGate profile={profile} loading={loading}>
           <div className="space-y-6">
             <div className="text-center">
-              <div className="text-4xl mb-3">⛺</div>
-              <h1 className="text-3xl font-extrabold text-gray-900">Crear nuevo campamento</h1>
+              <h1 className="text-3xl font-extrabold text-gray-900">Crear campamento o campus</h1>
               <p className="mt-3 text-gray-500 max-w-2xl mx-auto">
-                Configura tu campamento en unos pocos pasos. Después podrás invitar a monitores y gestionar todo desde el panel de control.
+                Elige el tipo de programa, rellena los datos básicos y en unos minutos podrás invitar a monitores y gestionar todo desde el panel.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               {[
-                { emoji: '📋', title: 'Información básica', description: 'Nombre, fechas y ubicación' },
-                { emoji: '👥', title: 'Capacidad', description: 'Número de monitores y acampados' },
-                { emoji: '⚙️', title: 'Administración', description: 'Datos del coordinador' },
+                { emoji: '📋', title: 'Tipo de programa', description: 'Campamento o campus' },
+                { emoji: '👥', title: 'Información básica', description: 'Nombre, fechas y ubicación' },
+                { emoji: '⚙️', title: 'Capacidad', description: 'Monitores y participantes' },
               ].map((step, index) => (
                 <div key={index} className="bg-white rounded-2xl p-5 border border-orange-100 shadow-sm">
                   <div className="w-8 h-8 bg-orange-500 text-white font-extrabold rounded-full flex items-center justify-center mx-auto mb-3 text-sm">

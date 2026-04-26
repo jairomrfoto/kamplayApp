@@ -89,7 +89,7 @@ export default function SubscriptionBanner({ profile, onSubscribed }: Props) {
         <div>
           <p className="text-sm font-bold text-gray-900">Activa tu suscripción Kamplay Pro</p>
           <p className="text-xs text-gray-500 mt-0.5">
-            30 €/mes · Campamentos ilimitados · Acampados ilimitados · Todas las funcionalidades
+            30 €/mes · Campamentos y campus ilimitados · Todas las funcionalidades
           </p>
         </div>
       </div>

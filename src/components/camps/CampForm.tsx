@@ -138,9 +138,9 @@ const CampForm = () => {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-8 space-y-8">
       <div className="border-b pb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Información del Campamento</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Información del programa</h2>
         <p className="mt-1 text-sm text-gray-500">
-          Completa todos los campos necesarios para crear tu campamento
+          Completa los datos para crear tu campamento o campus
         </p>
       </div>
 
@@ -181,7 +181,7 @@ const CampForm = () => {
       </div>
 
       <FormField
-        label="Nombre del campamento"
+        label="Nombre del programa"
         error={errors.name}
         touched={touched.name}
       >
@@ -288,7 +288,7 @@ const CampForm = () => {
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">€</span>
         </div>
-        <p className="text-xs text-gray-400 mt-1">Déjalo en blanco si el campamento es gratuito.</p>
+        <p className="text-xs text-gray-400 mt-1">Déjalo en blanco si el programa es gratuito.</p>
       </FormField>
 
       <div className="border-t pt-6">
@@ -321,7 +321,7 @@ const CampForm = () => {
           type="submit"
           className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
-          Crear Campamento
+          {campType === 'campus' ? 'Crear Campus' : 'Crear Campamento'}
         </button>
       </div>
 

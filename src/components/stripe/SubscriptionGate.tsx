@@ -29,7 +29,7 @@ export default function SubscriptionGate({ profile, loading, children }: Props) 
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">Función de pago</h2>
         <p className="text-gray-500 text-sm mb-6">
-          Para crear campamentos y acceder a todas las funcionalidades necesitas una suscripción activa.
+          Para crear campamentos y campus, y acceder a todas las funcionalidades, necesitas una suscripción activa.
         </p>
         {profile && <SubscriptionBanner profile={profile} />}
       </div>

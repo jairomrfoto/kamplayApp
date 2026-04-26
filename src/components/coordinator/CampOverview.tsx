@@ -130,21 +130,21 @@ const CampOverview = () => {
             <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <PlusCircle size={32} className="text-orange-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Aún no tienes ningún campamento</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Aún no tienes ningún programa</h2>
             <p className="text-gray-500 text-sm mb-6">
-              Crea tu primer campamento para empezar a gestionar acampados, monitores y actividades.
+              Crea tu primer campamento o campus para empezar a gestionar participantes, monitores y actividades.
             </p>
             <button
               onClick={() => setCreating(true)}
               className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
             >
-              Crear campamento
+              Crear campamento o campus
             </button>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Crear campamento</h2>
-            <p className="text-sm text-gray-500 mb-5">Rellena los datos básicos del campamento</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Nuevo programa</h2>
+            <p className="text-sm text-gray-500 mb-5">Rellena los datos básicos del campamento o campus</p>
 
             <form onSubmit={handleCreateCamp} className="space-y-4">
               <div>
@@ -167,10 +167,10 @@ const CampOverview = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del campamento</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del programa</label>
                 <input type="text" required value={campData.name}
                   onChange={e => setCampData({ ...campData, name: e.target.value })}
-                  placeholder="Ej: Campamento Verano 2025"
+                  placeholder="Ej: Campamento Verano 2025 / Campus Arte"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" />
               </div>
               <div>
@@ -218,7 +218,7 @@ const CampOverview = () => {
                 </button>
                 <button type="submit" disabled={createLoading}
                   className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
-                  {createLoading ? <><Loader size={16} className="animate-spin" /> Creando...</> : 'Crear campamento'}
+                  {createLoading ? <><Loader size={16} className="animate-spin" /> Creando...</> : `Crear ${newCampType === 'campus' ? 'campus' : 'campamento'}`}
                 </button>
               </div>
             </form>
@@ -299,7 +299,7 @@ const CampOverview = () => {
       <div className="bg-white rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Package size={18} className="text-orange-600" />
-          Códigos de acceso al campamento
+          Códigos de acceso al programa
         </h2>
         <p className="text-sm text-gray-500 mb-4">
           Comparte estos códigos para que monitores, familias y profesores puedan acceder a la app.

@@ -29,7 +29,7 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
     setOpen(false);
   };
 
-  const campName = currentCamp?.name || 'Sin campamento';
+  const campName = currentCamp?.name || 'Sin programa activo';
 
   if (variant === 'header') {
     return (
@@ -67,7 +67,7 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-orange-600 text-sm transition-colors"
               >
                 <Plus size={14} />
-                Unirse a otro campamento
+                Unirse con código
               </button>
             </div>
           </div>
@@ -117,14 +117,14 @@ const CampSwitcher = ({ variant = 'sidebar' }: Props) => {
               className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-orange-600 text-sm transition-colors"
             >
               <Plus size={14} />
-              Unirse a otro campamento
+              Unirse con código
             </button>
             <button
               onClick={() => { setOpen(false); navigate('/create-camp'); }}
               className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-orange-600 text-sm transition-colors"
             >
               <Plus size={14} />
-              Crear campamento
+              Crear campamento o campus
             </button>
           </div>
         </div>

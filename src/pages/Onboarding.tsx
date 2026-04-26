@@ -82,7 +82,7 @@ const Onboarding = () => {
       role: 'coordinator' as Role,
       emoji: '🛡️',
       label: 'Coordinador',
-      desc: 'Creo y gestiono campamentos',
+      desc: 'Creo y gestiono campamentos y campus',
       bg: 'bg-orange-50 hover:bg-orange-100 border-orange-200 hover:border-orange-400',
       dot: 'bg-orange-500',
     },
@@ -90,7 +90,7 @@ const Onboarding = () => {
       role: 'monitor' as Role,
       emoji: '⭐',
       label: 'Monitor',
-      desc: 'Accedo a mi panel y me uno al campamento',
+      desc: 'Accedo a mi panel y me uno al programa',
       bg: 'bg-green-50 hover:bg-green-100 border-green-200 hover:border-green-400',
       dot: 'bg-green-500',
     },
@@ -98,7 +98,7 @@ const Onboarding = () => {
       role: 'parent' as Role,
       emoji: '❤️',
       label: 'Padre / Tutor',
-      desc: 'Sigo el día a día de mi hijo',
+      desc: 'Sigo el día a día de mi hijo en el programa',
       bg: 'bg-amber-50 hover:bg-amber-100 border-amber-200 hover:border-amber-400',
       dot: 'bg-amber-500',
     },
@@ -106,7 +106,7 @@ const Onboarding = () => {
       role: 'profesor' as Role,
       emoji: '🎓',
       label: 'Profesor / Profesora',
-      desc: 'Accedo al campamento de mi colegio',
+      desc: 'Accedo al campus o campamento de mi colegio',
       bg: 'bg-blue-50 hover:bg-blue-100 border-blue-200 hover:border-blue-400',
       dot: 'bg-blue-500',
     },
@@ -118,7 +118,7 @@ const Onboarding = () => {
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🏕️</div>
           <h1 className="text-2xl font-extrabold text-gray-900">¡Bienvenido a Kamplay!</h1>
-          <p className="text-gray-500 mt-2">¿Cuál es tu rol en el campamento?</p>
+          <p className="text-gray-500 mt-2">¿Cuál es tu rol en el programa?</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 space-y-3">

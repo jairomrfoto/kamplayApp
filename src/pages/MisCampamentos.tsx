@@ -36,9 +36,9 @@ const MisCampamentos = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Mis Campamentos</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Mis programas</h2>
           <p className="text-sm text-gray-500 mt-1">
-            {userCamps.length} campamento{userCamps.length !== 1 ? 's' : ''} · Haz clic para gestionarlos
+            {userCamps.length} {userCamps.length !== 1 ? 'programas' : 'programa'} · Haz clic para gestionarlos
           </p>
         </div>
         <div className="flex gap-2">
@@ -54,7 +54,7 @@ const MisCampamentos = () => {
             className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors"
           >
             <Plus size={16} />
-            Nuevo campamento
+            Nuevo programa
           </button>
         </div>
       </div>
@@ -62,13 +62,13 @@ const MisCampamentos = () => {
       {userCamps.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm p-12 text-center">
           <Tent size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500 font-medium mb-2">Aún no tienes campamentos</p>
-          <p className="text-gray-400 text-sm mb-6">Crea uno nuevo o únete con un código</p>
+          <p className="text-gray-500 font-medium mb-2">Aún no tienes ningún programa</p>
+          <p className="text-gray-400 text-sm mb-6">Crea un campamento o campus, o únete con un código</p>
           <button
             onClick={() => navigate('/create-camp')}
             className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
           >
-            Crear mi primer campamento
+            Crear mi primer programa
           </button>
         </div>
       ) : (
@@ -163,7 +163,7 @@ const MisCampamentos = () => {
                       onClick={() => handleSwitch(camp.id)}
                       className="w-full flex items-center justify-center gap-2 border border-indigo-300 text-orange-600 py-2 rounded-lg text-sm hover:bg-orange-50 transition-colors"
                     >
-                      Cambiar a este campamento <ChevronRight size={15} />
+                      Cambiar a este programa <ChevronRight size={15} />
                     </button>
                   )}
                 </div>

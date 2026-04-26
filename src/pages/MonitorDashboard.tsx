@@ -106,7 +106,7 @@ const MonitorDashboard = () => {
         <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <p className="text-amber-800 text-sm">
-              Aún no estás vinculado a ningún campamento. Pídele el código al coordinador.
+              Aún no estás vinculado a ningún programa. Pídele el código MON- al coordinador.
             </p>
             <Link
               to="/join-camp"

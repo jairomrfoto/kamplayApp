@@ -22,16 +22,17 @@ const JoinCamp = () => {
 
     try {
       const trimmed = code.trim().toUpperCase();
-      const isMonitor = trimmed.startsWith('MON-');
-      const isParent = trimmed.startsWith('PAD-');
+      const isMonitor  = trimmed.startsWith('MON-');
+      const isParent   = trimmed.startsWith('PAD-');
+      const isProfesor = trimmed.startsWith('PROF-');
 
-      if (!isMonitor && !isParent) {
-        setError('Código no válido. Los códigos de monitor empiezan por MON- y los de padres por PAD-.');
+      if (!isMonitor && !isParent && !isProfesor) {
+        setError('Código no válido. Los códigos empiezan por MON- (monitores), PAD- (familias) o PROF- (profesores).');
         setLoading(false);
         return;
       }
 
-      const type = isMonitor ? 'monitor' : 'family';
+      const type = isMonitor ? 'monitor' : isProfesor ? 'teacher' : 'family';
       const camp = await getCampByCode(trimmed, type);
 
       if (!camp) {
@@ -40,7 +41,7 @@ const JoinCamp = () => {
         return;
       }
 
-      const role = isMonitor ? 'monitor' : 'parent';
+      const role = isMonitor ? 'monitor' : isProfesor ? 'profesor' : 'parent';
 
       const nombre = user.displayName || user.email?.split('@')[0] || 'Monitor';
 
@@ -50,6 +51,7 @@ const JoinCamp = () => {
       addLocalCamp(user.uid, camp.id, camp, role);
 
       if (isMonitor) navigate('/monitor-dashboard');
+      else if (isProfesor) navigate('/profesor-dashboard');
       else navigate('/parent-dashboard');
 
       // Sync to Firestore in background (adds campId to campIds[] without replacing others)
@@ -113,11 +115,11 @@ const JoinCamp = () => {
                 required
                 value={code}
                 onChange={e => setCode(e.target.value.toUpperCase())}
-                placeholder="MON-XXXXXX  o  PAD-XXXXXX"
+                placeholder="MON-XXXXXX · PAD-XXXXXX · PROF-XXXXXX"
                 className="w-full border border-gray-300 rounded-lg px-3 py-3 text-center text-xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-400 uppercase"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Monitores: código MON-&nbsp;&nbsp;·&nbsp;&nbsp;Padres/tutores: código PAD-
+                Monitores: MON-&nbsp;·&nbsp;Familias: PAD-&nbsp;·&nbsp;Profesores: PROF-
               </p>
             </div>
 

@@ -9,6 +9,7 @@ export interface Camp {
   joinCodes: {
     monitors: string;
     families: string;
+    teachers?: string;
   };
   coordinators: string[];
   mainCoordinator: string;

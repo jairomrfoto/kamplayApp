@@ -32,7 +32,8 @@ import {
   writeBatch,
   arrayUnion,
 } from 'firebase/firestore';
-import { db, auth } from '../config/firebase';
+import { db, auth, storage } from '../config/firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 // ─── Firestore REST fallback (bypasses SDK connection state) ─────────────────
 // Used when the SDK reports "client is offline" — works as a plain HTTPS request.
@@ -165,7 +166,7 @@ function restFirstWrite(
 }
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
-  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal, Novedad,
+  Actividad, HorarioDiario, MenuItem, Incident, UserProfile, ActividadPersonal, Novedad, ProfesorDoc,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 
@@ -336,17 +337,27 @@ export async function saveCampInfo(camp: Camp): Promise<void> {
     () => setDocRest(`campamentos/${camp.id}`, data),
     () => setDoc(doc(db, 'campamentos', camp.id), data)
   );
+  // Persist join codes to the codigos collection so getCampByCode works
+  saveJoinCodes(
+    camp.id,
+    camp.joinCodes.monitors,
+    camp.joinCodes.families,
+    camp.joinCodes.teachers,
+  ).catch(console.error);
 }
 
-export async function saveJoinCodes(campId: string, monitorCode: string, familyCode: string): Promise<void> {
+export async function saveJoinCodes(campId: string, monitorCode: string, familyCode: string, teacherCode?: string): Promise<void> {
   const b = writeBatch(db);
   b.set(doc(db, 'codigos', monitorCode), { campId, type: 'monitor' });
   b.set(doc(db, 'codigos', familyCode), { campId, type: 'family' });
+  if (teacherCode) b.set(doc(db, 'codigos', teacherCode), { campId, type: 'teacher' });
   b.commit().catch(() => {});
-  await Promise.all([
+  const restWrites = [
     setDocRest(`codigos/${monitorCode}`, { campId, type: 'monitor' }),
     setDocRest(`codigos/${familyCode}`, { campId, type: 'family' }),
-  ]);
+  ];
+  if (teacherCode) restWrites.push(setDocRest(`codigos/${teacherCode}`, { campId, type: 'teacher' }));
+  await Promise.all(restWrites);
 }
 
 export async function getCampByCode(code: string, _type?: string): Promise<Camp | null> {
@@ -469,7 +480,8 @@ export const firestoreActividades = makeCrud<Actividad>('actividades');
 export const firestoreHorarios   = makeCrud<HorarioDiario>('horarios');
 export const firestoreMenus      = makeCrud<MenuItem>('menus');
 export const firestoreIncidencias = makeCrud<Incident>('incidencias');
-export const firestoreNovedades   = makeCrud<Novedad>('novedades');
+export const firestoreNovedades    = makeCrud<Novedad>('novedades');
+export const firestoreProfesorDocs = makeCrud<ProfesorDoc>('profesorDocs');
 
 // ─── Coordinador ─────────────────────────────────────────────────────────────
 // Saved as a camp subcollection so Firestore rules allow access.
@@ -490,4 +502,33 @@ export async function getCoordinatorProfile(campId: string, uid: string): Promis
     },
     async () => getDocRest(`campamentos/${campId}/coordinadores/${uid}`) as Promise<Partial<CampCoordinator> | null>
   );
+}
+
+// ─── Storage — file uploads for profesor documents ───────────────────────────
+
+export interface UploadProgress {
+  percent: number;
+  downloadUrl?: string;
+}
+
+export function uploadProfesorFile(
+  campId: string,
+  file: File,
+  onProgress: (p: UploadProgress) => void,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const path = `campamentos/${campId}/profesorDocs/${Date.now()}_${file.name}`;
+    const fileRef = ref(storage, path);
+    const task = uploadBytesResumable(fileRef, file);
+    task.on(
+      'state_changed',
+      snap => onProgress({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
+      reject,
+      async () => {
+        const url = await getDownloadURL(task.snapshot.ref);
+        onProgress({ percent: 100, downloadUrl: url });
+        resolve(url);
+      },
+    );
+  });
 }

@@ -105,8 +105,9 @@ const CampForm = () => {
       id: campId,
       ...formData,
       joinCodes: {
-        monitors: generateJoinCode(),
-        families: generateJoinCode(),
+        monitors: generateJoinCode('MON'),
+        families: generateJoinCode('PAD'),
+        teachers: generateJoinCode('PROF'),
       },
       coordinators: user ? [user.uid] : [],
       mainCoordinator: user?.uid || '',

@@ -14,6 +14,7 @@ import Acampados from './pages/Acampados';
 import Materiales from './pages/Materiales';
 import Monitores from './pages/Monitores';
 import MonitorDashboard from './pages/MonitorDashboard';
+import ProfesorDashboard from './pages/ProfesorDashboard';
 import Grupos from './pages/Grupos';
 import Cabanas from './pages/Cabanas';
 import AreaMedica from './pages/AreaMedica';
@@ -72,6 +73,7 @@ function AppRoutes() {
         <Route path="/parent-dashboard/*" element={<ParentDashboard />} />
         <Route path="/coordinator-dashboard/*" element={<CoordinatorDashboard />} />
         <Route path="/monitor-dashboard/*" element={<MonitorDashboard />} />
+        <Route path="/profesor-dashboard/*" element={<ProfesorDashboard />} />
         <Route
           path="/app/*"
           element={

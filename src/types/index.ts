@@ -188,7 +188,7 @@ export interface UserProfile {
   uid: string;
   campId: string;
   campIds?: string[];
-  role: 'coordinator' | 'monitor' | 'parent';
+  role: 'coordinator' | 'monitor' | 'parent' | 'profesor';
   email: string;
   nombre: string;
   // Stripe — written only by Cloud Functions (Admin SDK)
@@ -197,6 +197,20 @@ export interface UserProfile {
   stripeSubscriptionId?: string;
   stripeConnectId?: string;
   connectOnboarded?: boolean;
+}
+
+export interface ProfesorDoc {
+  id: string;
+  campId: string;
+  tipo: 'nota' | 'documento' | 'lista_alumnos';
+  titulo: string;
+  contenido?: string;       // for notas
+  fileUrl?: string;         // Storage download URL
+  fileName?: string;        // original file name
+  fileSize?: number;        // bytes
+  autorId: string;
+  autorNombre: string;
+  fecha: Date;
 }
 
 export interface ActividadPersonal {

@@ -62,7 +62,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
             <div className="bg-gray-50 p-3 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium">Código:</span>
-                <button 
+                <button
                   onClick={() => copyToClipboard(camp.joinCodes.families)}
                   className="text-orange-600 hover:text-orange-700"
                 >
@@ -73,6 +73,25 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
               <p className="mt-1 text-xs text-gray-500">Comparte este código con las familias de los acampados</p>
             </div>
           </div>
+
+          {camp.joinCodes.teachers && (
+            <div>
+              <p className="text-gray-600 mb-2">Código para profesores:</p>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">Código:</span>
+                  <button
+                    onClick={() => copyToClipboard(camp.joinCodes.teachers!)}
+                    className="text-orange-600 hover:text-orange-700"
+                  >
+                    <Copy size={16} />
+                  </button>
+                </div>
+                <p className="text-sm font-mono">{camp.joinCodes.teachers}</p>
+                <p className="mt-1 text-xs text-gray-500">Comparte este código con los profesores del colegio</p>
+              </div>
+            </div>
+          )}
 
           <p className="text-sm text-gray-500">
             Guarda estos códigos en un lugar seguro. Los necesitarás para gestionar el acceso al campamento.

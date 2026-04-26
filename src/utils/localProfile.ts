@@ -7,7 +7,7 @@
 import type { Camp } from '../types/camp';
 
 export interface LocalProfile {
-  role: 'coordinator' | 'monitor' | 'parent';
+  role: 'coordinator' | 'monitor' | 'parent' | 'profesor';
   campId: string;                     // active camp ID
   campIds?: string[];                  // all camp IDs user belongs to
   camp?: Camp;                         // active camp object (offline cache)

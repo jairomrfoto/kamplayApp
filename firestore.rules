@@ -61,7 +61,14 @@ service cloud.firestore {
       allow update, delete: if isAuth() &&
         resource.data.mainCoordinator == request.auth.uid;
 
-      // ── Subcollections (acampados, monitores, grupos, etc.) ───────────────
+      // ── profesorDocs — professors write their own docs; coordinators/monitors read ─
+      match /profesorDocs/{docId} {
+        allow read: if isAuth();
+        allow create, update: if isAuth() && request.resource.data.autorId == request.auth.uid;
+        allow delete: if isAuth() && resource.data.autorId == request.auth.uid;
+      }
+
+      // ── All other subcollections (acampados, monitores, grupos, etc.) ─────
       // All camp members (any authenticated user with the camp ID) can read.
       // Writes require authentication — the app enforces finer-grained role
       // logic (coordinator vs monitor vs parent) at the service layer.

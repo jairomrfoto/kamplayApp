@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   Calendar, Users, Package, UserCog, UsersRound, Tent,
   HeartPulse, LayoutDashboard, UtensilsCrossed as MenuIcon,
-  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper, ClipboardList,
+  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper, ClipboardList, MessageCircle,
 } from 'lucide-react';
 import CampSwitcher from './CampSwitcher';
 import { useStore } from '../store/store';
@@ -36,11 +36,12 @@ function getBaseLinks(isCampus: boolean): LinkDef[] {
 
 function getCoordinatorLinks(isCampus: boolean): LinkDef[] {
   return [
-    { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,    text: 'Mis programas' },
-    { to: '/coordinator-dashboard/novedades',       icon: Newspaper, text: 'Novedades' },
+    { to: '/coordinator-dashboard/mis-campamentos', icon: Layers,         text: 'Mis programas' },
+    { to: '/coordinator-dashboard/novedades',       icon: Newspaper,      text: 'Novedades' },
+    { to: '/coordinator-dashboard/chat',            icon: MessageCircle,  text: 'Chat' },
     ...getBaseLinks(isCampus),
-    { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,  text: 'Mi Biblioteca' },
-    { to: '/coordinator-dashboard/coordinadores',  icon: Shield,    text: 'Coordinadores' },
+    { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,       text: 'Mi Biblioteca' },
+    { to: '/coordinator-dashboard/coordinadores',  icon: Shield,         text: 'Coordinadores' },
   ];
 }
 

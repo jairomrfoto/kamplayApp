@@ -7,11 +7,12 @@ import { updateLocalCamp } from '../utils/localProfile';
 import {
   Tent, LogOut, ChevronDown, PlusCircle, MapPin, Calendar,
   User, Loader, ArrowLeft, Baby, Heart, Pencil, X, Plus, Check,
-  UtensilsCrossed, Baby as ChildIcon, Newspaper,
+  UtensilsCrossed, Baby as ChildIcon, Newspaper, MessageCircle,
 } from 'lucide-react';
 import type { Camper } from '../types';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
 import CampPaymentButton from '../components/stripe/CampPaymentButton';
+import ChatPanel from '../components/chat/ChatPanel';
 
 // ─── Medical Info Editor ──────────────────────────────────────────────────────
 interface MedicalEditorProps {
@@ -342,7 +343,7 @@ const ParentDashboard = () => {
   const { user, signOut } = useAuth();
   const { currentCamp, campers, addCamper } = useStore();
   const [showMenu, setShowMenu] = useState(false);
-  const [activeTab, setActiveTab] = useState<'children' | 'novedades' | 'menu'>('novedades');
+  const [activeTab, setActiveTab] = useState<'children' | 'novedades' | 'menu' | 'chat'>('novedades');
   const [addingChild, setAddingChild] = useState(false);
   const [editingMedical, setEditingMedical] = useState<Camper | null>(null);
   const [joinedCampId, setJoinedCampId] = useState<string | null>(null);
@@ -450,6 +451,11 @@ const ParentDashboard = () => {
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'menu' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                 <UtensilsCrossed size={15} /> Menú
               </button>
+              <button
+                onClick={() => setActiveTab('chat')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'chat' ? 'bg-orange-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <MessageCircle size={15} /> Chat
+              </button>
             </div>
 
             {/* Novedades tab */}
@@ -464,6 +470,19 @@ const ParentDashboard = () => {
                   <UtensilsCrossed size={18} className="text-orange-500" /> Menú del campamento
                 </h3>
                 <MenuCalendar />
+              </div>
+            )}
+
+            {/* Chat tab */}
+            {activeTab === 'chat' && (
+              <div className="bg-white rounded-xl shadow-sm p-5">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <MessageCircle size={18} className="text-orange-500" /> Chat del campamento
+                </h3>
+                <ChatPanel
+                  userRole="parent"
+                  userName={displayName}
+                />
               </div>
             )}
 

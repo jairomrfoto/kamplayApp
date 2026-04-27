@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Users, Calendar, UtensilsCrossed, Tent, UsersRound, FileText,
-  LogOut, ChevronDown,
+  LogOut, ChevronDown, MessageCircle,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useStore } from '../store/store';
@@ -13,14 +13,16 @@ import ProfesorMenu from '../components/profesor/ProfesorMenu';
 import ProfesorGrupos from '../components/profesor/ProfesorGrupos';
 import ProfesorCabanas from '../components/profesor/ProfesorCabanas';
 import ProfesorDocumentacion from '../components/profesor/ProfesorDocumentacion';
+import ChatPanel from '../components/chat/ChatPanel';
 
 const TABS = [
-  { id: 'acampados',    label: 'Acampados',   icon: Users },
-  { id: 'actividades',  label: 'Actividades', icon: Calendar },
-  { id: 'menu',         label: 'Menú',        icon: UtensilsCrossed },
-  { id: 'grupos',       label: 'Grupos',      icon: UsersRound },
-  { id: 'cabanas',      label: 'Cabañas',     icon: Tent },
+  { id: 'acampados',    label: 'Acampados',     icon: Users },
+  { id: 'actividades',  label: 'Actividades',   icon: Calendar },
+  { id: 'menu',         label: 'Menú',          icon: UtensilsCrossed },
+  { id: 'grupos',       label: 'Grupos',        icon: UsersRound },
+  { id: 'cabanas',      label: 'Cabañas',       icon: Tent },
   { id: 'documentacion',label: 'Documentación', icon: FileText },
+  { id: 'chat',         label: 'Chat',          icon: MessageCircle },
 ];
 
 export default function ProfesorDashboard() {
@@ -38,6 +40,8 @@ export default function ProfesorDashboard() {
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'Profesor';
   const initial = displayName.charAt(0).toUpperCase();
 
+  const profesorName = user?.displayName || user?.email?.split('@')[0] || 'Profesor';
+
   const renderContent = () => {
     switch (activeTab) {
       case 'acampados':     return <ProfesorAcampados />;
@@ -46,6 +50,7 @@ export default function ProfesorDashboard() {
       case 'grupos':        return <ProfesorGrupos />;
       case 'cabanas':       return <ProfesorCabanas />;
       case 'documentacion': return <ProfesorDocumentacion />;
+      case 'chat':          return <ChatPanel userRole="profesor" userName={profesorName} />;
       default:              return null;
     }
   };

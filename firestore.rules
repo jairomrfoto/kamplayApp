@@ -73,6 +73,12 @@ service cloud.firestore {
         allow delete: if isAuth() && resource.data.autorId == request.auth.uid;
       }
 
+      match /canales/{canalId}/mensajes/{msgId} {
+        allow read: if isAuth();
+        allow create: if isAuth() && request.resource.data.autorId == request.auth.uid;
+        allow update, delete: if isAuth() && resource.data.autorId == request.auth.uid;
+      }
+
       match /{subcollection}/{docId} {
         allow read: if isAuth();
         allow write: if isAuth();

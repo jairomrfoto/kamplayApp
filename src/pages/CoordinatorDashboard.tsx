@@ -20,6 +20,14 @@ import MisCampamentos from './MisCampamentos';
 import MisActividades from '../components/MisActividades';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
 import Asistencia from './Asistencia';
+import ChatPanel from '../components/chat/ChatPanel';
+import { useAuth } from '../hooks/useAuth';
+
+const CoordinatorChat = () => {
+  const { user } = useAuth();
+  const name = user?.displayName || user?.email?.split('@')[0] || 'Coordinador';
+  return <ChatPanel userRole="coordinator" userName={name} />;
+};
 
 const CoordinatorDashboard = () => {
   return (
@@ -47,6 +55,7 @@ const CoordinatorDashboard = () => {
             <Route path="/mi-biblioteca" element={<MisActividades />} />
             <Route path="/novedades" element={<NovedadesFeed rol="coordinator" />} />
             <Route path="/asistencia" element={<Asistencia />} />
+            <Route path="/chat" element={<CoordinatorChat />} />
           </Routes>
         </main>
       </div>

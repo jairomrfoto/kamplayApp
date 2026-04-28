@@ -1,3 +1,4 @@
+import { signInAnonymously } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import type { Camp } from '../types/camp';
 
@@ -42,10 +43,28 @@ function fieldsToObj(fields: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, parseValue(v)]));
 }
 
-// ─── Public: fetch all listed camps (no auth required) ───────────────────────
+// ─── Public: fetch all listed camps ──────────────────────────────────────────
+// Uses anonymous auth so isAuth() is always satisfied in security rules.
+// Firestore collection queries require auth even when the rule allows public reads.
 
 export async function getListedCamps(): Promise<Partial<Camp>[]> {
-  const url = `https://firestore.googleapis.com/v1/projects/${pid()}/databases/(default)/documents:runQuery?key=${apiKey()}`;
+  // Get or create an auth token (anonymous if the visitor isn't logged in)
+  let token: string | null = null;
+  try {
+    let user = auth.currentUser;
+    if (!user) {
+      const cred = await signInAnonymously(auth);
+      user = cred.user;
+    }
+    token = await user.getIdToken();
+  } catch {
+    // Proceed without token as last resort
+  }
+
+  const url = `https://firestore.googleapis.com/v1/projects/${pid()}/databases/(default)/documents:runQuery`;
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
   const body = {
     structuredQuery: {
       from: [{ collectionId: 'campamentos' }],
@@ -60,17 +79,16 @@ export async function getListedCamps(): Promise<Partial<Camp>[]> {
     },
   };
   try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) return [];
+    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+    if (!res.ok) {
+      console.error('[getListedCamps] Firestore error', res.status, await res.text());
+      return [];
+    }
     const json = await res.json() as Array<{ document?: { name: string; fields?: Record<string, unknown> } }>;
     return json
       .filter(r => r.document?.fields)
       .map(r => {
-        const id = r.document!.name.split('/').pop() as string;
+        const id  = r.document!.name.split('/').pop() as string;
         const obj = fieldsToObj(r.document!.fields!);
         return {
           ...obj,
@@ -79,7 +97,8 @@ export async function getListedCamps(): Promise<Partial<Camp>[]> {
           endDate:   obj.endDate   ? new Date(obj.endDate   as string) : new Date(),
         } as unknown as Partial<Camp>;
       });
-  } catch {
+  } catch (err) {
+    console.error('[getListedCamps] fetch error', err);
     return [];
   }
 }

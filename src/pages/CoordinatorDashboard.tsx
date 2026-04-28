@@ -21,6 +21,7 @@ import MisActividades from '../components/MisActividades';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
 import Asistencia from './Asistencia';
 import ChatPanel from '../components/chat/ChatPanel';
+import CampListingEditor from '../components/coordinator/CampListingEditor';
 import { useAuth } from '../hooks/useAuth';
 
 const CoordinatorChat = () => {
@@ -56,6 +57,7 @@ const CoordinatorDashboard = () => {
             <Route path="/novedades" element={<NovedadesFeed rol="coordinator" />} />
             <Route path="/asistencia" element={<Asistencia />} />
             <Route path="/chat" element={<CoordinatorChat />} />
+            <Route path="/mi-anuncio" element={<CampListingEditor />} />
           </Routes>
         </main>
       </div>

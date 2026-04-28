@@ -62,9 +62,16 @@ service cloud.firestore {
 
     // ── Camps ─────────────────────────────────────────────────────────────────
     match /campamentos/{campId} {
-      allow read: if isAuth();
+      // Public read for listed camps (directory); auth required otherwise
+      allow read: if isAuth() || resource.data.listed == true;
       allow create: if isAuth() && hasActiveSubscription(request.auth.uid);
-      allow update, delete: if isAuth() &&
+      allow update: if isAuth() && (
+        resource.data.mainCoordinator == request.auth.uid ||
+        isAdmin() ||
+        // Any authenticated user may update only the aggregate rating fields
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avgRating', 'ratingCount'])
+      );
+      allow delete: if isAuth() &&
         (resource.data.mainCoordinator == request.auth.uid || isAdmin());
 
       match /profesorDocs/{docId} {
@@ -77,6 +84,12 @@ service cloud.firestore {
         allow read: if isAuth();
         allow create: if isAuth() && request.resource.data.autorId == request.auth.uid;
         allow update, delete: if isAuth() && resource.data.autorId == request.auth.uid;
+      }
+
+      // Parent ratings — one per parent (docId == parentUid)
+      match /valoraciones/{uid} {
+        allow read: if isAuth();
+        allow write: if isAuth() && request.auth.uid == uid;
       }
 
       match /{subcollection}/{docId} {

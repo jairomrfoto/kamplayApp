@@ -15,6 +15,12 @@ export interface Camp {
   coordinators: string[];
   mainCoordinator: string;
   inscriptionFee?: number; // en céntimos (ej. 5000 = 50 €)
+  // Directorio público
+  listed?: boolean;
+  description?: string;
+  zona?: string;
+  avgRating?: number;
+  ratingCount?: number;
 }
 
 export interface CampCoordinator {

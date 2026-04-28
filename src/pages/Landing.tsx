@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Check } from 'lucide-react';
+import { ChevronRight, Check, Star, MapPin, Calendar } from 'lucide-react';
 
 const features = [
   { title: 'Gestión de participantes', desc: 'Fichas completas con información médica, alergias y medicación programada. Todo en un solo lugar.' },
@@ -65,6 +65,9 @@ const Landing = () => {
             <span className="text-lg font-extrabold text-gray-900">Kamplay</span>
           </div>
           <div className="flex items-center gap-2">
+            <Link to="/directorio" className="text-sm font-semibold text-orange-600 hover:text-orange-800 px-3 py-1.5 rounded-lg hover:bg-orange-50 transition-colors hidden sm:block">
+              Directorio
+            </Link>
             <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block">
               Iniciar sesión
             </Link>
@@ -281,6 +284,62 @@ const Landing = () => {
                 <p className="text-sm text-gray-500">{label}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Directorio ── */}
+      <section className="py-20 bg-white border-t border-stone-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Directorio público</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">Encuentra el programa perfecto</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">
+              Los coordinadores publican sus campamentos y campus aquí. Compara opciones, lee valoraciones de otras familias y elige con confianza.
+            </p>
+          </div>
+
+          {/* Preview cards — illustrative */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+            {[
+              { type: 'Campamento', name: 'Campamento Sierra Norte', zona: 'Madrid', dates: '14 jul – 27 jul · 14 días', rating: 4.8, reviews: 12, price: '350 €', gradient: 'from-orange-400 to-amber-500', badge: 'bg-orange-900/30 text-orange-100' },
+              { type: 'Campus',     name: 'Campus Verano Creativo',  zona: 'Cataluña', dates: '1 jul – 31 jul · 31 días',  rating: 4.6, reviews: 8,  price: '180 €', gradient: 'from-blue-500 to-indigo-600',  badge: 'bg-blue-900/30 text-blue-100' },
+              { type: 'Campamento', name: 'Campamento Aventura Sur', zona: 'Andalucía', dates: '1 ago – 14 ago · 14 días', rating: 5.0, reviews: 5,  price: '420 €', gradient: 'from-orange-400 to-amber-500', badge: 'bg-orange-900/30 text-orange-100' },
+            ].map((c, i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
+                <div className={`bg-gradient-to-r ${c.gradient} px-5 py-4`}>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{c.type}</span>
+                  <h3 className="text-white font-extrabold text-base mt-1.5">{c.name}</h3>
+                </div>
+                <div className="p-4 space-y-2">
+                  <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <MapPin size={12} className="text-gray-400" /> {c.zona}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <Calendar size={12} className="text-gray-400" /> {c.dates}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {[1,2,3,4,5].map(s => (
+                      <Star key={s} size={12} className={s <= Math.round(c.rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'} />
+                    ))}
+                    <span className="text-xs text-gray-500 ml-1">{c.rating} ({c.reviews})</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <span className="font-extrabold text-gray-900">{c.price}</span>
+                    <span className="text-xs text-orange-500 font-semibold">Ver detalles →</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-gray-400 text-center mb-6">Ejemplos ilustrativos. Los programas reales aparecen en el directorio.</p>
+
+          <div className="text-center">
+            <Link to="/directorio"
+              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shadow-md">
+              Ver todos los programas <ChevronRight size={18} />
+            </Link>
           </div>
         </div>
       </section>

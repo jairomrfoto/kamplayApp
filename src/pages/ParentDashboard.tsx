@@ -13,6 +13,7 @@ import type { Camper } from '../types';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
 import CampPaymentButton from '../components/stripe/CampPaymentButton';
 import ChatPanel from '../components/chat/ChatPanel';
+import RateCampPrompt from '../components/parent/RateCampPrompt';
 
 // ─── Medical Info Editor ──────────────────────────────────────────────────────
 interface MedicalEditorProps {
@@ -457,6 +458,9 @@ const ParentDashboard = () => {
                 <MessageCircle size={15} /> Chat
               </button>
             </div>
+
+            {/* Rating prompt — shown after camp ends */}
+            {currentCamp && <RateCampPrompt camp={currentCamp} />}
 
             {/* Novedades tab */}
             {activeTab === 'novedades' && (

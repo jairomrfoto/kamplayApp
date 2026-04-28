@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   Calendar, Users, Package, UserCog, UsersRound, Tent,
   HeartPulse, LayoutDashboard, UtensilsCrossed as MenuIcon,
-  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper, ClipboardList, MessageCircle,
+  AlertTriangle, Shield, Layers, BookOpen, X, Newspaper, ClipboardList, MessageCircle, Globe,
 } from 'lucide-react';
 import CampSwitcher from './CampSwitcher';
 import { useStore } from '../store/store';
@@ -41,6 +41,7 @@ function getCoordinatorLinks(isCampus: boolean): LinkDef[] {
     { to: '/coordinator-dashboard/chat',            icon: MessageCircle,  text: 'Chat' },
     ...getBaseLinks(isCampus),
     { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,       text: 'Mi Biblioteca' },
+    { to: '/coordinator-dashboard/mi-anuncio',     icon: Globe,          text: 'Mi anuncio' },
     { to: '/coordinator-dashboard/coordinadores',  icon: Shield,         text: 'Coordinadores' },
   ];
 }

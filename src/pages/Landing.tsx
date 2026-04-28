@@ -66,7 +66,7 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-2">
             <Link to="/directorio" className="text-sm font-semibold text-orange-600 hover:text-orange-800 px-3 py-1.5 rounded-lg hover:bg-orange-50 transition-colors hidden sm:block">
-              Directorio
+              Campamentos disponibles
             </Link>
             <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block">
               Iniciar sesión
@@ -292,7 +292,7 @@ const Landing = () => {
       <section className="py-20 bg-white border-t border-stone-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Directorio público</span>
+            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Campamentos disponibles</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">Encuentra el programa perfecto</h2>
             <p className="text-gray-500 max-w-xl mx-auto">
               Los coordinadores publican sus campamentos y campus aquí. Compara opciones, lee valoraciones de otras familias y elige con confianza.

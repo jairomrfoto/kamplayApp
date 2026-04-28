@@ -19,6 +19,9 @@ export interface Camp {
   listed?: boolean;
   description?: string;
   zona?: string;
+  photos?: string[];
+  ageMin?: number;
+  ageMax?: number;
   avgRating?: number;
   ratingCount?: number;
 }

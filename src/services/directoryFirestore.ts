@@ -9,7 +9,8 @@ export interface CampRating {
   autorNombre: string;
 }
 
-const pid = () => import.meta.env.VITE_FIREBASE_PROJECT_ID as string;
+const pid    = () => import.meta.env.VITE_FIREBASE_PROJECT_ID as string;
+const apiKey = () => import.meta.env.VITE_FIREBASE_API_KEY    as string;
 
 async function getToken(): Promise<string> {
   const user = auth.currentUser;
@@ -26,6 +27,10 @@ function parseValue(v: unknown): unknown {
   if ('booleanValue'   in val) return val.booleanValue;
   if ('timestampValue' in val) return val.timestampValue;
   if ('nullValue'      in val) return null;
+  if ('arrayValue' in val) {
+    const values = ((val.arrayValue as Record<string, unknown>).values as unknown[]) ?? [];
+    return (values as unknown[]).map(parseValue);
+  }
   if ('mapValue' in val) {
     const fields = ((val.mapValue as Record<string, unknown>).fields as Record<string, unknown>) ?? {};
     return Object.fromEntries(Object.entries(fields).map(([k, fv]) => [k, parseValue(fv)]));
@@ -40,7 +45,7 @@ function fieldsToObj(fields: Record<string, unknown>): Record<string, unknown> {
 // ─── Public: fetch all listed camps (no auth required) ───────────────────────
 
 export async function getListedCamps(): Promise<Partial<Camp>[]> {
-  const url = `https://firestore.googleapis.com/v1/projects/${pid()}/databases/(default)/documents:runQuery`;
+  const url = `https://firestore.googleapis.com/v1/projects/${pid()}/databases/(default)/documents:runQuery?key=${apiKey()}`;
   const body = {
     structuredQuery: {
       from: [{ collectionId: 'campamentos' }],
@@ -155,12 +160,24 @@ export async function submitRating(
 
 export async function updateCampListing(
   campId: string,
-  data: { listed: boolean; description?: string; zona?: string },
+  data: {
+    listed: boolean;
+    description?: string;
+    zona?: string;
+    photos?: string[];
+    ageMin?: number | null;
+    ageMax?: number | null;
+  },
 ): Promise<void> {
   const token = await getToken();
-  const maskPaths = 'updateMask.fieldPaths=listed&updateMask.fieldPaths=description&updateMask.fieldPaths=zona';
+  const mask = [
+    'listed', 'description', 'zona', 'photos', 'ageMin', 'ageMax',
+  ].map(f => `updateMask.fieldPaths=${f}`).join('&');
+
+  const photos = data.photos ?? [];
+
   await fetch(
-    `https://firestore.googleapis.com/v1/projects/${pid()}/databases/(default)/documents/campamentos/${campId}?${maskPaths}`,
+    `https://firestore.googleapis.com/v1/projects/${pid()}/databases/(default)/documents/campamentos/${campId}?${mask}`,
     {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -169,6 +186,9 @@ export async function updateCampListing(
           listed:      { booleanValue: data.listed },
           description: { stringValue: data.description || '' },
           zona:        { stringValue: data.zona || '' },
+          photos:      { arrayValue: { values: photos.map(u => ({ stringValue: u })) } },
+          ageMin:      data.ageMin != null ? { integerValue: String(data.ageMin) } : { nullValue: null },
+          ageMax:      data.ageMax != null ? { integerValue: String(data.ageMax) } : { nullValue: null },
         },
       }),
     },

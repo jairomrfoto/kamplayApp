@@ -78,6 +78,8 @@ interface AppState {
 
   // ── Actividades ──────────────────────────────────────────────────────────
   addActividad: (actividad: Actividad) => void;
+  updateActividad: (actividad: Actividad) => void;
+  deleteActividad: (actividadId: string) => void;
   setMisActividades: (actividades: ActividadPersonal[]) => void;
   addMiActividad: (actividad: ActividadPersonal) => void;
 
@@ -350,6 +352,26 @@ export const useStore = create<AppState>((set, get) => ({
           : [...state.misActividades, personal],
       }));
       saveUserActividad(uid, personal).catch(console.error);
+    }
+  },
+
+  updateActividad: (actividad) => {
+    set((state) => ({
+      actividades: state.actividades.map(a => a.id === actividad.id ? actividad : a),
+    }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      firestoreActividades.update(currentCamp.id, actividad).catch(console.error);
+    }
+  },
+
+  deleteActividad: (actividadId) => {
+    set((state) => ({
+      actividades: state.actividades.filter(a => a.id !== actividadId),
+    }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      firestoreActividades.delete(currentCamp.id, actividadId).catch(console.error);
     }
   },
 

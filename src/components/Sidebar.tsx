@@ -41,7 +41,7 @@ function getCoordinatorLinks(isCampus: boolean): LinkDef[] {
     { to: '/coordinator-dashboard/chat',            icon: MessageCircle,  text: 'Chat' },
     ...getBaseLinks(isCampus),
     { to: '/coordinator-dashboard/mi-biblioteca',  icon: BookOpen,       text: 'Mi Biblioteca' },
-    { to: '/coordinator-dashboard/mi-anuncio',     icon: Globe,          text: 'Mi anuncio' },
+    // HIDDEN: { to: '/coordinator-dashboard/mi-anuncio', icon: Globe, text: 'Mi anuncio' },
     { to: '/coordinator-dashboard/coordinadores',  icon: Shield,         text: 'Coordinadores' },
   ];
 }

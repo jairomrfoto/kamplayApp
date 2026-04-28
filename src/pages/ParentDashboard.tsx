@@ -459,8 +459,8 @@ const ParentDashboard = () => {
               </button>
             </div>
 
-            {/* Rating prompt — shown after camp ends */}
-            {currentCamp && <RateCampPrompt camp={currentCamp} />}
+            {/* HIDDEN: rating prompt — re-enable when directory launches */}
+            {/* {currentCamp && <RateCampPrompt camp={currentCamp} />} */}
 
             {/* Novedades tab */}
             {activeTab === 'novedades' && (

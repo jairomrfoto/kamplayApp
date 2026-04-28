@@ -65,9 +65,7 @@ const Landing = () => {
             <span className="text-lg font-extrabold text-gray-900">Kamplay</span>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/directorio" className="text-sm font-semibold text-orange-600 hover:text-orange-800 px-3 py-1.5 rounded-lg hover:bg-orange-50 transition-colors hidden sm:block">
-              Campamentos disponibles
-            </Link>
+            {/* HIDDEN: directory nav link — re-enable when ready to launch */}
             <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block">
               Iniciar sesión
             </Link>
@@ -288,8 +286,8 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Directorio ── */}
-      <section className="py-20 bg-white border-t border-stone-100">
+      {/* ── Directorio — HIDDEN until 100+ users; re-enable this section when ready ── */}
+      {false && <section className="py-20 bg-white border-t border-stone-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Campamentos disponibles</span>
@@ -342,7 +340,7 @@ const Landing = () => {
             </Link>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ── CTA final ── */}
       <section className="py-20 bg-gradient-to-br from-green-600 to-green-800 text-white relative overflow-hidden">

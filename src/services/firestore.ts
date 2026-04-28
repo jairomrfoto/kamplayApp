@@ -450,6 +450,14 @@ export async function getUserActividades(uid: string): Promise<ActividadPersonal
 
 function makeCrud<T extends { id: string }>(colName: string) {
   return {
+    list: (campId: string): Promise<T[]> =>
+      raceBothReads<T[]>(
+        async () => {
+          const snap = await getDocs(campCol(campId, colName));
+          return snap.docs.map(d => ({ id: d.id, ...d.data() } as T));
+        },
+        () => listCollectionRest<T>(`campamentos/${campId}/${colName}`),
+      ),
     save: (campId: string, item: T) => {
       const data = toFirestore(item as unknown as Record<string, unknown>);
       const restPath = `campamentos/${campId}/${colName}/${item.id}`;

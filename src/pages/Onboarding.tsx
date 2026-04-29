@@ -33,7 +33,6 @@ const Onboarding = () => {
 
     // Admin shortcut — bypass normal role selection
     if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
-      // Ensure Firestore doc exists so subcollection reads don't 403/404
       const adminProfile = {
         uid: user.uid,
         campId: '',
@@ -41,8 +40,8 @@ const Onboarding = () => {
         email: user.email || '',
         nombre: user.displayName || user.email?.split('@')[0] || '',
       };
-      saveUserProfile(adminProfile).catch(() => {});
       setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
+      await saveUserProfile(adminProfile).catch(() => {});
       navigate('/admin', { replace: true });
       return;
     }

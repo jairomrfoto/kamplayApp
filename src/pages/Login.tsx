@@ -248,12 +248,10 @@ const Login = () => {
   const handleGoogle = async () => {
     setGLoading(true); setError('');
     try {
+      // signInWithRedirect never returns — page reloads after Google auth
       await signInWithGoogle();
-      resetRl();
-      navigate('/onboarding');
     } catch (err: any) {
-      if (err.code !== 'auth/popup-closed-by-user')
-        setError('No se pudo iniciar sesión con Google. Inténtalo de nuevo.');
+      setError('No se pudo iniciar sesión con Google. Inténtalo de nuevo.');
       setGLoading(false);
     }
   };

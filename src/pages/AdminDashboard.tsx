@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, Tent, CreditCard, LogOut, RefreshCw, Loader,
-  ChevronUp, ChevronDown, Search, Shield, FlaskConical,
+  Search, Shield, FlaskConical,
 } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';

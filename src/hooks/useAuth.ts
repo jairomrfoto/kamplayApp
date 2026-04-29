@@ -4,7 +4,8 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendPasswordResetEmail,
   sendEmailVerification,
   updatePassword,
@@ -15,10 +16,13 @@ import {
 import { auth, googleProvider } from '../config/firebase';
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser]       = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Consume any pending Google redirect result first
+    getRedirectResult(auth).catch(() => {});
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
@@ -44,9 +48,10 @@ export function useAuth() {
     if (u && !u.emailVerified) await sendEmailVerification(u);
   };
 
+  // Redirect flow — avoids popup COOP issues entirely
   const signInWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    await signInWithRedirect(auth, googleProvider);
+    // Page will reload after Google redirects back; onAuthStateChanged picks up the user
   };
 
   const sendPasswordReset = async (email: string) => {

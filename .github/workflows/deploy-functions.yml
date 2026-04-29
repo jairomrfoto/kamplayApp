@@ -24,18 +24,35 @@ jobs:
       - name: Install function dependencies
         run: npm --prefix functions install
 
-      # Crea functions/.env con toda la config (sensible y no sensible)
+      # Crea functions/.env con la config no sensible
       - name: Create functions/.env
         run: |
-          echo "APP_URL=https://kamplay-7a007.web.app"      > functions/.env
-          echo "SMTP_HOST=smtp.gmail.com"                  >> functions/.env
-          echo "SMTP_PORT=587"                              >> functions/.env
-          echo "SMTP_USER=${{ vars.SMTP_USER }}"            >> functions/.env
-          echo "SMTP_FROM=${{ vars.SMTP_FROM }}"            >> functions/.env
-          echo "SMTP_PASS=${{ secrets.SMTP_PASS }}"         >> functions/.env
-          echo "ANTHROPIC_KEY=${{ secrets.ANTHROPIC_KEY }}" >> functions/.env
-          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"         >> functions/.env
-          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> functions/.env
+          echo "APP_URL=https://kamplay-7a007.web.app" > functions/.env
+          echo "SMTP_HOST=smtp.gmail.com"             >> functions/.env
+          echo "SMTP_PORT=587"                         >> functions/.env
+          echo "SMTP_USER=${{ vars.SMTP_USER }}"       >> functions/.env
+          echo "SMTP_FROM=${{ vars.SMTP_FROM }}"       >> functions/.env
+
+      # Sube los secretos a Google Secret Manager (crea o actualiza la versión)
+      - name: Sync secrets to Secret Manager
+        run: |
+          set_secret() {
+            local name=$1
+            local value=$2
+            if [ -n "$value" ]; then
+              printf '%s' "$value" | firebase functions:secrets:set "$name" --data-file=-
+            fi
+          }
+          set_secret ANTHROPIC_KEY     "$ANTHROPIC_KEY"
+          set_secret SMTP_PASS         "$SMTP_PASS"
+          set_secret STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"
+          set_secret STRIPE_WEBHOOK_SECRET "$STRIPE_WEBHOOK_SECRET"
+        env:
+          FIREBASE_TOKEN:          ${{ secrets.FIREBASE_TOKEN }}
+          ANTHROPIC_KEY:           ${{ secrets.ANTHROPIC_KEY }}
+          SMTP_PASS:               ${{ secrets.SMTP_PASS }}
+          STRIPE_SECRET_KEY:       ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET:   ${{ secrets.STRIPE_WEBHOOK_SECRET }}
 
       - name: Deploy Firebase Functions
         run: firebase deploy --only functions --project kamplay-7a007

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   ChevronLeft, ChevronRight, Plus, X, Clock, MapPin,
-  Users, Trash2, Edit2, BookOpen, Search, Calendar,
+  Users, Trash2, Edit2, BookOpen, Search,
 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';

@@ -18,6 +18,9 @@ export default function SubscriptionGate({ profile, loading, children }: Props) 
     );
   }
 
+  // Dev bypass: set VITE_BYPASS_SUBSCRIPTION=true in .env.local to skip gate
+  if (import.meta.env.VITE_BYPASS_SUBSCRIPTION === 'true') return <>{children}</>;
+
   const status = profile?.subscriptionStatus;
   const isActive = status === 'active' || status === 'trialing';
 

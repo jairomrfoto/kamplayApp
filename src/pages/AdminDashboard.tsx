@@ -2,8 +2,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, Tent, CreditCard, LogOut, RefreshCw, Loader,
-  ChevronUp, ChevronDown, Search, Shield,
+  ChevronUp, ChevronDown, Search, Shield, FlaskConical,
 } from 'lucide-react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import {
   adminGetAllUsers, adminGetAllCamps, adminGetAllPayments, adminGetCampStats,
@@ -115,6 +117,15 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     await signOut();
     navigate('/login');
+  };
+
+  const handleToggleTrial = async (u: AdminUser) => {
+    const isTrial = u.subscriptionStatus === 'trialing';
+    const newStatus = isTrial ? 'canceled' : 'trialing';
+    await updateDoc(doc(db, 'usuarios', u.uid), { subscriptionStatus: newStatus });
+    setUsers(prev => prev.map(usr =>
+      usr.uid === u.uid ? { ...usr, subscriptionStatus: newStatus } : usr
+    ));
   };
 
   // ── Derived stats ────────────────────────────────────────────────────────
@@ -334,20 +345,41 @@ export default function AdminDashboard() {
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Rol</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Suscripción</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Camp ID</th>
+                      <th className="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Acceso prueba</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
-                    {filteredUsers.map(u => (
-                      <tr key={u.uid} className="hover:bg-gray-800/50 transition-colors">
-                        <td className="px-4 py-3 text-gray-200 font-mono text-xs">{u.email || '–'}</td>
-                        <td className="px-4 py-3 text-gray-200">{u.nombre || '–'}</td>
-                        <td className="px-4 py-3"><RoleBadge role={u.role} /></td>
-                        <td className="px-4 py-3"><SubBadge status={u.subscriptionStatus} /></td>
-                        <td className="px-4 py-3 text-gray-500 font-mono text-xs truncate max-w-[140px]">{u.campId || '–'}</td>
-                      </tr>
-                    ))}
+                    {filteredUsers.map(u => {
+                      const isTrial = u.subscriptionStatus === 'trialing';
+                      const isActive = u.subscriptionStatus === 'active';
+                      return (
+                        <tr key={u.uid} className="hover:bg-gray-800/50 transition-colors">
+                          <td className="px-4 py-3 text-gray-200 font-mono text-xs">{u.email || '–'}</td>
+                          <td className="px-4 py-3 text-gray-200">{u.nombre || '–'}</td>
+                          <td className="px-4 py-3"><RoleBadge role={u.role} /></td>
+                          <td className="px-4 py-3"><SubBadge status={u.subscriptionStatus} /></td>
+                          <td className="px-4 py-3 text-gray-500 font-mono text-xs truncate max-w-[140px]">{u.campId || '–'}</td>
+                          <td className="px-4 py-3 text-center">
+                            {!isActive && (
+                              <button
+                                onClick={() => handleToggleTrial(u)}
+                                title={isTrial ? 'Revocar acceso de prueba' : 'Activar acceso de prueba'}
+                                className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg font-medium transition-colors ${
+                                  isTrial
+                                    ? 'bg-red-900/40 text-red-400 hover:bg-red-900/60'
+                                    : 'bg-blue-900/40 text-blue-400 hover:bg-blue-900/60'
+                                }`}
+                              >
+                                <FlaskConical size={11} />
+                                {isTrial ? 'Revocar' : 'Prueba'}
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                     {filteredUsers.length === 0 && (
-                      <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500">Sin resultados</td></tr>
+                      <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500">Sin resultados</td></tr>
                     )}
                   </tbody>
                 </table>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Tent, Loader, Eye, EyeOff, CheckCircle, AlertCircle, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';

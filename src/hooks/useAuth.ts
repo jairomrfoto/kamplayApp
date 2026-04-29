@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
@@ -18,28 +19,29 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  const signInWithEmail = async (email: string, password: string) => {
-    try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      return result.user;
-    } catch (error: any) {
-      if (
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/invalid-credential' ||
-        error.code === 'auth/invalid-email'
-      ) {
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-        return result.user;
-      }
-      throw error;
-    }
+  // Login only — never creates an account
+  const signIn = async (email: string, password: string) => {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return result.user;
+  };
+
+  // Register — creates account and sends verification email
+  const signUp = async (email: string, password: string) => {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(result.user);
+    return result.user;
+  };
+
+  const resendVerification = async () => {
+    const u = auth.currentUser;
+    if (u && !u.emailVerified) await sendEmailVerification(u);
   };
 
   const signInWithGoogle = async () => {
@@ -63,5 +65,10 @@ export function useAuth() {
     await firebaseSignOut(auth);
   };
 
-  return { user, loading, signInWithEmail, signInWithGoogle, sendPasswordReset, changePassword, signOut };
+  return {
+    user, loading,
+    signIn, signUp, resendVerification,
+    signInWithGoogle, sendPasswordReset,
+    changePassword, signOut,
+  };
 }

@@ -27,6 +27,9 @@ const Onboarding = () => {
     if (authLoading) return;
     if (!user) { navigate('/login'); return; }
 
+    // Block unverified email accounts (Google is always verified)
+    if (!user.emailVerified) { navigate('/login'); return; }
+
     // Admin shortcut — bypass normal role selection
     if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
       navigate('/admin');

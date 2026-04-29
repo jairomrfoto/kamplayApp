@@ -95,6 +95,8 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
+
 // ── Component ────────────────────────────────────────────────────────────────
 type Mode = 'login' | 'register';
 type Screen = 'form' | 'verify-pending' | 'reset';
@@ -128,10 +130,13 @@ const Login = () => {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Redirect already-verified users
+  // Redirect already-verified users — go directly to /admin for admin accounts
   useEffect(() => {
     if (authLoading) return;
-    if (user?.emailVerified) navigate('/onboarding');
+    if (user?.emailVerified) {
+      const dest = ADMIN_EMAIL && user.email === ADMIN_EMAIL ? '/admin' : '/onboarding';
+      navigate(dest, { replace: true });
+    }
   }, [user, authLoading]);
 
   // Lockout countdown

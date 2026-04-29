@@ -9,11 +9,12 @@ type Role = 'coordinator' | 'monitor' | 'parent' | 'profesor';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
 
-function redirectByRole(role: Role, navigate: (path: string) => void) {
-  if (role === 'coordinator') navigate('/coordinator-dashboard');
-  else if (role === 'monitor') navigate('/monitor-dashboard');
-  else if (role === 'profesor') navigate('/join-camp');
-  else navigate('/parent-dashboard');
+function redirectByRole(role: Role, navigate: (path: string, opts?: object) => void, replace = false) {
+  const opts = replace ? { replace: true } : undefined;
+  if (role === 'coordinator') navigate('/coordinator-dashboard', opts);
+  else if (role === 'monitor') navigate('/monitor-dashboard', opts);
+  else if (role === 'profesor') navigate('/join-camp', opts);
+  else navigate('/parent-dashboard', opts);
 }
 
 const Onboarding = () => {
@@ -32,13 +33,23 @@ const Onboarding = () => {
 
     // Admin shortcut — bypass normal role selection
     if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
-      navigate('/admin');
+      // Ensure Firestore doc exists so subcollection reads don't 403/404
+      const adminProfile = {
+        uid: user.uid,
+        campId: '',
+        role: 'coordinator' as Role,
+        email: user.email || '',
+        nombre: user.displayName || user.email?.split('@')[0] || '',
+      };
+      saveUserProfile(adminProfile).catch(() => {});
+      setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
+      navigate('/admin', { replace: true });
       return;
     }
 
     const cached = getLocalProfile(user.uid);
     if (cached?.role) {
-      redirectByRole(cached.role, navigate);
+      redirectByRole(cached.role, navigate, true);
       return;
     }
 

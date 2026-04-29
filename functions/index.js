@@ -5,18 +5,166 @@
  *   firebase functions:config:set \
  *     stripe.secret_key="sk_live_..." \
  *     stripe.webhook_secret="whsec_..." \
- *     app.url="https://kamplay-7a007.web.app"
+ *     smtp.user="tucorreo@gmail.com" \
+ *     smtp.pass="xxxx xxxx xxxx xxxx" \
+ *     smtp.from="Kamplay <noreply@kamplay.es>" \
+ *     app.url="https://kamplay.es"
  *
- * Para test:
- *   firebase functions:config:set stripe.secret_key="sk_test_..."
+ * smtp.pass debe ser una Contraseña de Aplicación de Google
+ * (Google Account → Seguridad → Verificación en 2 pasos → Contraseñas de aplicación)
+ *
+ * Cuando tengas dominio propio con email SMTP, cambia smtp.user / smtp.pass
+ * por las credenciales de tu servidor y smtp.from por "Kamplay <noreply@kamplay.es>"
  */
 
-const functions = require('firebase-functions');
-const admin     = require('firebase-admin');
-const Stripe    = require('stripe');
+const functions  = require('firebase-functions');
+const admin      = require('firebase-admin');
+const nodemailer = require('nodemailer');
+const Stripe     = require('stripe');
 
 admin.initializeApp();
 const db = admin.firestore();
+
+// ─── SMTP transporter (lazy — built on first use) ─────────────────────────────
+let _transporter = null;
+function getTransporter() {
+  if (_transporter) return _transporter;
+  const cfg = functions.config();
+  _transporter = nodemailer.createTransport({
+    host:   cfg.smtp?.host   || 'smtp.gmail.com',
+    port:   Number(cfg.smtp?.port  || 587),
+    secure: false,
+    auth: {
+      user: cfg.smtp?.user || '',
+      pass: cfg.smtp?.pass || '',
+    },
+  });
+  return _transporter;
+}
+
+// ─── Email HTML template ───────────────────────────────────────────────────────
+function buildVerificationEmail(verificationLink) {
+  const year = new Date().getFullYear();
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Activa tu cuenta de Kamplay</title>
+</head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#f97316;padding:32px 40px;text-align:center;">
+            <p style="margin:0;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">⛺ Kamplay</p>
+            <p style="margin:6px 0 0;font-size:13px;color:#fed7aa;font-weight:500;">Tu pasión, su felicidad</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:40px 40px 32px;">
+            <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">Activa tu cuenta</h1>
+            <p style="margin:0 0 24px;font-size:15px;color:#4b5563;line-height:1.6;">
+              Gracias por registrarte en Kamplay. Para empezar a gestionar tu campamento o campus de verano, confirma tu dirección de correo haciendo clic en el botón:
+            </p>
+
+            <!-- CTA button -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td align="center" style="padding:8px 0 32px;">
+                <a href="${verificationLink}"
+                   style="display:inline-block;background:#f97316;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 36px;border-radius:12px;">
+                  Verificar mi correo
+                </a>
+              </td></tr>
+            </table>
+
+            <p style="margin:0 0 8px;font-size:13px;color:#6b7280;line-height:1.5;">
+              Si el botón no funciona, copia y pega este enlace en tu navegador:
+            </p>
+            <p style="margin:0 0 32px;font-size:12px;color:#9ca3af;word-break:break-all;">${verificationLink}</p>
+
+            <!-- Info box -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:16px 20px;">
+                <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
+                  ⏱ Este enlace es válido durante <strong>24 horas</strong>. Si no has creado esta cuenta, puedes ignorar este correo.
+                </p>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f9fafb;padding:24px 40px;border-top:1px solid #f3f4f6;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#9ca3af;">
+              © ${year} Kamplay · <a href="https://kamplay.es" style="color:#f97316;text-decoration:none;">kamplay.es</a>
+            </p>
+            <p style="margin:6px 0 0;font-size:11px;color:#d1d5db;">
+              Recibes este correo porque alguien solicitó crear una cuenta con esta dirección.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+// ─── AUTH TRIGGER: enviar email de verificación personalizado ─────────────────
+exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
+  // Skip Google / already-verified accounts
+  if (user.emailVerified || !user.email) return null;
+
+  const cfg = functions.config();
+  const smtpUser = cfg.smtp?.user;
+  const smtpPass = cfg.smtp?.pass;
+
+  if (!smtpUser || !smtpPass) {
+    // SMTP not configured yet — fall back silently (Firebase sends its own email)
+    console.warn('SMTP not configured. Set smtp.user and smtp.pass via firebase functions:config:set');
+    return null;
+  }
+
+  try {
+    const appUrl = cfg.app?.url || 'https://kamplay.es';
+    const actionCodeSettings = {
+      url: appUrl + '/login',
+      handleCodeInApp: false,
+    };
+
+    const verificationLink = await admin.auth().generateEmailVerificationLink(
+      user.email,
+      actionCodeSettings
+    );
+
+    const fromAddress = cfg.smtp?.from || `Kamplay <${smtpUser}>`;
+    const transporter = getTransporter();
+
+    await transporter.sendMail({
+      from:    fromAddress,
+      to:      user.email,
+      subject: 'Activa tu cuenta de Kamplay',
+      html:    buildVerificationEmail(verificationLink),
+    });
+
+    console.log(`✅ Verification email sent to ${user.email}`);
+  } catch (err) {
+    console.error('Error sending verification email:', err);
+    // Don't throw — the user account is already created
+  }
+
+  return null;
+});
+
+
 
 // ─── Stripe init ─────────────────────────────────────────────────────────────
 const stripe = Stripe(functions.config().stripe.secret_key, {

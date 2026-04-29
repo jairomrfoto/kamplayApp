@@ -32,13 +32,13 @@ export function useAuth() {
     return result.user;
   };
 
-  // Register — creates account and sends verification email
+  // Register — creates account; Cloud Function onUserCreated sends the branded email
   const signUp = async (email: string, password: string) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(result.user);
     return result.user;
   };
 
+  // Resend: fall back to Firebase's built-in if SMTP not yet configured
   const resendVerification = async () => {
     const u = auth.currentUser;
     if (u && !u.emailVerified) await sendEmailVerification(u);

@@ -2,7 +2,7 @@ name: Deploy Firebase Functions
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/audit-bolt-app-O4YSY]
     paths:
       - 'functions/**'
       - '.github/workflows/deploy-functions.yml'

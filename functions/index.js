@@ -473,3 +473,168 @@ exports.stripeWebhook = functions
 
     res.json({ received: true });
   });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. DOCUMENT PARSER — Extracción inteligente de datos de campamento con IA
+// ─────────────────────────────────────────────────────────────────────────────
+// Configurar la clave de Anthropic:
+//   firebase functions:config:set anthropic.key="sk-ant-..."
+// ─────────────────────────────────────────────────────────────────────────────
+exports.parseDocument = functions
+  .region('europe-west1')
+  .runWith({ timeoutSeconds: 180, memory: '512MB' })
+  .https.onCall(async (data, context) => {
+    assertAuth(context);
+
+    const { fileBase64, fileName, mimeType } = data;
+
+    if (!fileBase64 || !fileName || !mimeType) {
+      throw new functions.https.HttpsError('invalid-argument', 'Faltan parámetros: fileBase64, fileName o mimeType.');
+    }
+
+    // Limit: ~4 MB raw file (base64 is ~4/3 larger)
+    const estimatedBytes = Math.ceil((fileBase64.length * 3) / 4);
+    if (estimatedBytes > 4 * 1024 * 1024) {
+      throw new functions.https.HttpsError('invalid-argument', 'El archivo supera el límite de 4 MB.');
+    }
+
+    const buffer = Buffer.from(fileBase64, 'base64');
+    let rawText = '';
+
+    try {
+      const lowerName = fileName.toLowerCase();
+      if (mimeType === 'application/pdf' || lowerName.endsWith('.pdf')) {
+        const pdfParse = require('pdf-parse');
+        const result = await pdfParse(buffer, { max: 0 });
+        rawText = result.text;
+      } else if (
+        mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        lowerName.endsWith('.docx')
+      ) {
+        const mammoth = require('mammoth');
+        const result = await mammoth.extractRawText({ buffer });
+        rawText = result.value;
+      } else if (mimeType === 'text/csv' || lowerName.endsWith('.csv')) {
+        rawText = buffer.toString('utf-8');
+      } else if (mimeType === 'text/plain' || lowerName.endsWith('.txt')) {
+        rawText = buffer.toString('utf-8');
+      } else {
+        throw new functions.https.HttpsError(
+          'invalid-argument',
+          `Formato no soportado (${mimeType}). Usa PDF, DOCX, CSV o TXT.`
+        );
+      }
+    } catch (err) {
+      if (err.httpErrorCode) throw err;
+      throw new functions.https.HttpsError('internal', 'Error al leer el archivo: ' + (err.message || 'formato inválido'));
+    }
+
+    rawText = rawText.trim();
+    if (!rawText) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'No se pudo extraer texto del documento. El archivo puede estar protegido, escaneado sin OCR, o vacío.'
+      );
+    }
+
+    const cfg = functions.config();
+    const anthropicKey = cfg.anthropic && cfg.anthropic.key;
+    if (!anthropicKey) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'La API de IA no está configurada. Contacta al administrador.'
+      );
+    }
+
+    const sdkModule = require('@anthropic-ai/sdk');
+    const Anthropic = sdkModule.default || sdkModule.Anthropic || sdkModule;
+    const client = new Anthropic({ apiKey: anthropicKey });
+
+    const SYSTEM_PROMPT = `Eres un experto en extracción de datos para sistemas de gestión de campamentos y campus educativos en España. Analiza documentos en cualquier formato (tablas, listas, texto libre) y devuelve ÚNICAMENTE JSON válido sin ningún texto adicional ni bloques de código markdown.`;
+
+    const USER_PROMPT = `Analiza este documento de campamento/campus y extrae TODA la información disponible. Devuelve SOLO el JSON con este esquema exacto (usa null o [] cuando un campo no está disponible):
+
+{
+  "acampados": [{
+    "nombre": "Nombre completo",
+    "edad": 12,
+    "grupo": "nombre del grupo o null",
+    "cabana": "nombre/número cabaña o null",
+    "alergias": ["gluten"],
+    "medicacion": ["ibuprofeno 400mg"],
+    "notasMedicas": "observaciones o null",
+    "contacto": "Nombre Tutor · 666 123 456 o null"
+  }],
+  "grupos": [{
+    "nombre": "Nombre Grupo",
+    "edadMinima": 10,
+    "edadMaxima": 14,
+    "monitores": ["Nombre Monitor"],
+    "acampadosNombres": ["Nombre Acampado 1"]
+  }],
+  "actividades": [{
+    "titulo": "Nombre actividad",
+    "fechaStr": "DD/MM/YYYY o null",
+    "horaInicio": "HH:MM o null",
+    "horaFin": "HH:MM o null",
+    "grupo": "nombre grupo o null",
+    "categoria": "deportes|arte|naturaleza|juegos|talleres|otro",
+    "descripcion": "texto o null",
+    "ubicacion": "lugar o null",
+    "duracionMinutos": 60
+  }],
+  "infoGeneral": {
+    "nombre": "Nombre del campamento o null",
+    "fechaInicio": "DD/MM/YYYY o null",
+    "fechaFin": "DD/MM/YYYY o null",
+    "ubicacion": "lugar o null",
+    "descripcion": "descripción general o null"
+  }
+}
+
+DOCUMENTO A ANALIZAR:
+${rawText.slice(0, 55000)}`;
+
+    let aiResponse;
+    try {
+      aiResponse = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 8192,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: USER_PROMPT }],
+      });
+    } catch (err) {
+      console.error('Anthropic API error:', err);
+      throw new functions.https.HttpsError('internal', 'Error al procesar con IA: ' + (err.message || ''));
+    }
+
+    const responseText = aiResponse.content[0] && aiResponse.content[0].type === 'text'
+      ? aiResponse.content[0].text.trim()
+      : '';
+
+    let parsed;
+    try {
+      parsed = JSON.parse(responseText);
+    } catch {
+      // Try to extract from markdown code blocks
+      const match = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (match) {
+        try { parsed = JSON.parse(match[1]); } catch {
+          throw new functions.https.HttpsError('internal', 'La IA no pudo generar datos estructurados válidos.');
+        }
+      } else {
+        throw new functions.https.HttpsError('internal', 'La IA no pudo generar datos estructurados válidos.');
+      }
+    }
+
+    console.log(`parseDocument: extracted ${(parsed.acampados || []).length} acampados, ${(parsed.grupos || []).length} grupos, ${(parsed.actividades || []).length} actividades from "${fileName}" (${rawText.length} chars)`);
+
+    return {
+      acampados: Array.isArray(parsed.acampados) ? parsed.acampados : [],
+      grupos: Array.isArray(parsed.grupos) ? parsed.grupos : [],
+      actividades: Array.isArray(parsed.actividades) ? parsed.actividades : [],
+      infoGeneral: (parsed.infoGeneral && typeof parsed.infoGeneral === 'object') ? parsed.infoGeneral : {},
+      fileName,
+      charCount: rawText.length,
+    };
+  });

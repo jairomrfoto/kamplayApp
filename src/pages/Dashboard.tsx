@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/store';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Upload } from 'lucide-react';
 import HorarioDiario from '../components/HorarioDiario';
 import IncidentForm from '../components/shared/IncidentForm';
+import DocumentImportModal from '../components/DocumentImport/DocumentImportModal';
 
 const Dashboard = () => {
   const { campers, monitores, materiales, incidencias, currentCamp } = useStore();
   const [showIncidentForm, setShowIncidentForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   const isCampus = currentCamp?.type === 'campus';
   const pendingIncidents = incidencias.filter(inc => inc.estado === 'pendiente');
@@ -61,13 +63,22 @@ const Dashboard = () => {
             {isCampus ? 'Resumen de hoy en tu campus' : 'Resumen de hoy en tu campamento'}
           </p>
         </div>
-        <button
-          onClick={() => setShowIncidentForm(true)}
-          className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all w-full sm:w-auto shadow-sm"
-        >
-          <AlertTriangle size={16} />
-          Reportar incidencia
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => setShowImport(true)}
+            className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex-1 sm:flex-none shadow-sm"
+          >
+            <Upload size={16} />
+            Importar documento
+          </button>
+          <button
+            onClick={() => setShowIncidentForm(true)}
+            className="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex-1 sm:flex-none shadow-sm"
+          >
+            <AlertTriangle size={16} />
+            Reportar incidencia
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -95,6 +106,10 @@ const Dashboard = () => {
 
       {showIncidentForm && (
         <IncidentForm onClose={() => setShowIncidentForm(false)} />
+      )}
+
+      {showImport && (
+        <DocumentImportModal onClose={() => setShowImport(false)} />
       )}
     </div>
   );

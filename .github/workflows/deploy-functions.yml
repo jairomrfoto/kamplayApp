@@ -55,6 +55,6 @@ jobs:
           STRIPE_WEBHOOK_SECRET:   ${{ secrets.STRIPE_WEBHOOK_SECRET }}
 
       - name: Deploy Firebase Functions
-        run: firebase deploy --only functions --project kamplay-7a007
+        run: firebase deploy --only functions --project kamplay-7a007 --force
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

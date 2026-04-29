@@ -24,14 +24,18 @@ jobs:
       - name: Install function dependencies
         run: npm --prefix functions install
 
-      # Crea functions/.env con la config no sensible
+      # Crea functions/.env con toda la config (sensible y no sensible)
       - name: Create functions/.env
         run: |
-          echo "APP_URL=https://kamplay-7a007.web.app" > functions/.env
-          echo "SMTP_HOST=smtp.gmail.com"             >> functions/.env
-          echo "SMTP_PORT=587"                         >> functions/.env
-          echo "SMTP_USER=${{ vars.SMTP_USER }}"       >> functions/.env
-          echo "SMTP_FROM=${{ vars.SMTP_FROM }}"       >> functions/.env
+          echo "APP_URL=https://kamplay-7a007.web.app"      > functions/.env
+          echo "SMTP_HOST=smtp.gmail.com"                  >> functions/.env
+          echo "SMTP_PORT=587"                              >> functions/.env
+          echo "SMTP_USER=${{ vars.SMTP_USER }}"            >> functions/.env
+          echo "SMTP_FROM=${{ vars.SMTP_FROM }}"            >> functions/.env
+          echo "SMTP_PASS=${{ secrets.SMTP_PASS }}"         >> functions/.env
+          echo "ANTHROPIC_KEY=${{ secrets.ANTHROPIC_KEY }}" >> functions/.env
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"         >> functions/.env
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> functions/.env
 
       - name: Deploy Firebase Functions
         run: firebase deploy --only functions --project kamplay-7a007

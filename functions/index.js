@@ -21,7 +21,6 @@
  */
 
 const functions  = require('firebase-functions');
-const { defineSecret } = require('firebase-functions/params');
 const admin      = require('firebase-admin');
 const nodemailer = require('nodemailer');
 const Stripe     = require('stripe');
@@ -29,26 +28,24 @@ const Stripe     = require('stripe');
 admin.initializeApp();
 const db = admin.firestore();
 
-// ── Secrets (Google Secret Manager) ──────────────────────────────────────────
-const STRIPE_SECRET_KEY     = defineSecret('STRIPE_SECRET_KEY');
-const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
-const SMTP_PASS             = defineSecret('SMTP_PASS');
-const ANTHROPIC_KEY         = defineSecret('ANTHROPIC_KEY');
-
-// ── Non-sensitive config via process.env (functions/.env) ─────────────────────
-const appUrl   = () => process.env.APP_URL   || 'https://kamplay-7a007.web.app';
-const smtpHost = () => process.env.SMTP_HOST || 'smtp.gmail.com';
-const smtpPort = () => Number(process.env.SMTP_PORT || 587);
-const smtpUser = () => process.env.SMTP_USER || '';
-const smtpFrom = () => process.env.SMTP_FROM || `Kamplay <${smtpUser()}>`;
+// ── Config y secretos via process.env (functions/.env creado en CI) ───────────
+const appUrl   = () => process.env.APP_URL            || 'https://kamplay-7a007.web.app';
+const smtpHost = () => process.env.SMTP_HOST          || 'smtp.gmail.com';
+const smtpPort = () => Number(process.env.SMTP_PORT   || 587);
+const smtpUser = () => process.env.SMTP_USER          || '';
+const smtpFrom = () => process.env.SMTP_FROM          || `Kamplay <${smtpUser()}>`;
+const smtpPass = () => process.env.SMTP_PASS          || '';
+const stripeKey = () => process.env.STRIPE_SECRET_KEY || '';
+const stripeWh  = () => process.env.STRIPE_WEBHOOK_SECRET || '';
+const aiKey     = () => process.env.ANTHROPIC_KEY     || '';
 
 const SUBSCRIPTION_PRICE_EUR_CENTS = 3000; // 30 €
 const PLATFORM_FEE_PERCENT         = 0.01; // 1 %
 
-// ── Stripe (lazy — secret only available at runtime) ─────────────────────────
+// ── Stripe (lazy) ─────────────────────────────────────────────────────────────
 let _stripe = null;
 function getStripe() {
-  if (!_stripe) _stripe = Stripe(STRIPE_SECRET_KEY.value(), { apiVersion: '2023-10-16' });
+  if (!_stripe) _stripe = Stripe(stripeKey(), { apiVersion: '2023-10-16' });
   return _stripe;
 }
 
@@ -60,7 +57,7 @@ function getTransporter() {
       host:   smtpHost(),
       port:   smtpPort(),
       secure: false,
-      auth: { user: smtpUser(), pass: SMTP_PASS.value() },
+      auth: { user: smtpUser(), pass: smtpPass() },
     });
   }
   return _transporter;
@@ -154,12 +151,11 @@ async function getOrCreateStripeCustomer(uid, email) {
 // AUTH TRIGGER — email de verificación personalizado
 // ─────────────────────────────────────────────────────────────────────────────
 exports.onUserCreated = functions
-  .runWith({ secrets: ['SMTP_PASS'] })
   .auth.user().onCreate(async (user) => {
     if (user.emailVerified || !user.email) return null;
 
     const smtpUserVal = smtpUser();
-    const smtpPassVal = SMTP_PASS.value();
+    const smtpPassVal = smtpPass();
 
     if (!smtpUserVal || !smtpPassVal) {
       console.warn('SMTP no configurado (SMTP_USER / SMTP_PASS). Firebase enviará su propio correo.');
@@ -340,7 +336,7 @@ exports.stripeWebhook = functions
     const sig = req.headers['stripe-signature'];
     let event;
     try {
-      event = getStripe().webhooks.constructEvent(req.rawBody, sig, STRIPE_WEBHOOK_SECRET.value());
+      event = getStripe().webhooks.constructEvent(req.rawBody, sig, stripeWh());
     } catch (err) {
       console.error('⚠️  Webhook signature failed:', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -441,7 +437,7 @@ exports.stripeWebhook = functions
 // ─────────────────────────────────────────────────────────────────────────────
 exports.parseDocument = functions
   .region('europe-west1')
-  .runWith({ timeoutSeconds: 180, memory: '512MB', secrets: ['ANTHROPIC_KEY'] })
+  .runWith({ timeoutSeconds: 180, memory: '512MB' })
   .https.onCall(async (data, context) => {
     assertAuth(context);
 
@@ -488,9 +484,9 @@ exports.parseDocument = functions
       throw new functions.https.HttpsError('invalid-argument', 'No se pudo extraer texto del documento. El archivo puede estar protegido, escaneado sin OCR, o vacío.');
     }
 
-    const anthropicKeyVal = ANTHROPIC_KEY.value();
+    const anthropicKeyVal = aiKey();
     if (!anthropicKeyVal) {
-      throw new functions.https.HttpsError('failed-precondition', 'La API de IA no está configurada. Ejecuta: firebase functions:secrets:set ANTHROPIC_KEY');
+      throw new functions.https.HttpsError('failed-precondition', 'La API de IA no está configurada. Añade ANTHROPIC_KEY a los secretos del repositorio en GitHub.');
     }
 
     const sdkModule = require('@anthropic-ai/sdk');

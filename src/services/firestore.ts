@@ -154,15 +154,17 @@ function raceBothReads<T>(sdkFn: () => Promise<T>, restFn: () => Promise<T>): Pr
 const sdkWithRestFallback = raceBothReads;
 
 // ── Write helper: REST is authoritative (guaranteed to reach Firestore) ───────
-// SDK write fires in background for local cache but is not awaited.
-// Rationale: the SDK can resolve setDoc() from its in-memory buffer even when
-// the server hasn't received the data, causing sdkWithRestFallback to skip REST.
-function restFirstWrite(
+// REST fires first so Firestore security rules always evaluate it as a CREATE
+// (not UPDATE) for new documents. SDK write follows for local cache only.
+async function restFirstWrite(
   restFn: () => Promise<void>,
   sdkFn: () => Promise<void>
 ): Promise<void> {
-  sdkFn().catch(() => {}); // background — for local SDK cache only
-  return restFn();         // this is what we await
+  try {
+    await restFn();
+  } finally {
+    sdkFn().catch(() => {}); // local cache update — never awaited
+  }
 }
 import type {
   Camper, Monitor, Grupo, Cabana, Material,

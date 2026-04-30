@@ -456,10 +456,11 @@ const Login = () => {
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+              <label htmlFor="login-email" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                 Correo electrónico
               </label>
               <input
+                id="login-email"
                 type="email" required value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="tu@correo.com"
@@ -470,11 +471,12 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+              <label htmlFor="login-password" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                 Contraseña
               </label>
               <div className="relative">
                 <input
+                  id="login-password"
                   type={showPwd ? 'text' : 'password'}
                   required minLength={mode === 'register' ? 8 : 1}
                   value={password}
@@ -521,11 +523,12 @@ const Login = () => {
             {/* Confirm password (register only) */}
             {mode === 'register' && (
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                <label htmlFor="login-confirm" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                   Confirmar contraseña
                 </label>
                 <div className="relative">
                   <input
+                    id="login-confirm"
                     type={showConfirm ? 'text' : 'password'}
                     required value={confirm}
                     onChange={e => setConfirm(e.target.value)}

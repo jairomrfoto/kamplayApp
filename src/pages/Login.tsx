@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Tent, Loader, Eye, EyeOff, CheckCircle, AlertCircle, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { saveUserProfile } from '../services/firestore';
+import { setLocalProfile } from '../utils/localProfile';
 
 // ── Disposable email blocklist ───────────────────────────────────────────────
 const DISPOSABLE_DOMAINS = new Set([
@@ -130,12 +132,21 @@ const Login = () => {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Redirect already-verified users — go directly to /admin for admin accounts
+  // Redirect already-verified users
   useEffect(() => {
     if (authLoading) return;
-    if (user?.emailVerified) {
-      const dest = ADMIN_EMAIL && user.email === ADMIN_EMAIL ? '/admin' : '/onboarding';
-      navigate(dest, { replace: true });
+    if (!user?.emailVerified) return;
+    if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
+      // Ensure admin has a usuarios document so admin panel loads correctly
+      saveUserProfile({
+        uid: user.uid, campId: '', role: 'coordinator',
+        email: user.email || '',
+        nombre: user.displayName || user.email?.split('@')[0] || '',
+      }).catch(() => {});
+      setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
+      navigate('/admin', { replace: true });
+    } else {
+      navigate('/onboarding', { replace: true });
     }
   }, [user, authLoading]);
 

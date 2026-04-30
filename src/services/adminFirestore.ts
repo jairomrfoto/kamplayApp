@@ -31,7 +31,8 @@ export interface AdminPayment {
 
 export async function adminGetAllUsers(): Promise<AdminUser[]> {
   const snap = await getDocs(collection(db, 'usuarios'));
-  return snap.docs.map(d => fromTs(d.data()) as AdminUser);
+  // Always derive uid from the document ID — never trust data-only uid
+  return snap.docs.map(d => ({ uid: d.id, ...fromTs(d.data()) } as AdminUser));
 }
 
 export async function adminGetAllCamps(): Promise<Camp[]> {

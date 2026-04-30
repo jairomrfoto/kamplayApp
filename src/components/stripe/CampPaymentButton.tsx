@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CreditCard, X } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import {
   Elements,
   PaymentElement,
@@ -9,8 +9,16 @@ import {
 } from '@stripe/react-stripe-js';
 import { createCampPaymentIntent } from '../../services/stripe';
 
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
-const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
+// Stripe is loaded lazily — only when the payment modal opens.
+// This prevents Stripe's SES lockdown from running on every page.
+let stripePromise: Promise<Stripe | null> | null = null;
+function getStripe() {
+  if (!stripePromise) {
+    const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+    stripePromise = key ? loadStripe(key) : Promise.resolve(null);
+  }
+  return stripePromise;
+}
 
 interface Props {
   campId: string;
@@ -128,7 +136,7 @@ export default function CampPaymentButton({ campId, campName, inscriptionFee }: 
               </button>
             </div>
             <div className="p-5">
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <Elements stripe={getStripe()} options={{ clientSecret }}>
                 <CheckoutForm
                   onSuccess={() => { setShowModal(false); setPaid(true); }}
                   onCancel={() => setShowModal(false)}

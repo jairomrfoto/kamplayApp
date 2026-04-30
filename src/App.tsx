@@ -1,33 +1,44 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
+import { Loader } from 'lucide-react';
+
+// Eager — needed immediately on first paint
 import Landing from './pages/Landing';
 import About from './pages/About';
 import Benefits from './pages/Benefits';
 import Login from './pages/Login';
-import ParentDashboard from './pages/ParentDashboard';
-import Dashboard from './pages/Dashboard';
-import CoordinatorDashboard from './pages/CoordinatorDashboard';
-import Calendario from './pages/Calendario';
-import Actividades from './pages/Actividades';
-import Acampados from './pages/Acampados';
-import Materiales from './pages/Materiales';
-import Monitores from './pages/Monitores';
-import MonitorDashboard from './pages/MonitorDashboard';
-import ProfesorDashboard from './pages/ProfesorDashboard';
-import Grupos from './pages/Grupos';
-import Cabanas from './pages/Cabanas';
-import AreaMedica from './pages/AreaMedica';
-import Incidencias from './pages/Incidencias';
-import Menu from './pages/Menu';
-import CreateCamp from './pages/CreateCamp';
 import Onboarding from './pages/Onboarding';
-import JoinCamp from './pages/JoinCamp';
-import Asistencia from './pages/Asistencia';
-import AdminDashboard from './pages/AdminDashboard';
-import CampDirectory from './pages/CampDirectory';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+
+// Lazy — only loaded when the user navigates to these routes
+const ParentDashboard      = lazy(() => import('./pages/ParentDashboard'));
+const Dashboard            = lazy(() => import('./pages/Dashboard'));
+const CoordinatorDashboard = lazy(() => import('./pages/CoordinatorDashboard'));
+const Calendario           = lazy(() => import('./pages/Calendario'));
+const Actividades          = lazy(() => import('./pages/Actividades'));
+const Acampados            = lazy(() => import('./pages/Acampados'));
+const Materiales           = lazy(() => import('./pages/Materiales'));
+const Monitores            = lazy(() => import('./pages/Monitores'));
+const MonitorDashboard     = lazy(() => import('./pages/MonitorDashboard'));
+const ProfesorDashboard    = lazy(() => import('./pages/ProfesorDashboard'));
+const Grupos               = lazy(() => import('./pages/Grupos'));
+const Cabanas              = lazy(() => import('./pages/Cabanas'));
+const AreaMedica           = lazy(() => import('./pages/AreaMedica'));
+const Incidencias          = lazy(() => import('./pages/Incidencias'));
+const Menu                 = lazy(() => import('./pages/Menu'));
+const CreateCamp           = lazy(() => import('./pages/CreateCamp'));
+const JoinCamp             = lazy(() => import('./pages/JoinCamp'));
+const Asistencia           = lazy(() => import('./pages/Asistencia'));
+const AdminDashboard       = lazy(() => import('./pages/AdminDashboard'));
+const CampDirectory        = lazy(() => import('./pages/CampDirectory'));
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-stone-50">
+    <Loader size={28} className="animate-spin text-orange-500" />
+  </div>
+);
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -65,49 +76,51 @@ function AppRoutes() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/benefits" element={<Benefits />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/create-camp" element={<CreateCamp />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/join-camp" element={<JoinCamp />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/directorio" element={<CampDirectory />} />
-        <Route path="/parent-dashboard/*" element={<ParentDashboard />} />
-        <Route path="/coordinator-dashboard/*" element={<CoordinatorDashboard />} />
-        <Route path="/monitor-dashboard/*" element={<MonitorDashboard />} />
-        <Route path="/profesor-dashboard/*" element={<ProfesorDashboard />} />
-        <Route
-          path="/app/*"
-          element={
-            <div className="min-h-screen bg-gray-50">
-              <Navbar />
-              <div className="flex">
-                <Sidebar />
-                <main className="flex-1 p-6">
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/calendario" element={<Calendario />} />
-                    <Route path="/actividades" element={<Actividades />} />
-                    <Route path="/acampados" element={<Acampados />} />
-                    <Route path="/materiales" element={<Materiales />} />
-                    <Route path="/monitores" element={<Monitores />} />
-                    <Route path="/grupos" element={<Grupos />} />
-                    <Route path="/cabanas" element={<Cabanas />} />
-                    <Route path="/area-medica" element={<AreaMedica />} />
-                    <Route path="/incidencias" element={<Incidencias />} />
-                    <Route path="/menu" element={<Menu />} />
-                    <Route path="/asistencia" element={<Asistencia />} />
-                  </Routes>
-                </main>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/benefits" element={<Benefits />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/create-camp" element={<CreateCamp />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/join-camp" element={<JoinCamp />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/directorio" element={<CampDirectory />} />
+          <Route path="/parent-dashboard/*" element={<ParentDashboard />} />
+          <Route path="/coordinator-dashboard/*" element={<CoordinatorDashboard />} />
+          <Route path="/monitor-dashboard/*" element={<MonitorDashboard />} />
+          <Route path="/profesor-dashboard/*" element={<ProfesorDashboard />} />
+          <Route
+            path="/app/*"
+            element={
+              <div className="min-h-screen bg-gray-50">
+                <Navbar />
+                <div className="flex">
+                  <Sidebar />
+                  <main className="flex-1 p-6">
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/calendario" element={<Calendario />} />
+                      <Route path="/actividades" element={<Actividades />} />
+                      <Route path="/acampados" element={<Acampados />} />
+                      <Route path="/materiales" element={<Materiales />} />
+                      <Route path="/monitores" element={<Monitores />} />
+                      <Route path="/grupos" element={<Grupos />} />
+                      <Route path="/cabanas" element={<Cabanas />} />
+                      <Route path="/area-medica" element={<AreaMedica />} />
+                      <Route path="/incidencias" element={<Incidencias />} />
+                      <Route path="/menu" element={<Menu />} />
+                      <Route path="/asistencia" element={<Asistencia />} />
+                    </Routes>
+                  </main>
+                </div>
               </div>
-            </div>
-          }
-        />
-      </Routes>
+            }
+          />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

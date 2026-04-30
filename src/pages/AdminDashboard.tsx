@@ -4,11 +4,10 @@ import {
   Users, Tent, CreditCard, LogOut, RefreshCw, Loader,
   Search, Shield, FlaskConical,
 } from 'lucide-react';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import {
   adminGetAllUsers, adminGetAllCamps, adminGetAllPayments, adminGetCampStats,
+  adminUpdateUser,
   type AdminUser, type AdminPayment,
 } from '../services/adminFirestore';
 import type { Camp } from '../types/camp';
@@ -84,23 +83,26 @@ export default function AdminDashboard() {
   }, [user, authLoading, navigate]);
 
   const load = useCallback(async () => {
-    try {
-      const [u, c, p] = await Promise.all([
-        adminGetAllUsers(),
-        adminGetAllCamps(),
-        adminGetAllPayments(),
-      ]);
-      setUsers(u);
+    const [usersRes, campsRes, paymentsRes] = await Promise.allSettled([
+      adminGetAllUsers(),
+      adminGetAllCamps(),
+      adminGetAllPayments(),
+    ]);
+    if (usersRes.status === 'fulfilled')   setUsers(usersRes.value);
+    else console.error('users load error:', usersRes.reason);
+
+    if (campsRes.status === 'fulfilled') {
+      const c = campsRes.value;
       setCamps(c);
-      setPayments(p);
       c.slice(0, 20).forEach(camp => {
         adminGetCampStats(camp.id).then(stats => {
           setCampStats(prev => ({ ...prev, [camp.id]: stats }));
         });
       });
-    } catch (e) {
-      console.error('Admin load error:', e);
-    }
+    } else console.error('camps load error:', campsRes.reason);
+
+    if (paymentsRes.status === 'fulfilled') setPayments(paymentsRes.value);
+    else console.error('payments load error:', paymentsRes.reason);
   }, []);
 
   useEffect(() => {
@@ -119,13 +121,21 @@ export default function AdminDashboard() {
   };
 
   const handleChangeRole = async (u: AdminUser, newRole: string) => {
-    await updateDoc(doc(db, 'usuarios', u.uid), { role: newRole });
-    setUsers(prev => prev.map(usr => usr.uid === u.uid ? { ...usr, role: newRole } : usr));
+    try {
+      await adminUpdateUser(u.uid, { role: newRole });
+      setUsers(prev => prev.map(usr => usr.uid === u.uid ? { ...usr, role: newRole, hasProfile: true } : usr));
+    } catch (e) {
+      console.error('handleChangeRole error:', e);
+    }
   };
 
   const handleChangeSubscription = async (u: AdminUser, newStatus: string) => {
-    await updateDoc(doc(db, 'usuarios', u.uid), { subscriptionStatus: newStatus });
-    setUsers(prev => prev.map(usr => usr.uid === u.uid ? { ...usr, subscriptionStatus: newStatus } : usr));
+    try {
+      await adminUpdateUser(u.uid, { subscriptionStatus: newStatus });
+      setUsers(prev => prev.map(usr => usr.uid === u.uid ? { ...usr, subscriptionStatus: newStatus, hasProfile: true } : usr));
+    } catch (e) {
+      console.error('handleChangeSubscription error:', e);
+    }
   };
 
   // ── Derived stats ────────────────────────────────────────────────────────

@@ -41,6 +41,12 @@ export async function adminGetAllUsers(): Promise<AdminUser[]> {
   return result.data;
 }
 
+/** Update arbitrary profile fields for any user — bypasses Firestore rules via Admin SDK. */
+export async function adminUpdateUser(uid: string, fields: Partial<UserProfile & { subscriptionStatus: string }>): Promise<void> {
+  const fn = httpsCallable<{ uid: string; fields: object }, { ok: boolean }>(fns, 'adminUpdateUser');
+  await fn({ uid, fields });
+}
+
 export async function adminGetAllCamps(): Promise<Camp[]> {
   const snap = await getDocs(collection(db, 'campamentos'));
   return snap.docs.map(d => ({ id: d.id, ...fromTs(d.data()) } as Camp));

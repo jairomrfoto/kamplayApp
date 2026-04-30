@@ -201,8 +201,28 @@ exports.adminListUsers = functions
   });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AUTH TRIGGER — email de verificación personalizado
+// ADMIN — update a user's profile fields (bypasses security rules)
 // ─────────────────────────────────────────────────────────────────────────────
+exports.adminUpdateUser = functions
+  .region('europe-west1')
+  .https.onCall(async (data, context) => {
+    assertAuth(context);
+
+    const adminDoc = await db.doc(`admins/${context.auth.uid}`).get();
+    if (!adminDoc.exists) {
+      throw new functions.https.HttpsError('permission-denied', 'Solo el administrador puede usar esta función.');
+    }
+
+    const { uid, fields } = data;
+    if (!uid || typeof fields !== 'object') {
+      throw new functions.https.HttpsError('invalid-argument', 'Faltan uid o fields.');
+    }
+
+    await db.doc(`usuarios/${uid}`).set(fields, { merge: true });
+    return { ok: true };
+  });
+
+
 exports.onUserCreated = functions
   .runWith({ secrets: ['SMTP_PASS'] })
   .auth.user().onCreate(async (user) => {

@@ -36,7 +36,7 @@ const SMTP_PASS             = defineSecret('SMTP_PASS');
 const ANTHROPIC_KEY         = defineSecret('ANTHROPIC_KEY');
 
 // ── Non-sensitive config via process.env (functions/.env) ─────────────────────
-const appUrl   = () => process.env.APP_URL   || 'https://kamplay-7a007.web.app';
+const appUrl   = () => process.env.APP_URL   || 'https://kamplay.es';
 const smtpHost = () => process.env.SMTP_HOST || 'smtp.gmail.com';
 const smtpPort = () => Number(process.env.SMTP_PORT || 587);
 const smtpUser = () => process.env.SMTP_USER || '';

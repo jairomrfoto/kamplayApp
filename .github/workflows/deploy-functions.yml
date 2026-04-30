@@ -28,7 +28,7 @@ jobs:
       # Crea functions/.env con la config no sensible
       - name: Create functions/.env
         run: |
-          echo "APP_URL=https://kamplay-7a007.web.app" > functions/.env
+          echo "APP_URL=https://kamplay.es" > functions/.env
           echo "SMTP_HOST=smtp.gmail.com"             >> functions/.env
           echo "SMTP_PORT=587"                         >> functions/.env
           echo "SMTP_USER=${{ vars.SMTP_USER }}"       >> functions/.env

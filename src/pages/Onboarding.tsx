@@ -41,8 +41,9 @@ const Onboarding = () => {
         nombre: user.displayName || user.email?.split('@')[0] || '',
       };
       setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
-      await saveUserProfile(adminProfile).catch(() => {});
-      navigate('/admin', { replace: true });
+      saveUserProfile(adminProfile)
+        .catch(() => {})
+        .then(() => navigate('/admin', { replace: true }));
       return;
     }
 

@@ -1,8 +1,10 @@
 import { collection, getDocs, Timestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import { getDocRest } from './firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { db, app } from '../config/firebase';
 import type { UserProfile } from '../types';
 import type { Camp } from '../types/camp';
+
+const fns = getFunctions(app, 'europe-west1');
 
 function fromTs(v: unknown): unknown {
   if (v instanceof Timestamp) return v.toDate();
@@ -16,7 +18,10 @@ function fromTs(v: unknown): unknown {
 }
 
 export interface AdminUser extends UserProfile {
+  emailVerified?: boolean;
+  hasProfile?: boolean;
   lastSeen?: Date;
+  createdAt?: Date;
 }
 
 export interface AdminPayment {
@@ -29,10 +34,11 @@ export interface AdminPayment {
   campName?: string;
 }
 
+/** Uses Admin SDK Cloud Function to list ALL Firebase Auth users merged with Firestore profiles. */
 export async function adminGetAllUsers(): Promise<AdminUser[]> {
-  const snap = await getDocs(collection(db, 'usuarios'));
-  // Always derive uid from the document ID — never trust data-only uid
-  return snap.docs.map(d => ({ uid: d.id, ...fromTs(d.data()) } as AdminUser));
+  const fn = httpsCallable<unknown, AdminUser[]>(fns, 'adminListUsers');
+  const result = await fn({});
+  return result.data;
 }
 
 export async function adminGetAllCamps(): Promise<Camp[]> {

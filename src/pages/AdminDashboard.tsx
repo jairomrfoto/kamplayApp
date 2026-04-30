@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Email / Nombre</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Rol</th>
                       <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Suscripción</th>
-                      <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Camp ID</th>
+                      <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Estado</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
@@ -378,7 +378,19 @@ export default function AdminDashboard() {
                             <option value="canceled">Cancelada (canceled)</option>
                           </select>
                         </td>
-                        <td className="px-4 py-3 text-gray-500 font-mono text-xs truncate max-w-[140px]">{u.campId || '–'}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-col gap-1">
+                            {u.emailVerified === false && (
+                              <span className="text-xs text-amber-400">Sin verificar</span>
+                            )}
+                            {!u.hasProfile && (
+                              <span className="text-xs text-gray-500">Sin perfil</span>
+                            )}
+                            {u.emailVerified !== false && u.hasProfile && (
+                              <span className="text-xs text-green-400">Activo</span>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                     {filteredUsers.length === 0 && (

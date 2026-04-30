@@ -151,6 +151,56 @@ async function getOrCreateStripeCustomer(uid, email) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ADMIN — list all users (Auth + Firestore merge, bypasses security rules)
+// ─────────────────────────────────────────────────────────────────────────────
+exports.adminListUsers = functions
+  .region('europe-west1')
+  .https.onCall(async (_data, context) => {
+    assertAuth(context);
+
+    // Verify caller is admin
+    const adminDoc = await db.doc(`admins/${context.auth.uid}`).get();
+    if (!adminDoc.exists) {
+      throw new functions.https.HttpsError('permission-denied', 'Solo el administrador puede usar esta función.');
+    }
+
+    // Collect all Auth users (paginated, max 1000 per page)
+    const authUsers = [];
+    let pageToken;
+    do {
+      const result = await admin.auth().listUsers(1000, pageToken);
+      authUsers.push(...result.users);
+      pageToken = result.pageToken;
+    } while (pageToken);
+
+    // Bulk-fetch Firestore profiles
+    const uids = authUsers.map(u => u.uid);
+    const profileSnaps = await Promise.all(
+      uids.map(uid => db.doc(`usuarios/${uid}`).get())
+    );
+    const profileMap = {};
+    profileSnaps.forEach(snap => {
+      if (snap.exists) profileMap[snap.id] = snap.data();
+    });
+
+    return authUsers.map(authUser => {
+      const profile = profileMap[authUser.uid] || {};
+      return {
+        uid:                authUser.uid,
+        email:              authUser.email || profile.email || '',
+        nombre:             profile.nombre || authUser.displayName || '',
+        role:               profile.role || '',
+        subscriptionStatus: profile.subscriptionStatus || '',
+        campId:             profile.campId || '',
+        emailVerified:      authUser.emailVerified,
+        createdAt:          authUser.metadata.creationTime || null,
+        lastSeen:           authUser.metadata.lastSignInTime || null,
+        hasProfile:         !!profileMap[authUser.uid],
+      };
+    });
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
 // AUTH TRIGGER — email de verificación personalizado
 // ─────────────────────────────────────────────────────────────────────────────
 exports.onUserCreated = functions

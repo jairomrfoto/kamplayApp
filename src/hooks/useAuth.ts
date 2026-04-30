@@ -4,6 +4,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   sendPasswordResetEmail,
@@ -20,7 +21,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Consume any pending Google redirect result first
+    // Consume any pending redirect result (fallback path)
     getRedirectResult(auth).catch(() => {});
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -30,28 +31,35 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
-  // Login only — never creates an account
   const signIn = async (email: string, password: string) => {
     const result = await signInWithEmailAndPassword(auth, email, password);
     return result.user;
   };
 
-  // Register — creates account; Cloud Function onUserCreated sends the branded email
   const signUp = async (email: string, password: string) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     return result.user;
   };
 
-  // Resend: fall back to Firebase's built-in if SMTP not yet configured
   const resendVerification = async () => {
     const u = auth.currentUser;
     if (u && !u.emailVerified) await sendEmailVerification(u);
   };
 
-  // Redirect flow — avoids popup COOP issues entirely
+  // Popup is the primary method (no third-party cookie issues).
+  // COOP header "same-origin-allow-popups" is set in firebase.json.
+  // Falls back to redirect only if the browser blocks the popup.
   const signInWithGoogle = async () => {
-    await signInWithRedirect(auth, googleProvider);
-    // Page will reload after Google redirects back; onAuthStateChanged picks up the user
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result.user;
+    } catch (err: any) {
+      if (err.code === 'auth/popup-blocked') {
+        await signInWithRedirect(auth, googleProvider);
+        return null;
+      }
+      throw err;
+    }
   };
 
   const sendPasswordReset = async (email: string) => {

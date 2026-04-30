@@ -1,10 +1,11 @@
-name: Deploy Firebase Functions
+name: Deploy Firebase Functions & Rules
 
 on:
   push:
     branches: [main, claude/audit-bolt-app-O4YSY]
     paths:
       - 'functions/**'
+      - 'firestore.rules'
       - '.github/workflows/deploy-functions.yml'
   workflow_dispatch: # permite lanzarlo manualmente desde GitHub
 
@@ -54,7 +55,7 @@ jobs:
           STRIPE_SECRET_KEY:       ${{ secrets.STRIPE_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET:   ${{ secrets.STRIPE_WEBHOOK_SECRET }}
 
-      - name: Deploy Firebase Functions
-        run: firebase deploy --only functions --project kamplay-7a007 --force
+      - name: Deploy Firebase Functions & Firestore Rules
+        run: firebase deploy --only functions,firestore:rules --project kamplay-7a007 --force
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

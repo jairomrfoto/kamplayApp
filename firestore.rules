@@ -1,3 +1,4 @@
+// Last deployed: 2026-04-30
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {

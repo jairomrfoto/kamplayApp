@@ -331,6 +331,7 @@ exports.createEventCheckout = functions
         },
         quantity: 1,
       }],
+      allow_promotion_codes: true,
       success_url: `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}`,
       cancel_url:  `${appUrl()}/create-camp?event=cancelled`,
       metadata: { firebaseUID: uid, campId, planType },

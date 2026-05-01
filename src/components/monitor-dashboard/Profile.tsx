@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine } from 'lucide-react';
+import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import ProfileEditForm from './ProfileEditForm';
 import ChangePassword from '../ChangePassword';
@@ -122,6 +123,26 @@ const Profile = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Upgrade a coordinador */}
+      <div className="bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl p-6 text-white">
+        <p className="text-xs font-bold uppercase tracking-wider text-orange-100 mb-1">¿Quieres más?</p>
+        <h3 className="text-xl font-extrabold mb-1">Conviértete en Coordinador</h3>
+        <p className="text-sm text-orange-100 mb-4">
+          Crea tu propio campamento o campus, gestiona monitores y acampados, y dirige tu programa al completo.
+        </p>
+        <ul className="space-y-1.5 mb-5 text-sm text-orange-50">
+          <li>✓ Campamentos y campus ilimitados (Plan Profesional)</li>
+          <li>✓ También disponible por evento desde 9 €</li>
+          <li>✓ Tu rol cambia a Coordinador automáticamente al pagar</li>
+        </ul>
+        <Link
+          to="/create-camp"
+          className="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-5 py-2.5 rounded-xl hover:bg-orange-50 transition-colors text-sm"
+        >
+          Crear mi campamento <ArrowRight size={16} />
+        </Link>
       </div>
 
       <ChangePassword />

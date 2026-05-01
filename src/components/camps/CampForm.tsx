@@ -14,7 +14,12 @@ import type { Camp } from '../../types/camp';
 
 interface CampFormData extends Omit<Camp, 'id' | 'joinCode' | 'adminId'> {}
 
-const CampForm = () => {
+interface CampFormProps {
+  planType?: 'subscription' | 'standard' | 'express';
+  onCampCreated?: (camp: Camp) => void;
+}
+
+const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addCampToUser } = useStore();
@@ -117,6 +122,11 @@ const CampForm = () => {
     };
 
     try {
+      if (onCampCreated) {
+        // Event plan: let parent handle save + payment redirect
+        onCampCreated(camp);
+        return;
+      }
       await saveCampInfo(camp);
       if (user) {
         addCampToUser(camp);

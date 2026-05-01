@@ -9,17 +9,18 @@ interface Props {
 }
 
 export default function SubscriptionBanner({ profile, onSubscribed }: Props) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading]           = useState(false);
+  const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
+  const [error, setError]               = useState('');
 
-  const status = profile.subscriptionStatus;
+  const status   = profile.subscriptionStatus;
   const isActive = status === 'active' || status === 'trialing';
 
   async function handleSubscribe() {
     setLoading(true);
     setError('');
     try {
-      const { url } = await startSubscriptionCheckout();
+      const { url } = await startSubscriptionCheckout(billingInterval);
       window.location.href = url;
     } catch (e: any) {
       setError(e?.message || 'Error al iniciar el pago');
@@ -44,8 +45,8 @@ export default function SubscriptionBanner({ profile, onSubscribed }: Props) {
       <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
         <CheckCircle size={18} className="text-green-600 flex-shrink-0" />
         <div className="flex-1">
-          <p className="text-sm font-semibold text-green-800">Suscripción activa</p>
-          <p className="text-xs text-green-600">Acceso completo a Kamplay Pro</p>
+          <p className="text-sm font-semibold text-green-800">Plan Profesional activo</p>
+          <p className="text-xs text-green-600">Acceso ilimitado a todas las funcionalidades</p>
         </div>
         <button
           onClick={handleManage}
@@ -83,24 +84,39 @@ export default function SubscriptionBanner({ profile, onSubscribed }: Props) {
   }
 
   return (
-    <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-4">
-      <div className="flex items-start gap-3 mb-3">
+    <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-4 space-y-3">
+      <div className="flex items-start gap-3">
         <Clock size={18} className="text-orange-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-bold text-gray-900">Activa tu suscripción Kamplay Pro</p>
-          <p className="text-xs text-gray-500 mt-0.5">
-            30 €/mes · Campamentos y campus ilimitados · Todas las funcionalidades
-          </p>
+          <p className="text-sm font-bold text-gray-900">Plan Profesional — uso ilimitado</p>
+          <p className="text-xs text-gray-500 mt-0.5">Campamentos y campus ilimitados · Todas las funcionalidades</p>
         </div>
       </div>
-      {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
+
+      {/* Toggle mensual / anual */}
+      <div className="flex rounded-lg border border-orange-200 overflow-hidden text-xs font-semibold">
+        <button
+          onClick={() => setBillingInterval('month')}
+          className={`flex-1 py-2 transition-colors ${billingInterval === 'month' ? 'bg-orange-500 text-white' : 'text-gray-600 hover:bg-orange-50'}`}
+        >
+          30 €/mes
+        </button>
+        <button
+          onClick={() => setBillingInterval('year')}
+          className={`flex-1 py-2 transition-colors ${billingInterval === 'year' ? 'bg-orange-500 text-white' : 'text-gray-600 hover:bg-orange-50'}`}
+        >
+          250 €/año <span className={billingInterval === 'year' ? 'text-orange-100' : 'text-green-600'}>· ahorras 2 meses</span>
+        </button>
+      </div>
+
+      {error && <p className="text-xs text-red-600">{error}</p>}
       <button
         onClick={handleSubscribe}
         disabled={loading}
         className="w-full text-sm bg-orange-500 text-white rounded-lg px-4 py-2.5 hover:bg-orange-600 disabled:opacity-50 font-semibold flex items-center justify-center gap-2"
       >
         <CreditCard size={15} />
-        {loading ? 'Redirigiendo...' : 'Suscribirse por 30 €/mes'}
+        {loading ? 'Redirigiendo...' : `Suscribirse ${billingInterval === 'year' ? '· 250 €/año' : '· 30 €/mes'}`}
       </button>
     </div>
   );

@@ -524,63 +524,101 @@ const Landing = () => {
 
       {/* ── Pricing ── */}
       <section className="py-20 bg-stone-50" aria-labelledby="precios-heading">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
-            <span className="inline-block text-green-600 font-bold text-sm uppercase tracking-wider mb-3">Precios</span>
-            <h2 id="precios-heading" className="text-3xl sm:text-4xl font-extrabold text-gray-900">Simple y transparente</h2>
+            <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Precios</span>
+            <h2 id="precios-heading" className="text-3xl sm:text-4xl font-extrabold text-gray-900">Paga solo por lo que usas</h2>
             <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-              Empieza gratis hoy mismo. Sin sorpresas, sin letra pequeña.
+              Sin permanencia. Sin comisiones ocultas. Elige el plan que encaja con tu programa.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            {/* Free */}
-            <div className="bg-white rounded-2xl border-2 border-stone-200 p-8">
-              <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Plan Gratuito</p>
-              <p className="text-4xl font-extrabold text-gray-900 mb-1">0 €</p>
-              <p className="text-sm text-gray-400 mb-6">Para siempre, sin tarjeta</p>
-              <ul className="space-y-3 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Express */}
+            <div className="bg-white rounded-2xl border-2 border-stone-200 p-7 flex flex-col">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Express</p>
+              <p className="text-4xl font-extrabold text-gray-900 mb-1">9 €</p>
+              <p className="text-sm text-gray-400 mb-1">pago único por evento</p>
+              <p className="text-xs text-orange-500 font-semibold mb-6">Hasta 3 días</p>
+              <ul className="space-y-2.5 mb-8 flex-1">
                 {[
-                  'Gestión de participantes ilimitada',
-                  'Área médica y fichas completas',
-                  'Actividades, calendario y menú',
+                  'Un campamento o campus',
+                  'Gestión de acampados y grupos',
                   'Acceso para monitores y familias',
-                  'Asistencia diaria (campus)',
+                  'Actividades y asistencia',
+                  'Editable hasta 2 días post-evento',
+                  'Archivo permanente de solo lectura',
                 ].map(f => (
-                  <li key={f} className="flex items-center gap-2.5 text-sm text-gray-600">
-                    <Check size={15} className="text-green-500 shrink-0" /> {f}
+                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                    <Check size={14} className="text-green-500 shrink-0 mt-0.5" /> {f}
                   </li>
                 ))}
               </ul>
-              <Link to="/create-camp" className="block w-full text-center bg-gray-900 hover:bg-gray-700 text-white font-bold py-3 rounded-xl transition-colors">
-                Empezar gratis
+              <Link to="/login" className="block w-full text-center border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold py-3 rounded-xl transition-colors">
+                Empezar
               </Link>
             </div>
 
-            {/* Pro */}
-            <div className="bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-white/20 text-white text-xs font-bold px-2.5 py-1 rounded-full">Próximamente</div>
-              <p className="text-sm font-bold text-orange-200 uppercase tracking-wider mb-2">Plan Pro</p>
-              <p className="text-4xl font-extrabold mb-1">Pronto</p>
-              <p className="text-sm text-orange-200 mb-6">Más funciones para programas grandes</p>
-              <ul className="space-y-3 mb-8">
+            {/* Estándar */}
+            <div className="bg-white rounded-2xl border-2 border-orange-300 p-7 flex flex-col relative shadow-md">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">Más popular</div>
+              <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-2">Estándar</p>
+              <p className="text-4xl font-extrabold text-gray-900 mb-1">15 €</p>
+              <p className="text-sm text-gray-400 mb-1">pago único por evento</p>
+              <p className="text-xs text-orange-500 font-semibold mb-6">Hasta 7 días</p>
+              <ul className="space-y-2.5 mb-8 flex-1">
                 {[
-                  'Todo del plan gratuito',
-                  'Directorio público de campamentos',
-                  'Valoraciones de familias',
-                  'Estadísticas y reportes avanzados',
-                  'Soporte prioritario',
+                  'Un campamento o campus',
+                  'Gestión de acampados y grupos',
+                  'Acceso para monitores y familias',
+                  'Actividades, menú e incidencias',
+                  'Escáner de documentos',
+                  'Editable hasta 7 días post-evento',
+                  'Archivo permanente de solo lectura',
                 ].map(f => (
-                  <li key={f} className="flex items-center gap-2.5 text-sm text-white/90">
-                    <Check size={15} className="text-white shrink-0" /> {f}
+                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                    <Check size={14} className="text-green-500 shrink-0 mt-0.5" /> {f}
                   </li>
                 ))}
               </ul>
-              <button disabled className="w-full bg-white/20 text-white font-bold py-3 rounded-xl opacity-60 cursor-not-allowed">
-                Disponible pronto
-              </button>
+              <Link to="/login" className="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors">
+                Empezar
+              </Link>
+            </div>
+
+            {/* Profesional */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-7 text-white flex flex-col">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Profesional</p>
+              <div className="mb-1">
+                <span className="text-4xl font-extrabold">30 €</span>
+                <span className="text-gray-400 text-sm">/mes</span>
+              </div>
+              <p className="text-sm text-gray-400 mb-1">o <span className="text-white font-bold">250 €/año</span> <span className="text-green-400 text-xs font-semibold">(ahorras 2 meses)</span></p>
+              <p className="text-xs text-orange-400 font-semibold mb-6">Programas ilimitados</p>
+              <ul className="space-y-2.5 mb-8 flex-1">
+                {[
+                  'Campamentos y campus ilimitados',
+                  'Sin límite de duración por evento',
+                  'Todo lo del plan Estándar',
+                  'Escáner de documentos con IA',
+                  'Directorio público con valoraciones',
+                  'Estadísticas y reportes',
+                  'Soporte prioritario',
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2 text-sm text-white/80">
+                    <Check size={14} className="text-orange-400 shrink-0 mt-0.5" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link to="/login" className="block w-full text-center bg-orange-500 hover:bg-orange-400 text-white font-bold py-3 rounded-xl transition-colors">
+                Suscribirme
+              </Link>
             </div>
           </div>
+
+          <p className="text-center text-xs text-gray-400 mt-8">
+            Los planes por evento no caducan: el archivo queda en modo lectura de forma permanente. · IVA no incluido.
+          </p>
         </div>
       </section>
 

@@ -42,8 +42,11 @@ const smtpPort = () => Number(process.env.SMTP_PORT || 587);
 const smtpUser = () => process.env.SMTP_USER || '';
 const smtpFrom = () => process.env.SMTP_FROM || `Kamplay <${smtpUser()}>`;
 
-const SUBSCRIPTION_PRICE_EUR_CENTS = 3000; // 30 €
-const PLATFORM_FEE_PERCENT         = 0.01; // 1 %
+const SUBSCRIPTION_MONTHLY_CENTS = 3000;  // 30 €/mes
+const SUBSCRIPTION_ANNUAL_CENTS  = 25000; // 250 €/año
+const STANDARD_EVENT_CENTS       = 1500;  // 15 € — hasta 7 días
+const EXPRESS_EVENT_CENTS        = 900;   // 9 €  — hasta 3 días
+const PLATFORM_FEE_PERCENT       = 0.01;  // 1 %
 
 // ── Stripe (lazy — secret only available at runtime) ─────────────────────────
 let _stripe = null;
@@ -256,7 +259,7 @@ exports.onUserCreated = functions
   });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. SUSCRIPCIÓN — Coordinador paga 30 €/mes
+// 1. SUSCRIPCIÓN — Plan Profesional 30 €/mes o 250 €/año
 // ─────────────────────────────────────────────────────────────────────────────
 exports.createSubscriptionCheckout = functions
   .region('europe-west1')
@@ -264,6 +267,8 @@ exports.createSubscriptionCheckout = functions
   .https.onCall(async (data, context) => {
     assertAuth(context);
     const { uid, token: { email } } = context.auth;
+    const interval = data && data.interval === 'year' ? 'year' : 'month';
+    const amount   = interval === 'year' ? SUBSCRIPTION_ANNUAL_CENTS : SUBSCRIPTION_MONTHLY_CENTS;
     const customerId = await getOrCreateStripeCustomer(uid, email);
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,
@@ -273,11 +278,11 @@ exports.createSubscriptionCheckout = functions
         price_data: {
           currency: 'eur',
           product_data: {
-            name: 'Kamplay Pro — Coordinador',
-            description: 'Acceso completo: campamentos ilimitados, acampados ilimitados y todas las funcionalidades.',
+            name: `Kamplay Profesional — ${interval === 'year' ? 'Anual' : 'Mensual'}`,
+            description: 'Uso ilimitado de todas las funciones: campamentos, campus, escáner de documentos y gestión completa.',
           },
-          unit_amount: SUBSCRIPTION_PRICE_EUR_CENTS,
-          recurring: { interval: 'month' },
+          unit_amount: amount,
+          recurring: { interval },
         },
         quantity: 1,
       }],
@@ -286,6 +291,49 @@ exports.createSubscriptionCheckout = functions
       metadata: { firebaseUID: uid },
       subscription_data: { metadata: { firebaseUID: uid } },
       allow_promotion_codes: true,
+    });
+    return { url: session.url, sessionId: session.id };
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. PAGO POR EVENTO — Estándar 15 € (7 días) o Express 9 € (3 días)
+// ─────────────────────────────────────────────────────────────────────────────
+exports.createEventCheckout = functions
+  .region('europe-west1')
+  .runWith({ secrets: ['STRIPE_SECRET_KEY'] })
+  .https.onCall(async (data, context) => {
+    assertAuth(context);
+    const { uid, token: { email } } = context.auth;
+    const { planType, campId } = data || {};
+    if (!planType || !campId) {
+      throw new functions.https.HttpsError('invalid-argument', 'Faltan planType o campId.');
+    }
+    if (!['standard', 'express'].includes(planType)) {
+      throw new functions.https.HttpsError('invalid-argument', 'planType debe ser standard o express.');
+    }
+
+    const amount      = planType === 'standard' ? STANDARD_EVENT_CENTS : EXPRESS_EVENT_CENTS;
+    const label       = planType === 'standard' ? 'Estándar (hasta 7 días)' : 'Express (hasta 3 días)';
+    const customerId  = await getOrCreateStripeCustomer(uid, email);
+
+    const session = await getStripe().checkout.sessions.create({
+      customer: customerId,
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: `Kamplay ${label}`,
+            description: `Licencia de evento para un campamento o campus. ${planType === 'standard' ? 'Editable hasta 7 días después del evento.' : 'Editable hasta 2 días después del evento.'}`,
+          },
+          unit_amount: amount,
+        },
+        quantity: 1,
+      }],
+      success_url: `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}`,
+      cancel_url:  `${appUrl()}/create-camp?event=cancelled`,
+      metadata: { firebaseUID: uid, campId, planType },
     });
     return { url: session.url, sessionId: session.id };
   });
@@ -420,15 +468,43 @@ exports.stripeWebhook = functions
       switch (event.type) {
         case 'checkout.session.completed': {
           const session = event.data.object;
-          if (session.mode !== 'subscription') break;
           const uid = session.metadata?.firebaseUID;
           if (!uid) break;
-          await db.doc(`usuarios/${uid}`).set({
-            subscriptionStatus:    'active',
-            stripeSubscriptionId:  session.subscription,
-            subscriptionUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          }, { merge: true });
-          console.log(`✅ Subscription activated for ${uid}`);
+
+          if (session.mode === 'subscription') {
+            // Plan Profesional — activar suscripción y promover a coordinador
+            await db.doc(`usuarios/${uid}`).set({
+              subscriptionStatus:    'active',
+              role:                  'coordinator',
+              stripeSubscriptionId:  session.subscription,
+              subscriptionUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            }, { merge: true });
+            console.log(`✅ Subscription activated + role=coordinator for ${uid}`);
+          } else if (session.mode === 'payment') {
+            // Plan por evento — activar campamento con fecha de expiración
+            const { campId, planType } = session.metadata || {};
+            if (!campId || !planType) break;
+            const campSnap = await db.doc(`campamentos/${campId}`).get();
+            if (!campSnap.exists) break;
+            const camp = campSnap.data();
+            const endDate = camp.endDate ? new Date(camp.endDate) : new Date();
+            const bufferDays = planType === 'standard' ? 7 : 2;
+            const expiresAt = new Date(endDate);
+            expiresAt.setDate(expiresAt.getDate() + bufferDays);
+            await db.doc(`campamentos/${campId}`).set({
+              status:    'active',
+              planType,
+              expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
+              paidAt:    admin.firestore.FieldValue.serverTimestamp(),
+              paymentSession: session.id,
+            }, { merge: true });
+            // Promover a coordinador si todavía no lo es
+            const userSnap = await db.doc(`usuarios/${uid}`).get();
+            if (userSnap.exists && userSnap.data().role !== 'coordinator') {
+              await db.doc(`usuarios/${uid}`).set({ role: 'coordinator' }, { merge: true });
+            }
+            console.log(`✅ Event camp ${campId} activated (${planType}) expires ${expiresAt.toISOString()}`);
+          }
           break;
         }
         case 'customer.subscription.updated': {
@@ -453,6 +529,7 @@ exports.stripeWebhook = functions
           await db.doc(`usuarios/${resolvedUid}`).set({
             subscriptionStatus:    'canceled',
             subscriptionUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            // Keep role as coordinator — they may have event-plan camps still active
           }, { merge: true });
           console.log(`❌ Subscription canceled for ${resolvedUid}`);
           break;

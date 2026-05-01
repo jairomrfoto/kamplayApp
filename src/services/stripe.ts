@@ -3,10 +3,12 @@ import { app } from '../config/firebase';
 
 const fns = getFunctions(app, 'europe-west1');
 
-// ── Coordinator subscription ──────────────────────────────────────────────────
-export async function startSubscriptionCheckout(): Promise<{ url: string; sessionId: string }> {
-  const fn = httpsCallable<void, { url: string; sessionId: string }>(fns, 'createSubscriptionCheckout');
-  const result = await fn();
+// ── Plan Profesional — suscripción mensual o anual ────────────────────────────
+export async function startSubscriptionCheckout(
+  interval: 'month' | 'year' = 'month'
+): Promise<{ url: string; sessionId: string }> {
+  const fn = httpsCallable<{ interval: string }, { url: string; sessionId: string }>(fns, 'createSubscriptionCheckout');
+  const result = await fn({ interval });
   return result.data;
 }
 
@@ -16,16 +18,12 @@ export async function openBillingPortal(): Promise<{ url: string }> {
   return result.data;
 }
 
-// ── Stripe Connect onboarding ─────────────────────────────────────────────────
-export async function startConnectOnboarding(): Promise<{ url: string; connectId: string }> {
-  const fn = httpsCallable<void, { url: string; connectId: string }>(fns, 'createConnectAccountLink');
-  const result = await fn();
-  return result.data;
-}
-
-// ── Parent inscription payment ────────────────────────────────────────────────
-export async function createCampPaymentIntent(campId: string): Promise<{ clientSecret: string }> {
-  const fn = httpsCallable<{ campId: string }, { clientSecret: string }>(fns, 'createCampPaymentIntent');
-  const result = await fn({ campId });
+// ── Plan por evento — Estándar (15 €) o Express (9 €) ─────────────────────────
+export async function startEventCheckout(
+  planType: 'standard' | 'express',
+  campId: string
+): Promise<{ url: string; sessionId: string }> {
+  const fn = httpsCallable<{ planType: string; campId: string }, { url: string; sessionId: string }>(fns, 'createEventCheckout');
+  const result = await fn({ planType, campId });
   return result.data;
 }

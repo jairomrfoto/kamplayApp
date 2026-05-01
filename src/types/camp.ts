@@ -15,6 +15,10 @@ export interface Camp {
   coordinators: string[];
   mainCoordinator: string;
   inscriptionFee?: number; // en céntimos (ej. 5000 = 50 €)
+  // Plan de pago
+  planType?: 'subscription' | 'standard' | 'express';
+  status?: 'draft' | 'active' | 'archived';
+  expiresAt?: Date;
   // Directorio público
   listed?: boolean;
   description?: string;

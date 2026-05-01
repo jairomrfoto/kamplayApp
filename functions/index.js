@@ -1,5 +1,5 @@
 /**
- * Kamplay — Cloud Functions  (redeploy: 2026-05-01)
+ * Kamplay — Cloud Functions  (redeploy: 2026-05-01b)
  *
  * ── Secretos (Google Secret Manager) — ejecutar UNA VEZ en tu terminal: ──────
  *   firebase functions:secrets:set STRIPE_SECRET_KEY

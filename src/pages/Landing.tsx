@@ -220,7 +220,7 @@ const Landing = () => {
             <a href="#preguntas" className="px-3 py-1.5 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors">FAQ</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors hidden sm:block">
+            <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
               Iniciar sesión
             </Link>
             <Link to="/create-camp" className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shadow-sm">

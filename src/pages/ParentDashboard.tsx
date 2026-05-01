@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import type { Camper } from '../types';
 import NovedadesFeed from '../components/novedades/NovedadesFeed';
-import CampPaymentButton from '../components/stripe/CampPaymentButton';
 import ChatPanel from '../components/chat/ChatPanel';
 import RateCampPrompt from '../components/parent/RateCampPrompt';
 
@@ -425,13 +424,6 @@ const ParentDashboard = () => {
                     {formatDate(currentCamp.startDate)} – {formatDate(currentCamp.endDate)}
                   </span>
                 </div>
-                {currentCamp.inscriptionFee && currentCamp.inscriptionFee > 0 && (
-                  <CampPaymentButton
-                    campId={currentCamp.id}
-                    campName={currentCamp.name}
-                    inscriptionFee={currentCamp.inscriptionFee}
-                  />
-                )}
               </div>
             )}
 

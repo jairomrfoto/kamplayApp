@@ -21,7 +21,7 @@ interface CampFormProps {
 const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addCampToUser, setCurrentCamp } = useStore();
+  const { addCampToUser, setCurrentCamp, switchCampFn } = useStore();
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -138,6 +138,7 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
         setCurrentCamp(camp);
         addLocalCamp(user.uid, campId, camp, 'coordinator');
         addUserCampId(user.uid, campId).catch(console.error);
+        switchCampFn?.(campId);
       }
       setCreatedCamp(camp);
       setShowSuccess(true);

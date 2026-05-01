@@ -11,6 +11,7 @@ import type { UserProfile } from '../../types';
 
 const CampOverview = () => {
   const { currentCamp, monitores, campers, actividades, incidencias, isLoading, setCurrentCamp } = useStore();
+  const isCampus = currentCamp?.type === 'campus';
   const { user } = useAuth();
   const [showIncidentForm, setShowIncidentForm] = useState(false);
   const [copiedMonitor, setCopiedMonitor] = useState(false);
@@ -259,7 +260,7 @@ const CampOverview = () => {
           <div className="flex items-center gap-3">
             <Users className="text-orange-600" size={20} />
             <div>
-              <p className="text-xs text-gray-500">Acampados</p>
+              <p className="text-xs text-gray-500">{isCampus ? 'Participantes' : 'Acampados'}</p>
               <p className="text-2xl font-bold text-gray-900">{campers.length}</p>
               <p className="text-xs text-gray-400">/ {currentCamp.maxCampers} plazas</p>
             </div>
@@ -355,7 +356,7 @@ const CampOverview = () => {
               </div>
             ) : (
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm text-gray-500">Este campamento aún no tiene código para profesores.</p>
+                <p className="text-sm text-gray-500">Este {isCampus ? 'campus' : 'campamento'} aún no tiene código para profesores.</p>
                 <button
                   onClick={handleGenerateTeacherCode}
                   disabled={generatingTeacher}

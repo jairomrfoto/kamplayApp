@@ -21,6 +21,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Instalar Firebase CLI
+        run: npm install -g firebase-tools@latest
+
       - name: Build de producción
         run: npm run build
         env:
@@ -33,16 +36,7 @@ jobs:
           VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
           VITE_ADMIN_EMAIL: jairomrfoto@gmail.com
 
-      - name: Deploy Hosting
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
-          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools deploy --only hosting --project kamplay-7a007 --non-interactive
+      - name: Deploy Hosting + Firestore Rules
+        run: firebase deploy --only hosting,firestore:rules --project kamplay-7a007 --force
         env:
-          CI: true
-
-      - name: Deploy Firestore Rules
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
-          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools deploy --only firestore:rules --project kamplay-7a007 --non-interactive
-        env:
-          CI: true
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

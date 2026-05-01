@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Camera, Upload, Mail, MapPin, PencilLine, X, Calendar, Award, GraduationCap } from 'lucide-react';
+import { Camera, Upload, Mail, MapPin, PencilLine, X, Calendar, Award, GraduationCap, UserCircle } from 'lucide-react';
 import { useStore } from '../../store/store';
+import { useAuth } from '../../hooks/useAuth';
 import type { CampCoordinator } from '../../types/camp';
 import ChangePassword from '../ChangePassword';
 import SubscriptionBanner from '../stripe/SubscriptionBanner';
@@ -9,16 +10,21 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 const CoordinatorProfile = () => {
   const { currentCoordinator, updateCoordinator } = useStore();
   const { profile: userProfile } = useUserProfile();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: currentCoordinator?.name ?? '',
-    email: currentCoordinator?.email ?? '',
+    name: currentCoordinator?.name ?? user?.displayName ?? '',
+    email: currentCoordinator?.email ?? user?.email ?? '',
     location: currentCoordinator?.location ?? '',
     photo: currentCoordinator?.photo ?? '',
     experiencia: currentCoordinator?.experiencia ?? [],
     certificaciones: currentCoordinator?.certificaciones ?? [],
     formacion: currentCoordinator?.formacion ?? [],
   });
+
+  // Fallback values from Firebase Auth
+  const displayName  = currentCoordinator?.name  || user?.displayName || user?.email?.split('@')[0] || '';
+  const displayEmail = currentCoordinator?.email || user?.email || '';
 
   const addExperiencia = () => {
     setFormData(prev => ({
@@ -68,14 +74,6 @@ const CoordinatorProfile = () => {
     updateCoordinator(updatedCoordinator);
     setIsEditing(false);
   };
-
-  if (!currentCoordinator) {
-    return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
-        Cargando perfil...
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -127,15 +125,21 @@ const CoordinatorProfile = () => {
                   </label>
                 </div>
               ) : (
-                currentCoordinator.photo ? (
+                currentCoordinator?.photo ? (
                   <img
                     src={currentCoordinator.photo}
-                    alt={currentCoordinator.name}
+                    alt={displayName}
                     className="w-32 h-32 rounded-full border-4 border-white object-cover"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-100 flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-gray-400" />
+                  <div className="w-32 h-32 rounded-full border-4 border-white bg-orange-100 flex items-center justify-center">
+                    {displayName ? (
+                      <span className="text-4xl font-extrabold text-orange-500">
+                        {displayName.charAt(0).toUpperCase()}
+                      </span>
+                    ) : (
+                      <UserCircle className="w-16 h-16 text-orange-300" />
+                    )}
                   </div>
                 )
               )}
@@ -370,16 +374,16 @@ const CoordinatorProfile = () => {
             ) : (
               <div className="text-center space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {currentCoordinator.name || 'Sin nombre'}
+                  {displayName || '—'}
                 </h2>
                 <p className="text-orange-600 font-medium">Coordinador Principal</p>
-                
+
                 <div className="flex justify-center gap-6 text-gray-600">
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5" />
-                    <span>{currentCoordinator.email}</span>
+                    <span>{displayEmail}</span>
                   </div>
-                  {currentCoordinator.location && (
+                  {currentCoordinator?.location && (
                     <div className="flex items-center gap-2">
                       <MapPin className="w-5 h-5" />
                       <span>{currentCoordinator.location}</span>
@@ -388,7 +392,7 @@ const CoordinatorProfile = () => {
                 </div>
                 
                 
-                {currentCoordinator.experiencia && currentCoordinator.experiencia.length > 0 && (
+                {currentCoordinator?.experiencia && currentCoordinator.experiencia.length > 0 && (
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Experiencia</h3>
                     <div className="space-y-4">
@@ -406,7 +410,7 @@ const CoordinatorProfile = () => {
                   </div>
                 )}
 
-                {currentCoordinator.certificaciones && currentCoordinator.certificaciones.length > 0 && (
+                {currentCoordinator?.certificaciones && currentCoordinator.certificaciones.length > 0 && (
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Certificaciones</h3>
                     <div className="space-y-4">
@@ -424,7 +428,7 @@ const CoordinatorProfile = () => {
                   </div>
                 )}
 
-                {currentCoordinator.formacion && currentCoordinator.formacion.length > 0 && (
+                {currentCoordinator?.formacion && currentCoordinator.formacion.length > 0 && (
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Formación</h3>
                     <div className="space-y-4">

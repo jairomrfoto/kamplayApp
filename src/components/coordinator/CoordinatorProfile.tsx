@@ -4,7 +4,6 @@ import { useStore } from '../../store/store';
 import type { CampCoordinator } from '../../types/camp';
 import ChangePassword from '../ChangePassword';
 import SubscriptionBanner from '../stripe/SubscriptionBanner';
-import ConnectStripeButton from '../stripe/ConnectStripeButton';
 import { useUserProfile } from '../../hooks/useUserProfile';
 
 const CoordinatorProfile = () => {
@@ -83,7 +82,6 @@ const CoordinatorProfile = () => {
       {userProfile && (
         <div className="space-y-3">
           <SubscriptionBanner profile={userProfile} />
-          <ConnectStripeButton profile={userProfile} />
         </div>
       )}
 

@@ -498,11 +498,11 @@ exports.stripeWebhook = functions
               paidAt:    admin.firestore.FieldValue.serverTimestamp(),
               paymentSession: session.id,
             }, { merge: true });
-            // Promover a coordinador si todavía no lo es
-            const userSnap = await db.doc(`usuarios/${uid}`).get();
-            if (userSnap.exists && userSnap.data().role !== 'coordinator') {
-              await db.doc(`usuarios/${uid}`).set({ role: 'coordinator' }, { merge: true });
-            }
+            // Promover a coordinador y añadir campId al perfil del usuario
+            await db.doc(`usuarios/${uid}`).set({
+              role:    'coordinator',
+              campIds: admin.firestore.FieldValue.arrayUnion(campId),
+            }, { merge: true });
             console.log(`✅ Event camp ${campId} activated (${planType}) expires ${expiresAt.toISOString()}`);
           }
           break;

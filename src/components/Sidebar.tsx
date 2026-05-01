@@ -15,7 +15,7 @@ function getBaseLinks(isCampus: boolean): LinkDef[] {
     { to: '/app/dashboard',   icon: LayoutDashboard, text: 'Dashboard' },
     { to: '/app/calendario',  icon: Calendar,        text: 'Calendario' },
     { to: '/app/actividades', icon: Users,           text: 'Actividades' },
-    { to: '/app/acampados',   icon: Users,           text: 'Acampados' },
+    { to: '/app/acampados',   icon: Users,           text: isCampus ? 'Participantes' : 'Acampados' },
     { to: '/app/materiales',  icon: Package,         text: 'Materiales' },
     { to: '/app/monitores',   icon: UserCog,         text: 'Monitores' },
     { to: '/app/grupos',      icon: UsersRound,      text: 'Grupos' },
@@ -27,10 +27,12 @@ function getBaseLinks(isCampus: boolean): LinkDef[] {
     links.push({ to: '/app/asistencia', icon: ClipboardList, text: 'Asistencia' });
   }
   links.push(
-    { to: '/app/area-medica', icon: HeartPulse,      text: 'Área Médica' },
-    { to: '/app/incidencias', icon: AlertTriangle,   text: 'Incidencias' },
-    { to: '/app/menu',        icon: MenuIcon,        text: 'Menú' },
+    { to: '/app/area-medica', icon: HeartPulse,  text: 'Área Médica' },
+    { to: '/app/incidencias', icon: AlertTriangle, text: 'Incidencias' },
   );
+  if (!isCampus) {
+    links.push({ to: '/app/menu', icon: MenuIcon, text: 'Menú' });
+  }
   return links;
 }
 

@@ -403,7 +403,7 @@ export default function DocumentImportModal({ onClose }: Props) {
             </div>
             <div>
               <h2 className="font-bold text-gray-900 text-base leading-tight">Importar documento</h2>
-              <p className="text-xs text-gray-400">La IA extrae y organiza todos los datos automáticamente</p>
+              <p className="text-xs text-gray-400">Sube tu documento y lo integramos automáticamente</p>
             </div>
           </div>
           {step !== 'importing' && (
@@ -458,7 +458,7 @@ export default function DocumentImportModal({ onClose }: Props) {
 
               {/* What gets extracted */}
               <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-2xl p-5">
-                <p className="text-sm font-bold text-orange-900 mb-3">La IA detecta y extrae automáticamente:</p>
+                <p className="text-sm font-bold text-orange-900 mb-3">El sistema detecta y organiza automáticamente:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
                     { icon: '👦', label: 'Acampados', desc: 'Nombre, edad, grupo, alergias, contacto de emergencia' },
@@ -495,7 +495,7 @@ export default function DocumentImportModal({ onClose }: Props) {
                 <Loader size={28} className="absolute -top-1 -right-1 text-orange-500 animate-spin" />
               </div>
               <div className="text-center">
-                <p className="font-bold text-gray-800 text-lg">Analizando con IA</p>
+                <p className="font-bold text-gray-800 text-lg">Procesando documento</p>
                 <p className="text-sm text-gray-400 mt-1 transition-all">{processingMsg}</p>
               </div>
               <div className="w-48 h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -697,7 +697,7 @@ export default function DocumentImportModal({ onClose }: Props) {
                 disabled={!file}
                 className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
               >
-                Analizar con IA <ChevronRight size={15} />
+                Procesar documento <ChevronRight size={15} />
               </button>
             </>
           )}

@@ -87,9 +87,11 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
 
   const isFormValid = useCallback(() => {
     const newErrors: Partial<CampFormData> = {};
+    const newTouched: Partial<Record<keyof CampFormData, boolean>> = {};
     let isValid = true;
 
     (Object.keys(formData) as Array<keyof CampFormData>).forEach(key => {
+      newTouched[key] = true;
       const error = validateField(key, formData[key]);
       if (error) {
         newErrors[key] = error;
@@ -97,6 +99,7 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
       }
     });
 
+    setTouched(newTouched);
     setErrors(newErrors);
     return isValid;
   }, [formData, validateField]);

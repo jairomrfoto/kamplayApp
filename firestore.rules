@@ -1,4 +1,4 @@
-// Last deployed: 2026-04-30
+// Last deployed: 2026-05-01
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -36,7 +36,8 @@ service cloud.firestore {
 
     // Coordinator has an active Kamplay subscription
     function hasActiveSubscription(uid) {
-      return get(/databases/$(database)/documents/usuarios/$(uid)).data.subscriptionStatus == 'active';
+      let status = get(/databases/$(database)/documents/usuarios/$(uid)).data.subscriptionStatus;
+      return status == 'active' || status == 'trialing';
     }
 
     // User has coordinator role (set by admin or webhook after payment)

@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { Save } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +23,8 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
   const { user } = useAuth();
   const { addCampToUser, setCurrentCamp } = useStore();
   const [showSuccess, setShowSuccess] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [createdCamp, setCreatedCamp] = useState<Camp | null>(null);
   const [inscriptionFeeEuros, setInscriptionFeeEuros] = useState('');
   const [campType, setCampType] = useState<'campamento' | 'campus'>('campamento');
@@ -122,9 +122,10 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
       ...(feeEuros > 0 ? { inscriptionFee: Math.round(feeEuros * 100) } : {}),
     };
 
+    setSubmitError('');
+    setSubmitting(true);
     try {
       if (onCampCreated) {
-        // Event plan: let parent handle save + payment redirect
         onCampCreated(camp);
         return;
       }
@@ -137,8 +138,11 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
       }
       setCreatedCamp(camp);
       setShowSuccess(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error guardando campamento:', err);
+      setSubmitError(err?.message || 'Error al guardar el campamento. Inténtalo de nuevo.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -303,44 +307,27 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
         <p className="text-xs text-gray-400 mt-1">Déjalo en blanco si el programa es gratuito.</p>
       </FormField>
 
-      <div className="border-t pt-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Datos del Coordinador</h2>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Email del Administrador
-        </label>
-        <input
-          type="email"
-          value={adminEmail}
-          onChange={(e) => setAdminEmail(e.target.value)}
-          required
-          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
-        />
-      </div>
+      {submitError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+          {submitError}
+        </div>
+      )}
 
       <div className="flex justify-end gap-4 pt-6 border-t">
         <button
-          type="button"
-          onClick={handleSaveDraft}
-          className="px-6 py-2 text-orange-600 hover:text-orange-700 font-medium flex items-center gap-2 rounded-lg hover:bg-orange-50 transition-colors"
-        >
-          <Save size={20} />
-          Guardar borrador
-        </button>
-        <button
           type="submit"
-          className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          disabled={submitting}
+          className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
         >
-          {campType === 'campus' ? 'Crear Campus' : 'Crear Campamento'}
+          {submitting && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+          {submitting ? 'Creando...' : (campType === 'campus' ? 'Crear Campus' : 'Crear Campamento')}
         </button>
       </div>
 
       {showSuccess && createdCamp && (
         <SuccessModal
           camp={createdCamp}
-          adminEmail={adminEmail}
+          adminEmail={user?.email || ''}
           onClose={() => navigate('/coordinator-dashboard')}
         />
       )}

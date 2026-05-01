@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight } from 'lucide-react';
+import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight, UserCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
+import { useAuth } from '../../hooks/useAuth';
 import ProfileEditForm from './ProfileEditForm';
 import ChangePassword from '../ChangePassword';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { currentMonitor } = useStore();
+  const { user } = useAuth();
+
+  const displayName  = currentMonitor?.nombre || user?.displayName || user?.email?.split('@')[0] || '';
+  const displayEmail = currentMonitor?.email  || user?.email || '';
 
   if (isEditing) {
     return <ProfileEditForm onCancel={() => setIsEditing(false)} />;
@@ -32,27 +37,33 @@ const Profile = () => {
               {currentMonitor?.foto ? (
                 <img
                   src={currentMonitor.foto}
-                  alt={currentMonitor.nombre}
+                  alt={displayName}
                   className="w-32 h-32 rounded-full border-4 border-white object-cover"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-100 flex items-center justify-center">
-                  <Camera className="w-8 h-8 text-gray-400" />
+                <div className="w-32 h-32 rounded-full border-4 border-white bg-orange-100 flex items-center justify-center">
+                  {displayName ? (
+                    <span className="text-4xl font-extrabold text-orange-500">
+                      {displayName.charAt(0).toUpperCase()}
+                    </span>
+                  ) : (
+                    <UserCircle className="w-16 h-16 text-orange-300" />
+                  )}
                 </div>
               )}
             </div>
           </div>
 
           <div className="mt-20 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">{currentMonitor?.nombre}</h2>
-            <p className="text-orange-600 font-medium">{currentMonitor?.especialidad}</p>
+            <h2 className="text-2xl font-bold text-gray-900">{displayName || '—'}</h2>
+            <p className="text-orange-600 font-medium">{currentMonitor?.especialidad || 'Monitor'}</p>
           </div>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-gray-600">
                 <Mail className="w-5 h-5" />
-                <span>{currentMonitor?.email || 'No especificado'}</span>
+                <span>{displayEmail || 'No especificado'}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-600">
                 <MapPin className="w-5 h-5" />
@@ -112,10 +123,7 @@ const Profile = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 {currentMonitor.habilidades.map((hab, index) => (
-                  <span
-                    key={index}
-                    className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm"
-                  >
+                  <span key={index} className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm">
                     {hab}
                   </span>
                 ))}

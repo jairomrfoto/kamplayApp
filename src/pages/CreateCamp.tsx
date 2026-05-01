@@ -5,7 +5,6 @@ import CampForm from '../components/camps/CampForm';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { startSubscriptionCheckout, startEventCheckout } from '../services/stripe';
 import { saveCampInfo } from '../services/firestore';
-import { useAuth } from '../hooks/useAuth';
 import type { Camp } from '../types/camp';
 
 type PlanType = 'subscription' | 'standard' | 'express';
@@ -37,19 +36,19 @@ const PLANS = [
 
 const CreateCamp = () => {
   const { profile, loading } = useUserProfile();
-  const { user } = useAuth();
-  const isActive = profile?.subscriptionStatus === 'active' || profile?.subscriptionStatus === 'trialing';
-  const bypass   = import.meta.env.VITE_BYPASS_SUBSCRIPTION === 'true';
+  const isActive      = profile?.subscriptionStatus === 'active' || profile?.subscriptionStatus === 'trialing';
+  const isCoordinator = profile?.role === 'coordinator';
+  const bypass        = import.meta.env.VITE_BYPASS_SUBSCRIPTION === 'true';
 
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
-  const [pendingCamp, setPendingCamp]   = useState<Camp | null>(null);
   const [paying, setPaying]             = useState(false);
   const [payError, setPayError]         = useState('');
 
-  const showForm = isActive || bypass;
+  // Active subscribers, coordinators set by admin, and bypass mode skip the payment flow
+  const showForm = isActive || isCoordinator || bypass;
 
   const handleCampReady = async (camp: Camp) => {
-    if (isActive || bypass) return; // already handled inside CampForm
+    if (showForm) return; // already handled inside CampForm
     if (!selectedPlan) return;
 
     if (selectedPlan === 'subscription') {
@@ -111,7 +110,7 @@ const CreateCamp = () => {
           </p>
         </div>
 
-        {/* Plan selector — solo para usuarios sin suscripción activa */}
+        {/* Plan selector — solo para usuarios sin suscripción activa ni rol de coordinador */}
         {!showForm && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -157,7 +156,7 @@ const CreateCamp = () => {
           </div>
         )}
 
-        {/* Formulario — siempre visible si tiene suscripción, si no solo cuando elige plan no-subscription */}
+        {/* Formulario — siempre visible para coordinadores/suscriptores, o cuando elige plan por evento */}
         {(showForm || (selectedPlan && selectedPlan !== 'subscription')) && (
           <div className="space-y-6">
             {payError && (
@@ -170,20 +169,20 @@ const CreateCamp = () => {
           </div>
         )}
 
-        {/* Suscripción profesional anual */}
+        {/* Suscripción profesional */}
         {!showForm && selectedPlan === 'subscription' && (
           <div className="bg-gray-900 rounded-2xl p-6 text-white text-center space-y-4">
             <p className="font-bold text-lg">Plan Profesional — uso ilimitado</p>
             <div className="flex justify-center gap-4">
               <button
-                onClick={async () => { setPaying(true); const { url } = await startSubscriptionCheckout('month'); window.location.href = url; }}
+                onClick={async () => { setPaying(true); try { const { url } = await startSubscriptionCheckout('month'); window.location.href = url; } catch (e: any) { setPayError(e?.message || 'Error'); setPaying(false); } }}
                 disabled={paying}
                 className="bg-orange-500 hover:bg-orange-400 text-white font-bold px-6 py-3 rounded-xl disabled:opacity-50"
               >
                 {paying ? 'Redirigiendo...' : '30 €/mes'}
               </button>
               <button
-                onClick={async () => { setPaying(true); const { url } = await startSubscriptionCheckout('year'); window.location.href = url; }}
+                onClick={async () => { setPaying(true); try { const { url } = await startSubscriptionCheckout('year'); window.location.href = url; } catch (e: any) { setPayError(e?.message || 'Error'); setPaying(false); } }}
                 disabled={paying}
                 className="border-2 border-orange-400 text-orange-400 hover:bg-orange-500 hover:text-white font-bold px-6 py-3 rounded-xl disabled:opacity-50 transition-colors"
               >

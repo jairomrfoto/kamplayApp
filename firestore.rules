@@ -39,6 +39,11 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/usuarios/$(uid)).data.subscriptionStatus == 'active';
     }
 
+    // User has coordinator role (set by admin or webhook after payment)
+    function hasCoordinatorRole(uid) {
+      return get(/databases/$(database)/documents/usuarios/$(uid)).data.role == 'coordinator';
+    }
+
     // ── Admin collection — only admin can read their own doc; no client writes ─
     match /admins/{uid} {
       allow read: if isOwner(uid);
@@ -65,7 +70,7 @@ service cloud.firestore {
     match /campamentos/{campId} {
       // Public read for listed camps (directory); auth required otherwise
       allow read: if isAuth() || resource.data.listed == true;
-      allow create: if isAuth() && (hasActiveSubscription(request.auth.uid) || isAdmin());
+      allow create: if isAuth() && (hasActiveSubscription(request.auth.uid) || hasCoordinatorRole(request.auth.uid) || isAdmin());
       allow update: if isAuth() && (
         resource.data.mainCoordinator == request.auth.uid ||
         isAdmin() ||

@@ -22,7 +22,7 @@ interface CampFormProps {
 const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addCampToUser } = useStore();
+  const { addCampToUser, setCurrentCamp } = useStore();
   const [showSuccess, setShowSuccess] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
   const [createdCamp, setCreatedCamp] = useState<Camp | null>(null);
@@ -111,6 +111,7 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
       id: campId,
       ...formData,
       type: campType,
+      status: 'active',
       joinCodes: {
         monitors: generateJoinCode('MON'),
         families: generateJoinCode('PAD'),
@@ -130,6 +131,7 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
       await saveCampInfo(camp);
       if (user) {
         addCampToUser(camp);
+        setCurrentCamp(camp);
         addLocalCamp(user.uid, campId, camp, 'coordinator');
         addUserCampId(user.uid, campId).catch(console.error);
       }
@@ -339,7 +341,7 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
         <SuccessModal
           camp={createdCamp}
           adminEmail={adminEmail}
-          onClose={() => navigate('/login')}
+          onClose={() => navigate('/coordinator-dashboard')}
         />
       )}
     </form>

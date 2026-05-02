@@ -645,7 +645,7 @@ exports.parseDocument = functions
     const Anthropic = sdkModule.default || sdkModule.Anthropic || sdkModule;
     const client = new Anthropic({ apiKey: anthropicKeyVal });
 
-    const SYSTEM_PROMPT = `Eres un experto en extracción de datos para sistemas de gestión de campamentos y campus educativos en España. Analiza documentos en cualquier formato (tablas, listas, texto libre) y devuelve ÚNICAMENTE JSON válido sin ningún texto adicional ni bloques de código markdown.`;
+    const SYSTEM_PROMPT = `Eres un experto en extracción de datos para sistemas de gestión de campamentos y campus educativos en España. Analiza documentos en cualquier formato (tablas, listas, texto libre) y devuelve ÚNICAMENTE JSON válido, sin texto previo, sin explicaciones, sin bloques markdown. La respuesta debe comenzar directamente con { y terminar con }.`;
 
     const USER_PROMPT = `Analiza este documento de campamento/campus y extrae TODA la información disponible. Devuelve SOLO el JSON con este esquema exacto (usa null o [] cuando un campo no está disponible):
 
@@ -692,33 +692,44 @@ ${rawText.slice(0, 55000)}`;
 
     let aiResponse;
     try {
+      // Prefill with '{' to force the model to output JSON directly, no preamble
       aiResponse = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 8192,
         system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: USER_PROMPT }],
+        messages: [
+          { role: 'user', content: USER_PROMPT },
+          { role: 'assistant', content: '{' },
+        ],
       });
     } catch (err) {
       console.error('Anthropic API error:', err);
       throw new functions.https.HttpsError('internal', 'Error al procesar con IA: ' + (err.message || ''));
     }
 
-    const responseText = aiResponse.content[0] && aiResponse.content[0].type === 'text'
-      ? aiResponse.content[0].text.trim()
+    // The model continues after our prefill '{', so we prepend it back
+    const rawResponse = aiResponse.content[0] && aiResponse.content[0].type === 'text'
+      ? aiResponse.content[0].text
       : '';
+    const responseText = ('{' + rawResponse).trim();
 
-    let parsed;
-    try {
-      parsed = JSON.parse(responseText);
-    } catch {
-      const match = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      if (match) {
-        try { parsed = JSON.parse(match[1]); } catch {
-          throw new functions.https.HttpsError('internal', 'La IA no pudo generar datos estructurados válidos.');
-        }
-      } else {
-        throw new functions.https.HttpsError('internal', 'La IA no pudo generar datos estructurados válidos.');
-      }
+    function extractJson(text) {
+      // 1. Direct parse
+      try { return JSON.parse(text); } catch {}
+      // 2. Strip markdown code fences
+      const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (fenceMatch) { try { return JSON.parse(fenceMatch[1]); } catch {} }
+      // 3. Extract outermost {...}
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start !== -1 && end > start) { try { return JSON.parse(text.slice(start, end + 1)); } catch {} }
+      return null;
+    }
+
+    const parsed = extractJson(responseText);
+    if (!parsed) {
+      console.error('parseDocument: could not parse AI response. First 500 chars:', responseText.slice(0, 500));
+      throw new functions.https.HttpsError('internal', 'La IA no pudo generar datos estructurados válidos.');
     }
 
     console.log(`parseDocument: ${(parsed.acampados || []).length} acampados, ${(parsed.grupos || []).length} grupos, ${(parsed.actividades || []).length} actividades — "${fileName}" (${rawText.length} chars)`);

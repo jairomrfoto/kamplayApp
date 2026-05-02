@@ -43,6 +43,20 @@ export function useFirestoreSync() {
     if (!campId || loadedCampIdRef.current === campId) return;
     loadedCampIdRef.current = campId;
 
+    // Cancel old subscriptions and polling FIRST, before loading new data,
+    // so in-flight callbacks from the previous camp can't overwrite new data.
+    if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
+    if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
+    if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
+    if (unsubscribeNovedadesRef.current) unsubscribeNovedadesRef.current();
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    // Clear stale collection data immediately so the old camp's data doesn't
+    // remain visible while the new camp loads.
+    setCampers([]);
+    setMonitores([]);
+    setIncidencias([]);
+    setNovedades([]);
+
     try {
       let camp = await getCampInfo(campId);
 
@@ -91,12 +105,7 @@ export function useFirestoreSync() {
       const hadCache = applyCampCache(campId);
       await loadFromFirestore(campId, hadCache);
 
-      // REST-polling subscriptions for the active camp
-      if (unsubscribeIncidenciasRef.current) unsubscribeIncidenciasRef.current();
-      if (unsubscribeCampersRef.current) unsubscribeCampersRef.current();
-      if (unsubscribeMonitoresRef.current) unsubscribeMonitoresRef.current();
-      if (unsubscribeNovedadesRef.current) unsubscribeNovedadesRef.current();
-
+      // Start fresh subscriptions for the new camp
       unsubscribeIncidenciasRef.current = subscribeToIncidencias(campId, setIncidencias);
       unsubscribeCampersRef.current = subscribeToCampers(campId, setCampers);
       unsubscribeMonitoresRef.current = subscribeToMonitores(campId, (monitores) => {
@@ -107,14 +116,13 @@ export function useFirestoreSync() {
       unsubscribeNovedadesRef.current = subscribeToNovedades(campId, setNovedades);
 
       // Full silent refresh every 15s
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
       pollIntervalRef.current = setInterval(() => {
         loadFromFirestore(campId, true);
       }, 15_000);
     } catch (err) {
       console.error('Error loading camp from Firestore:', err);
     }
-  }, [loadFromFirestore, setCurrentCamp, setIncidencias, addCampToUser, applyCampCache]);
+  }, [loadFromFirestore, setCurrentCamp, setIncidencias, setCampers, setMonitores, setNovedades, addCampToUser, applyCampCache]);
 
   // Register switchCamp so any component can call it via useStore().switchCampFn
   useEffect(() => {

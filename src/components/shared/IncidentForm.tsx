@@ -7,7 +7,8 @@ interface Props {
 }
 
 const IncidentForm = ({ onClose }: Props) => {
-  const { currentMonitor, currentCoordinator, campers, addIncident } = useStore();
+  const { currentMonitor, currentCoordinator, campers, addIncident, currentCamp } = useStore();
+  const isCampus = currentCamp?.type === 'campus';
   const [formData, setFormData] = useState({
     tipo: 'leve',
     descripcion: '',
@@ -89,7 +90,7 @@ const IncidentForm = ({ onClose }: Props) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Acampados Afectados
+              {isCampus ? 'Participantes Afectados' : 'Acampados Afectados'}
             </label>
             <select
               multiple
@@ -107,7 +108,7 @@ const IncidentForm = ({ onClose }: Props) => {
               ))}
             </select>
             <p className="mt-1 text-xs text-gray-500">
-              Mantén presionada la tecla Ctrl para seleccionar múltiples acampados
+              Mantén presionada la tecla Ctrl para seleccionar múltiples {isCampus ? 'participantes' : 'acampados'}
             </p>
           </div>
 

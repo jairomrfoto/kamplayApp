@@ -5,7 +5,9 @@ import IncidentForm from '../components/shared/IncidentForm';
 import IncidentFollowUpForm from '../components/shared/IncidentFollowUpForm';
 
 const Incidencias = () => {
-  const { incidencias, campers, monitores } = useStore();
+  const { incidencias, campers, monitores, currentCamp } = useStore();
+  const isCampus = currentCamp?.type === 'campus';
+  const participantsLabel = isCampus ? 'participantes' : 'acampados';
   const [showForm, setShowForm] = useState(false);
   const [showFollowUpForm, setShowFollowUpForm] = useState<string | null>(null);
   const [filter, setFilter] = useState('todas');
@@ -124,7 +126,7 @@ const Incidencias = () => {
               onChange={(e) => setSelectedCamper(e.target.value || null)}
               className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             >
-              <option value="">Todos los acampados</option>
+              <option value="">Todos los {participantsLabel}</option>
               {campers.map(camper => (
                 <option key={camper.id} value={camper.id}>
                   {camper.nombre}
@@ -204,7 +206,7 @@ const Incidencias = () => {
                 </div>
                 {incidencia.acampadosAfectados.length > 0 && (
                   <div className="mt-2 text-sm text-gray-600">
-                    <span className="font-medium">Acampados afectados: </span>
+                    <span className="font-medium">{isCampus ? 'Participantes afectados' : 'Acampados afectados'}: </span>
                     {getAcampadosNames(incidencia.acampadosAfectados)}
                   </div>
                 )}

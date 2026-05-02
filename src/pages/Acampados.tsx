@@ -13,6 +13,9 @@ const ITEM_SIZE = 64; // Altura de cada fila
 const Acampados = () => {
   const { campers, addCamper, deleteCamper, currentCamp, loadFromFirestore } = useStore();
   useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id, true); }, [currentCamp?.id]);
+  const isCampus = currentCamp?.type === 'campus';
+  const participantLabel = isCampus ? 'Participante' : 'Acampado';
+  const participantsLabel = isCampus ? 'Participantes' : 'Acampados';
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingCamper, setEditingCamper] = useState<string | null>(null);
@@ -56,7 +59,7 @@ const Acampados = () => {
               <Edit size={16} />
             </button>
             <button
-              onClick={() => { if (window.confirm('¿Eliminar acampado?')) deleteCamper(camper.id); }}
+              onClick={() => { if (window.confirm(`¿Eliminar ${participantLabel.toLowerCase()}?`)) deleteCamper(camper.id); }}
               className="text-red-600 hover:text-red-800"
             >
               <Trash size={16} />
@@ -70,7 +73,7 @@ const Acampados = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de Acampados</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de {participantsLabel}</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowImport(true)}
@@ -85,7 +88,7 @@ const Acampados = () => {
             className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-1.5 text-sm"
           >
             <Plus size={16} />
-            <span className="hidden sm:inline">Nuevo Acampado</span>
+            <span className="hidden sm:inline">Nuevo {participantLabel}</span>
             <span className="sm:hidden">Nuevo</span>
           </button>
         </div>
@@ -97,7 +100,7 @@ const Acampados = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
-              placeholder="Buscar acampados..."
+              placeholder={`Buscar ${participantsLabel.toLowerCase()}...`}
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -117,7 +120,7 @@ const Acampados = () => {
             </div>
 
             {filteredCampers.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No hay acampados registrados</div>
+              <div className="text-center py-8 text-gray-500">No hay {participantsLabel.toLowerCase()} registrados</div>
             ) : (
               <List
                 height={400}

@@ -161,7 +161,7 @@ const Asistencia = () => {
         ) : registros.length === 0 ? (
           <div className="text-center py-12 text-gray-400">
             <p className="text-lg mb-1">No hay participantes</p>
-            <p className="text-sm">Añade participantes en la sección Acampados.</p>
+            <p className="text-sm">Añade participantes en la sección {currentCamp?.type === 'campus' ? 'Participantes' : 'Acampados'}.</p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">

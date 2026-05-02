@@ -16,6 +16,7 @@ const GRID_GAP = 24;
 const Actividades = () => {
   const { actividades, currentCamp, loadFromFirestore } = useStore();
   React.useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id, true); }, [currentCamp?.id]);
+  const isCampus = currentCamp?.type === 'campus';
 
   const [tab, setTab] = useState<'campamento' | 'banco'>('campamento');
   const [showForm, setShowForm] = useState(false);
@@ -81,7 +82,7 @@ const Actividades = () => {
           }`}
         >
           <Layers size={16} />
-          Del campamento
+          {isCampus ? 'Del campus' : 'Del campamento'}
           {actividades.length > 0 && (
             <span className="ml-1 bg-orange-100 text-orange-700 text-xs px-1.5 py-0.5 rounded-full">
               {actividades.length}
@@ -146,7 +147,7 @@ const Actividades = () => {
       {tab === 'banco' && (
         <div>
           <p className="text-sm text-gray-500 mb-4">
-            Actividades de ejemplo listas para usar. Haz clic en <strong>"Usar como plantilla"</strong> para añadirlas al campamento y personalizar fechas, grupo y monitores.
+            Actividades de ejemplo listas para usar. Haz clic en <strong>"Usar como plantilla"</strong> para añadirlas al {isCampus ? 'campus' : 'campamento'} y personalizar fechas, grupo y monitores.
           </p>
           {plantillasFiltradas.length === 0 ? (
             <div className="text-center py-8 text-gray-500">No hay actividades en esta categoría</div>

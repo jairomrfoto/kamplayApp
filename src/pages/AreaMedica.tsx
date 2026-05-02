@@ -5,7 +5,9 @@ import MedicalRecordForm from '../components/medical/MedicalRecordForm';
 import MedicationChecklist from '../components/medical/MedicationChecklist';
 
 const AreaMedica = () => {
-  const { campers } = useStore();
+  const { campers, currentCamp } = useStore();
+  const isCampus = currentCamp?.type === 'campus';
+  const participantsLabel = isCampus ? 'participantes' : 'acampados';
   const [showForm, setShowForm] = useState(false);
 
   const campersConInfoMedica = campers.filter(
@@ -96,7 +98,7 @@ const AreaMedica = () => {
                   <span className="font-medium text-red-700">Alergias</span>
                 </div>
                 <p className="mt-1 text-sm text-red-600">
-                  {campers.filter(c => c.infoMedica.alergias.length > 0).length} acampados
+                  {campers.filter(c => c.infoMedica.alergias.length > 0).length} {participantsLabel}
                 </p>
               </div>
 
@@ -106,7 +108,7 @@ const AreaMedica = () => {
                   <span className="font-medium text-blue-700">Medicación</span>
                 </div>
                 <p className="mt-1 text-sm text-blue-600">
-                  {campers.filter(c => c.infoMedica.medicacion.length > 0).length} acampados
+                  {campers.filter(c => c.infoMedica.medicacion.length > 0).length} {participantsLabel}
                 </p>
               </div>
             </div>

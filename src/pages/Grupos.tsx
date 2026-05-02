@@ -8,6 +8,8 @@ import GrupoForm from '../components/grupos/GrupoForm';
 const Grupos = () => {
   const { grupos, campers, currentCamp, loadFromFirestore } = useStore();
   React.useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id, true); }, [currentCamp?.id]);
+  const isCampus = currentCamp?.type === 'campus';
+  const participantsLabel = isCampus ? 'Participantes' : 'Acampados';
   const [selectedGrupo, setSelectedGrupo] = useState<string | null>(null);
   const [selectedCamper, setSelectedCamper] = useState<string | null>(null);
   const [showGrupoEval, setShowGrupoEval] = useState(false);
@@ -17,7 +19,7 @@ const Grupos = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Grupos de Campamento</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{isCampus ? 'Grupos del Campus' : 'Grupos de Campamento'}</h2>
         <button 
           onClick={() => setShowNewGrupoForm(true)}
           className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
@@ -49,11 +51,11 @@ const Grupos = () => {
                   <div className="border-t pt-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Users size={18} className="text-orange-600" />
-                      <span className="font-medium">Acampados</span>
+                      <span className="font-medium">{participantsLabel}</span>
                     </div>
                     <div className="pl-6">
                       {grupo.acampados.length === 0 ? (
-                        <p className="text-sm text-gray-500">Sin acampados asignados</p>
+                        <p className="text-sm text-gray-500">Sin {participantsLabel.toLowerCase()} asignados</p>
                       ) : (
                         <div className="space-y-2">
                           {grupo.acampados.map((acampadoId) => {
@@ -175,7 +177,7 @@ const Grupos = () => {
       {showCamperEval && selectedCamper && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold mb-4">Evaluación del Acampado</h3>
+            <h3 className="text-lg font-semibold mb-4">Evaluación del {isCampus ? 'Participante' : 'Acampado'}</h3>
             <EvaluacionCamperForm
               camperId={selectedCamper}
               onSubmit={() => {

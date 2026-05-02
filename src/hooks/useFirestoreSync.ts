@@ -168,16 +168,27 @@ export function useFirestoreSync() {
           const campId = profile.campId || '';
           const campIds = profile.campIds || (campId ? [campId] : []);
 
+          // Merge campIds from Firestore with local ones; keep local.campId as
+          // primary since it may have been updated more recently (new camp created).
+          const mergedCampIds = Array.from(new Set([
+            ...(local?.campIds || (local?.campId ? [local.campId] : [])),
+            ...campIds,
+          ]));
+          const activeCampId = local?.campId || campId;
           setLocalProfile(user.uid, {
             role: profile.role as 'coordinator' | 'monitor' | 'parent',
-            campId,
-            campIds,
+            campId: activeCampId,
+            campIds: mergedCampIds,
             camp: local?.camp,
             camps: local?.camps,
           });
 
-          // Load active camp if different from localStorage
-          if (campId && campId !== local?.campId) {
+          // Load active camp from Firestore only if it's a camp localStorage
+          // doesn't already know about. If localStorage has campId X and Firestore
+          // still has an older campId Y (race after camp creation), we must NOT
+          // override local — local is always more recent for newly created camps.
+          const profileCampKnownLocally = local?.campIds?.includes(campId) || local?.campId === campId;
+          if (campId && campId !== local?.campId && !profileCampKnownLocally) {
             loadedCampIdRef.current = null;
             loadCamp(campId, user.uid, local?.camp);
           }

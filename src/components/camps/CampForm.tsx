@@ -137,7 +137,7 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
         addCampToUser(camp);
         setCurrentCamp(camp);
         addLocalCamp(user.uid, campId, camp, 'coordinator');
-        addUserCampId(user.uid, campId).catch(console.error);
+        await addUserCampId(user.uid, campId);
         switchCampFn?.(campId);
       }
       setCreatedCamp(camp);

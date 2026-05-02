@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight, UserCircle } from 'lucide-react';
+import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight, UserCircle, Tent, School } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
@@ -8,8 +8,9 @@ import ChangePassword from '../ChangePassword';
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const { currentMonitor } = useStore();
+  const { currentMonitor, userCamps } = useStore();
   const { user } = useAuth();
+  const activeCamps = userCamps.filter(c => c.status !== 'archived');
 
   const displayName  = currentMonitor?.nombre || user?.displayName || user?.email?.split('@')[0] || '';
   const displayEmail = currentMonitor?.email  || user?.email || '';
@@ -132,6 +133,32 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      {/* Mis programas */}
+      {activeCamps.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="text-base font-bold text-gray-900 mb-4">Mis programas</h3>
+          <div className="space-y-3">
+            {activeCamps.map(camp => {
+              const isCampus = camp.type === 'campus';
+              return (
+                <div key={camp.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${isCampus ? 'bg-blue-100' : 'bg-orange-100'}`}>
+                    {isCampus
+                      ? <School size={18} className="text-blue-600" />
+                      : <Tent size={18} className="text-orange-600" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm truncate">{camp.name}</p>
+                    <p className="text-xs text-gray-500">{isCampus ? 'Campus' : 'Campamento'}{camp.location ? ` · ${camp.location}` : ''}</p>
+                  </div>
+                  <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Monitor</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Upgrade a coordinador */}
       <div className="bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl p-6 text-white">

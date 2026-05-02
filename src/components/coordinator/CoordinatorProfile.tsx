@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
-import { Camera, Upload, Mail, MapPin, PencilLine, X, Calendar, Award, GraduationCap, UserCircle } from 'lucide-react';
+import { Camera, Upload, Mail, MapPin, PencilLine, X, Calendar, Award, GraduationCap, UserCircle, Tent, School, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
-import type { CampCoordinator } from '../../types/camp';
+import type { Camp, CampCoordinator } from '../../types/camp';
 import ChangePassword from '../ChangePassword';
 import SubscriptionBanner from '../stripe/SubscriptionBanner';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import ArchiveCampModal from '../camps/ArchiveCampModal';
 
 const CoordinatorProfile = () => {
-  const { currentCoordinator, updateCoordinator } = useStore();
+  const { currentCoordinator, updateCoordinator, userCamps, removeCampFromUser, switchCampFn } = useStore();
   const { profile: userProfile } = useUserProfile();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [archivingCamp, setArchivingCamp] = useState<Camp | null>(null);
+
+  const activeCamps = userCamps.filter(c => c.status !== 'archived');
   const [formData, setFormData] = useState({
     name: currentCoordinator?.name ?? user?.displayName ?? '',
     email: currentCoordinator?.email ?? user?.email ?? '',
@@ -461,7 +467,61 @@ const CoordinatorProfile = () => {
         </div>
       </div>
 
+      {/* Mis programas */}
+      {activeCamps.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="text-base font-bold text-gray-900 mb-4">Mis programas</h3>
+          <div className="space-y-3">
+            {activeCamps.map(camp => {
+              const isCampus = camp.type === 'campus';
+              const isOwner = camp.mainCoordinator === user?.uid;
+              return (
+                <div key={camp.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${isCampus ? 'bg-blue-100' : 'bg-orange-100'}`}>
+                    {isCampus
+                      ? <School size={18} className="text-blue-600" />
+                      : <Tent size={18} className="text-orange-600" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm truncate">{camp.name}</p>
+                    <p className="text-xs text-gray-500">{isCampus ? 'Campus' : 'Campamento'}{camp.location ? ` · ${camp.location}` : ''}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={() => { switchCampFn?.(camp.id); navigate('/coordinator-dashboard'); }}
+                      className="text-xs text-orange-600 hover:text-orange-700 font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors"
+                    >
+                      Gestionar
+                    </button>
+                    {isOwner && (
+                      <button
+                        onClick={() => setArchivingCamp(camp)}
+                        title="Archivar programa"
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <ChangePassword />
+
+      {archivingCamp && (
+        <ArchiveCampModal
+          camp={archivingCamp}
+          onCancel={() => setArchivingCamp(null)}
+          onConfirmed={() => {
+            removeCampFromUser(archivingCamp.id);
+            setArchivingCamp(null);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -423,7 +423,29 @@ export async function addUserCampId(uid: string, campId: string): Promise<void> 
 /** Fetch all Camp objects for the given IDs (parallel). */
 export async function getUserCamps(campIds: string[]): Promise<Camp[]> {
   const results = await Promise.all(campIds.map(id => getCampInfo(id).catch(() => null)));
-  return results.filter(Boolean) as Camp[];
+  return (results.filter(Boolean) as Camp[]).filter(c => c.status !== 'archived');
+}
+
+/** Soft-delete: marks a camp as archived without removing it from Firestore. */
+export async function archiveCamp(campId: string): Promise<void> {
+  return restFirstWrite(
+    async () => {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not authenticated');
+      const token = await user.getIdToken();
+      const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+      const res = await fetch(
+        `https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/campamentos/${campId}?updateMask.fieldPaths=status`,
+        {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields: { status: { stringValue: 'archived' } } }),
+        }
+      );
+      if (!res.ok) throw new Error(`REST archive ${res.status}`);
+    },
+    () => updateDoc(doc(db, 'campamentos', campId), { status: 'archived' })
+  );
 }
 
 // ─── CRUD genérico por colección ─────────────────────────────────────────────

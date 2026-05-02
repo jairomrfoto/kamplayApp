@@ -41,6 +41,7 @@ interface AppState {
   setCurrentCamp: (camp: Camp) => void;
   setUserCamps: (camps: Camp[]) => void;
   addCampToUser: (camp: Camp) => void;
+  removeCampFromUser: (campId: string) => void;
   /** Mobile sidebar open state */
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -164,6 +165,10 @@ export const useStore = create<AppState>((set, get) => ({
     userCamps: state.userCamps.some(c => c.id === camp.id)
       ? state.userCamps.map(c => c.id === camp.id ? camp : c)
       : [...state.userCamps, camp],
+  })),
+  removeCampFromUser: (campId) => set((state) => ({
+    userCamps: state.userCamps.filter(c => c.id !== campId),
+    currentCamp: state.currentCamp?.id === campId ? undefined : state.currentCamp,
   })),
   setSwitchCampFn: (fn) => set({ switchCampFn: fn }),
   setCampCache: (campId, data) => set((state) => ({

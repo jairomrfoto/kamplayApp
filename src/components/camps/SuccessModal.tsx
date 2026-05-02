@@ -9,18 +9,21 @@ interface Props {
 }
 
 const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
+  const isCampus = camp.type === 'campus';
+  const programLabel = isCampus ? 'Campus' : 'Campamento';
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl max-w-md w-full p-6 my-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-green-100 p-2 rounded-full">
             <Check className="text-green-600" size={20} />
           </div>
-          <h3 className="text-lg font-semibold">¡Campamento Creado!</h3>
+          <h3 className="text-lg font-semibold">¡{programLabel} Creado!</h3>
         </div>
 
         <div className="space-y-4">
@@ -29,7 +32,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
             <div className="bg-gray-50 p-3 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium">Email:</span>
-                <button 
+                <button
                   onClick={() => copyToClipboard(adminEmail)}
                   className="text-orange-600 hover:text-orange-700"
                 >
@@ -45,7 +48,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
             <div className="bg-gray-50 p-3 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium">Código:</span>
-                <button 
+                <button
                   onClick={() => copyToClipboard(camp.joinCodes.monitors)}
                   className="text-orange-600 hover:text-orange-700"
                 >
@@ -53,7 +56,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
                 </button>
               </div>
               <p className="text-sm font-mono">{camp.joinCodes.monitors}</p>
-              <p className="mt-1 text-xs text-gray-500">Comparte este código con los monitores del campamento</p>
+              <p className="mt-1 text-xs text-gray-500">Comparte este código con los monitores del {programLabel.toLowerCase()}</p>
             </div>
           </div>
 
@@ -70,7 +73,7 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
                 </button>
               </div>
               <p className="text-sm font-mono">{camp.joinCodes.families}</p>
-              <p className="mt-1 text-xs text-gray-500">Comparte este código con las familias de los acampados</p>
+              <p className="mt-1 text-xs text-gray-500">Comparte este código con las familias de los {isCampus ? 'participantes' : 'acampados'}</p>
             </div>
           </div>
 
@@ -88,13 +91,13 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
                   </button>
                 </div>
                 <p className="text-sm font-mono">{camp.joinCodes.teachers}</p>
-                <p className="mt-1 text-xs text-gray-500">Comparte este código con los profesores del colegio</p>
+                <p className="mt-1 text-xs text-gray-500">Comparte este código con los profesores del {isCampus ? 'campus' : 'colegio'}</p>
               </div>
             </div>
           )}
 
           <p className="text-sm text-gray-500">
-            Guarda estos códigos en un lugar seguro. Los necesitarás para gestionar el acceso al campamento.
+            Guarda estos códigos en un lugar seguro. Los necesitarás para gestionar el acceso al {programLabel.toLowerCase()}.
           </p>
         </div>
 
@@ -109,6 +112,6 @@ const SuccessModal = ({ camp, adminEmail, onClose }: Props) => {
       </div>
     </div>
   );
-}
+};
 
 export default SuccessModal;

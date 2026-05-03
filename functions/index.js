@@ -645,7 +645,7 @@ exports.parseDocument = functions
     const Anthropic = sdkModule.default || sdkModule.Anthropic || sdkModule;
     const client = new Anthropic({ apiKey: anthropicKeyVal });
 
-    const SYSTEM_PROMPT = `Eres un experto en extracción de datos para sistemas de gestión de campamentos y campus educativos en España. Analiza documentos en cualquier formato (tablas, listas, texto libre) y devuelve ÚNICAMENTE JSON válido, sin texto previo, sin explicaciones, sin bloques markdown. La respuesta debe comenzar directamente con { y terminar con }.`;
+    const SYSTEM_PROMPT = `Eres un extractor de datos para campamentos y campus educativos en España. Tu ÚNICA tarea es devolver un objeto JSON válido. NUNCA escribas texto antes o después del JSON. NUNCA uses bloques markdown ni comillas de código. Tu respuesta debe ser exactamente el objeto JSON y nada más: empieza con { y termina con }.`;
 
     const USER_PROMPT = `Analiza este documento de campamento/campus y extrae TODA la información disponible. Devuelve SOLO el JSON con este esquema exacto (usa null o [] cuando un campo no está disponible):
 
@@ -692,26 +692,22 @@ ${rawText.slice(0, 55000)}`;
 
     let aiResponse;
     try {
-      // Prefill with '{' to force the model to output JSON directly, no preamble
       aiResponse = await client.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 8192,
         system: SYSTEM_PROMPT,
-        messages: [
-          { role: 'user', content: USER_PROMPT },
-          { role: 'assistant', content: '{' },
-        ],
+        messages: [{ role: 'user', content: USER_PROMPT }],
       });
     } catch (err) {
       console.error('Anthropic API error:', err);
       throw new functions.https.HttpsError('internal', 'Error al procesar con IA: ' + (err.message || ''));
     }
 
-    // The model continues after our prefill '{', so we prepend it back
+    // Extract text from response
     const rawResponse = aiResponse.content[0] && aiResponse.content[0].type === 'text'
       ? aiResponse.content[0].text
       : '';
-    const responseText = ('{' + rawResponse).trim();
+    const responseText = rawResponse.trim();
 
     function extractJson(text) {
       // 1. Direct parse

@@ -188,6 +188,10 @@ const Grupos = () => {
                 setShowCamperEval(false);
                 setSelectedCamper(null);
               }}
+              onCancel={() => {
+                setShowCamperEval(false);
+                setSelectedCamper(null);
+              }}
             />
           </div>
         </div>

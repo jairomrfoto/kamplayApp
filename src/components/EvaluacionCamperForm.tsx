@@ -5,9 +5,10 @@ import type { EvaluacionCamper } from '../types';
 interface Props {
   camperId: string;
   onSubmit: () => void;
+  onCancel: () => void;
 }
 
-const EvaluacionCamperForm = ({ camperId, onSubmit }: Props) => {
+const EvaluacionCamperForm = ({ camperId, onSubmit, onCancel }: Props) => {
   const { addEvaluacionCamper } = useStore();
   const [formData, setFormData] = useState({
     participacion: 3,
@@ -112,7 +113,14 @@ const EvaluacionCamperForm = ({ camperId, onSubmit }: Props) => {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50"
+        >
+          Volver
+        </button>
         <button
           type="submit"
           className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"

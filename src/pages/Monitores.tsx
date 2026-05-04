@@ -7,12 +7,13 @@ import MonitorPermissions from '../components/coordinator/MonitorPermissions';
 import type { Monitor } from '../types';
 
 const Monitores = () => {
-  const { monitores, updateMonitor, loadFromFirestore, currentCamp } = useStore();
+  const { monitores, updateMonitor, loadFromFirestore, currentCamp, currentCoordinator } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [editingMonitor, setEditingMonitor] = useState<string | null>(null);
   const [managingPermissions, setManagingPermissions] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  const isCoordinator = !!currentCoordinator;
   const pendingCount = monitores.filter(m => m.pendiente).length;
 
   // Refresh on mount so the coordinator always sees the latest list,
@@ -91,7 +92,7 @@ const Monitores = () => {
                   <MonitorProfile
                     monitor={monitor}
                     onEdit={() => setEditingMonitor(monitor.id)}
-                    onManagePermissions={() => setManagingPermissions(monitor.id)}
+                    onManagePermissions={isCoordinator ? () => setManagingPermissions(monitor.id) : undefined}
                   />
                 )}
               </div>

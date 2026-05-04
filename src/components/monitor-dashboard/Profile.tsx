@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight, UserCircle, Tent, School } from 'lucide-react';
+import { Camera, Mail, MapPin, Award, Briefcase, GraduationCap, Heart, PencilLine, ArrowRight, UserCircle, Tent, School, Shield, Check, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
@@ -11,6 +11,7 @@ const Profile = () => {
   const { currentMonitor, userCamps } = useStore();
   const { user } = useAuth();
   const activeCamps = userCamps.filter(c => c.status !== 'archived');
+  const isCampus = activeCamps.some(c => c.type === 'campus');
 
   const displayName  = currentMonitor?.nombre || user?.displayName || user?.email?.split('@')[0] || '';
   const displayEmail = currentMonitor?.email  || user?.email || '';
@@ -133,6 +134,42 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      {/* Mis permisos (solo lectura) */}
+      {currentMonitor && (
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Shield size={18} className="text-orange-500" />
+            <h3 className="text-base font-bold text-gray-900">Mis permisos</h3>
+          </div>
+          {currentMonitor.pendiente ? (
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              Tus permisos están pendientes de aprobación por el coordinador.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {[
+                { key: 'editarActividades' as const, label: 'Editar Actividades' },
+                { key: 'editarMateriales' as const, label: 'Gestionar Materiales' },
+                { key: 'editarGrupos' as const, label: 'Administrar Grupos' },
+                ...(!isCampus ? [{ key: 'editarCabanas' as const, label: 'Gestionar Cabañas' }] : []),
+                { key: 'editarAreaMedica' as const, label: 'Acceso Área Médica' },
+                ...(isCampus ? [{ key: 'asistencia' as const, label: 'Gestionar Asistencia' }] : []),
+              ].map(({ key, label }) => {
+                const enabled = currentMonitor.permisos[key] ?? false;
+                return (
+                  <li key={key} className="flex items-center justify-between text-sm">
+                    <span className={enabled ? 'text-gray-800' : 'text-gray-400'}>{label}</span>
+                    {enabled
+                      ? <Check size={15} className="text-green-500" />
+                      : <X size={15} className="text-gray-300" />}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Mis programas */}
       {activeCamps.length > 0 && (

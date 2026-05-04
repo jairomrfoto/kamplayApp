@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/store';
 import { Shield, X, Clock, ArrowUpCircle, CheckCircle, Loader } from 'lucide-react';
-import { promoteMonitorToCoordinator } from '../../services/firestore';
 import type { Monitor } from '../../types';
 import type { CampCoordinator } from '../../types/camp';
 
@@ -44,8 +43,10 @@ const MonitorPermissions = ({ monitor, onClose }: Props) => {
         },
         isMainCoordinator: false,
       };
+      // addCoordinator adds the uid to camp.coordinators[] and saves the CampCoordinator doc.
+      // On next login, useFirestoreSync detects coordinators.includes(uid) and self-updates
+      // the monitor's own profile role to 'coordinator' (avoiding the 403 cross-user write).
       addCoordinator(coordinator);
-      await promoteMonitorToCoordinator(monitor.id);
       setPromoted(true);
     } catch (err) {
       console.error('Error al promover:', err);

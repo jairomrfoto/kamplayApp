@@ -18,7 +18,7 @@ import {
   getUserProfile, subscribeToIncidencias, getCampInfo, saveCampInfo,
   saveUserProfile, saveJoinCodes, subscribeToCampers, subscribeToMonitores,
   getCoordinatorProfile, getDocRest, getUserCamps, loadCampData, getUserActividades,
-  subscribeToNovedades,
+  subscribeToNovedades, promoteMonitorToCoordinator,
 } from '../services/firestore';
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from '../utils/localProfile';
@@ -91,6 +91,13 @@ export function useFirestoreSync() {
             ...(extra || {}),
           };
           setCurrentCoordinator(coordinator);
+
+          // If this user was a monitor that got promoted, self-update their role.
+          // The user can write to their own profile (Firestore rules: isOwner).
+          const ownProfile = await getUserProfile(uid).catch(() => null);
+          if (ownProfile && ownProfile.role === 'monitor') {
+            promoteMonitorToCoordinator(uid).catch(() => {});
+          }
         }
 
         const monCode = camp.joinCodes?.monitors;

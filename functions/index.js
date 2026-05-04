@@ -645,49 +645,80 @@ exports.parseDocument = functions
     const Anthropic = sdkModule.default || sdkModule.Anthropic || sdkModule;
     const client = new Anthropic({ apiKey: anthropicKeyVal });
 
-    const SYSTEM_PROMPT = `Eres un extractor de datos para campamentos y campus educativos en España. Tu ÚNICA tarea es devolver un objeto JSON válido. NUNCA escribas texto antes o después del JSON. NUNCA uses bloques markdown ni comillas de código. Tu respuesta debe ser exactamente el objeto JSON y nada más: empieza con { y termina con }.`;
+    // Tool definition — forces the model to return valid structured JSON (no parse failures possible)
+    const EXTRACT_TOOL = {
+      name: 'extract_camp_data',
+      description: 'Extrae y estructura todos los datos del documento de campamento o campus educativo.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          acampados: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                nombre:      { type: 'string' },
+                edad:        { type: ['number', 'null'] },
+                grupo:       { type: ['string', 'null'] },
+                cabana:      { type: ['string', 'null'] },
+                alergias:    { type: 'array', items: { type: 'string' } },
+                medicacion:  { type: 'array', items: { type: 'string' } },
+                notasMedicas:{ type: ['string', 'null'] },
+                contacto:    { type: ['string', 'null'] },
+              },
+              required: ['nombre', 'alergias', 'medicacion'],
+            },
+          },
+          grupos: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                nombre:           { type: 'string' },
+                edadMinima:       { type: ['number', 'null'] },
+                edadMaxima:       { type: ['number', 'null'] },
+                monitores:        { type: 'array', items: { type: 'string' } },
+                acampadosNombres: { type: 'array', items: { type: 'string' } },
+              },
+              required: ['nombre', 'monitores', 'acampadosNombres'],
+            },
+          },
+          actividades: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                titulo:          { type: 'string' },
+                fechaStr:        { type: ['string', 'null'] },
+                horaInicio:      { type: ['string', 'null'] },
+                horaFin:         { type: ['string', 'null'] },
+                grupo:           { type: ['string', 'null'] },
+                categoria:       { type: 'string', enum: ['deportes', 'arte', 'naturaleza', 'juegos', 'talleres', 'otro'] },
+                descripcion:     { type: ['string', 'null'] },
+                ubicacion:       { type: ['string', 'null'] },
+                duracionMinutos: { type: 'number' },
+              },
+              required: ['titulo', 'categoria', 'duracionMinutos'],
+            },
+          },
+          infoGeneral: {
+            type: 'object',
+            properties: {
+              nombre:      { type: ['string', 'null'] },
+              fechaInicio: { type: ['string', 'null'] },
+              fechaFin:    { type: ['string', 'null'] },
+              ubicacion:   { type: ['string', 'null'] },
+              descripcion: { type: ['string', 'null'] },
+            },
+          },
+        },
+        required: ['acampados', 'grupos', 'actividades', 'infoGeneral'],
+      },
+    };
 
-    const USER_PROMPT = `Analiza este documento de campamento/campus y extrae TODA la información disponible. Devuelve SOLO el JSON con este esquema exacto (usa null o [] cuando un campo no está disponible):
+    const USER_PROMPT = `Analiza este documento de campamento/campus y usa la herramienta extract_camp_data para extraer TODA la información disponible. Si un campo no está en el documento usa null o array vacío.
 
-{
-  "acampados": [{
-    "nombre": "Nombre completo",
-    "edad": 12,
-    "grupo": "nombre del grupo o null",
-    "cabana": "nombre/número cabaña o null",
-    "alergias": ["gluten"],
-    "medicacion": ["ibuprofeno 400mg"],
-    "notasMedicas": "observaciones o null",
-    "contacto": "Nombre Tutor · 666 123 456 o null"
-  }],
-  "grupos": [{
-    "nombre": "Nombre Grupo",
-    "edadMinima": 10,
-    "edadMaxima": 14,
-    "monitores": ["Nombre Monitor"],
-    "acampadosNombres": ["Nombre Acampado 1"]
-  }],
-  "actividades": [{
-    "titulo": "Nombre actividad",
-    "fechaStr": "DD/MM/YYYY o null",
-    "horaInicio": "HH:MM o null",
-    "horaFin": "HH:MM o null",
-    "grupo": "nombre grupo o null",
-    "categoria": "deportes|arte|naturaleza|juegos|talleres|otro",
-    "descripcion": "texto o null",
-    "ubicacion": "lugar o null",
-    "duracionMinutos": 60
-  }],
-  "infoGeneral": {
-    "nombre": "Nombre del campamento o null",
-    "fechaInicio": "DD/MM/YYYY o null",
-    "fechaFin": "DD/MM/YYYY o null",
-    "ubicacion": "lugar o null",
-    "descripcion": "descripción general o null"
-  }
-}
-
-DOCUMENTO A ANALIZAR:
+DOCUMENTO:
 ${rawText.slice(0, 55000)}`;
 
     let aiResponse;
@@ -695,7 +726,8 @@ ${rawText.slice(0, 55000)}`;
       aiResponse = await client.messages.create({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 8192,
-        system: SYSTEM_PROMPT,
+        tools: [EXTRACT_TOOL],
+        tool_choice: { type: 'tool', name: 'extract_camp_data' },
         messages: [{ role: 'user', content: USER_PROMPT }],
       });
     } catch (err) {
@@ -703,30 +735,13 @@ ${rawText.slice(0, 55000)}`;
       throw new functions.https.HttpsError('internal', 'Error al procesar con IA: ' + (err.message || ''));
     }
 
-    // Extract text from response
-    const rawResponse = aiResponse.content[0] && aiResponse.content[0].type === 'text'
-      ? aiResponse.content[0].text
-      : '';
-    const responseText = rawResponse.trim();
-
-    function extractJson(text) {
-      // 1. Direct parse
-      try { return JSON.parse(text); } catch {}
-      // 2. Strip markdown code fences
-      const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      if (fenceMatch) { try { return JSON.parse(fenceMatch[1]); } catch {} }
-      // 3. Extract outermost {...}
-      const start = text.indexOf('{');
-      const end = text.lastIndexOf('}');
-      if (start !== -1 && end > start) { try { return JSON.parse(text.slice(start, end + 1)); } catch {} }
-      return null;
-    }
-
-    const parsed = extractJson(responseText);
-    if (!parsed) {
-      console.error('parseDocument: could not parse AI response. First 500 chars:', responseText.slice(0, 500));
+    // With tool_choice forced, the model MUST return a tool_use block with valid JSON
+    const toolUse = aiResponse.content.find(c => c.type === 'tool_use' && c.name === 'extract_camp_data');
+    if (!toolUse) {
+      console.error('parseDocument: no tool_use block in response', JSON.stringify(aiResponse.content).slice(0, 300));
       throw new functions.https.HttpsError('internal', 'La IA no pudo generar datos estructurados válidos.');
     }
+    const parsed = toolUse.input;
 
     console.log(`parseDocument: ${(parsed.acampados || []).length} acampados, ${(parsed.grupos || []).length} grupos, ${(parsed.actividades || []).length} actividades — "${fileName}" (${rawText.length} chars)`);
 

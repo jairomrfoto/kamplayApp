@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store/store';
-import { Plus, Search, RefreshCw, Shield } from 'lucide-react';
+import { Plus, Search, RefreshCw, Shield, Bell } from 'lucide-react';
 import MonitorProfile from '../components/monitors/MonitorProfile';
 import MonitorProfileForm from '../components/monitors/MonitorProfileForm';
 import MonitorPermissions from '../components/coordinator/MonitorPermissions';
@@ -12,6 +12,8 @@ const Monitores = () => {
   const [editingMonitor, setEditingMonitor] = useState<string | null>(null);
   const [managingPermissions, setManagingPermissions] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const pendingCount = monitores.filter(m => m.pendiente).length;
 
   // Refresh on mount so the coordinator always sees the latest list,
   // even if the real-time onSnapshot listener missed the update.
@@ -44,6 +46,18 @@ const Monitores = () => {
           {refreshing ? 'Actualizando...' : 'Actualizar'}
         </button>
       </div>
+
+      {pendingCount > 0 && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <div className="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+            <Bell size={15} className="text-amber-600" />
+          </div>
+          <p className="text-sm text-amber-800 flex-1">
+            <span className="font-semibold">{pendingCount} monitor{pendingCount > 1 ? 'es' : ''} nuevo{pendingCount > 1 ? 's' : ''}</span>
+            {' '}acaba{pendingCount > 1 ? 'n' : ''} de unirse y espera{pendingCount > 1 ? 'n' : ''} que les actives los permisos.
+          </p>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center gap-4 mb-6">

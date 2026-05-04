@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle } from 'lucide-react';
+import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle, Clock, Lock } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
 import Activities from '../components/monitor-dashboard/Activities';
@@ -19,7 +19,7 @@ const MonitorDashboard = () => {
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { currentCamp } = useStore();
+  const { currentCamp, currentMonitor } = useStore();
 
   const handleLogout = async () => {
     await signOut();
@@ -30,14 +30,20 @@ const MonitorDashboard = () => {
   const initial = displayName.charAt(0).toUpperCase();
 
   const isCampus = currentCamp?.type === 'campus';
+  const isPendiente = currentMonitor?.pendiente === true;
+
+  const hasPermiso = (key: keyof NonNullable<typeof currentMonitor>['permisos']) => {
+    if (!currentMonitor) return true;
+    return currentMonitor.permisos[key] === true;
+  };
 
   const tabs = [
     { id: 'current',         label: isCampus ? 'Campus' : 'Campamento', icon: isCampus ? Users : Tent },
     { id: 'novedades',       label: 'Novedades',    icon: Newspaper },
     { id: 'chat',            label: 'Chat',         icon: MessageCircle },
     { id: 'acampados',       label: 'Mis Acampados',icon: Users },
-    ...(isCampus ? [{ id: 'asistencia', label: 'Asistencia', icon: ClipboardList }] : []),
-    { id: 'activities',      label: 'Actividades',  icon: Calendar },
+    ...(isCampus && hasPermiso('asistencia') ? [{ id: 'asistencia', label: 'Asistencia', icon: ClipboardList }] : []),
+    ...(hasPermiso('editarActividades') ? [{ id: 'activities', label: 'Actividades', icon: Calendar }] : []),
     { id: 'mis-actividades', label: 'Mi Biblioteca',icon: BookOpen },
     { id: 'profile',         label: 'Mi Perfil',    icon: UserCircle },
     { id: 'history',         label: 'Historial',    icon: History },
@@ -126,6 +132,19 @@ const MonitorDashboard = () => {
             >
               Introducir código
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Pending permissions banner */}
+      {isPendiente && (
+        <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <Clock size={16} className="text-blue-600 flex-shrink-0" />
+            <p className="text-blue-800 text-sm">
+              <span className="font-semibold">Acceso pendiente de aprobación.</span>
+              {' '}El coordinador revisará tus permisos pronto. Algunas funciones estarán disponibles una vez los active.
+            </p>
           </div>
         </div>
       )}

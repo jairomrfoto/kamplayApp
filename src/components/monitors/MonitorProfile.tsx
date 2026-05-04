@@ -1,5 +1,5 @@
 import React from 'react';
-import { Camera, Mail, Award, Calendar, MapPin, Shield } from 'lucide-react';
+import { Camera, Mail, Award, Calendar, MapPin, Shield, Clock } from 'lucide-react';
 import type { Monitor } from '../../types';
 
 interface Props {
@@ -13,14 +13,20 @@ const MonitorProfile = ({ monitor, onEdit, onManagePermissions, extraActions }: 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       <div className="relative h-32 bg-orange-500">
+        {monitor.pendiente && (
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-amber-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+            <Clock size={11} />
+            Pendiente
+          </div>
+        )}
         <div className="absolute top-4 right-4 flex items-center gap-2">
           {onManagePermissions && (
             <button
               onClick={onManagePermissions}
-              className="bg-white p-2 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2"
+              className={`bg-white p-2 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2 ${monitor.pendiente ? 'ring-2 ring-amber-400' : ''}`}
             >
-              <Shield size={18} className="text-orange-600" />
-              <span>Permisos</span>
+              <Shield size={18} className={monitor.pendiente ? 'text-amber-500' : 'text-orange-600'} />
+              <span>{monitor.pendiente ? 'Activar' : 'Permisos'}</span>
             </button>
           )}
           <button 

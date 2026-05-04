@@ -45,7 +45,9 @@ export interface Monitor {
     editarGrupos: boolean;
     editarCabanas: boolean;
     editarAreaMedica: boolean;
+    asistencia: boolean;
   };
+  pendiente?: boolean;
   foto?: string;
   email?: string;
 }

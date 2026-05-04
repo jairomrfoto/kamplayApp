@@ -66,12 +66,14 @@ const JoinCamp = () => {
           grupoAsignado: '',
           cabanaAsignada: '',
           encuestas: [],
+          pendiente: true,
           permisos: {
             editarActividades: false,
             editarMateriales: false,
             editarGrupos: false,
             editarCabanas: false,
             editarAreaMedica: false,
+            asistencia: false,
           },
           email: user.email || '',
         }).catch(err => console.error('Error registering monitor:', err));

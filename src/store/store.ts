@@ -278,7 +278,7 @@ export const useStore = create<AppState>((set, get) => ({
   updateMonitorPermisos: (monitorId, permisos) => {
     set((state) => ({
       monitores: state.monitores.map(m =>
-        m.id === monitorId ? { ...m, permisos: { ...m.permisos, ...permisos } } : m
+        m.id === monitorId ? { ...m, permisos: { ...m.permisos, ...permisos }, pendiente: false } : m
       ),
     }));
     const { currentCamp, monitores } = get();

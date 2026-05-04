@@ -169,6 +169,10 @@ const Grupos = () => {
                 setShowGrupoEval(false);
                 setSelectedGrupo(null);
               }}
+              onCancel={() => {
+                setShowGrupoEval(false);
+                setSelectedGrupo(null);
+              }}
             />
           </div>
         </div>

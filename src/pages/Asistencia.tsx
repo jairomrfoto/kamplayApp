@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Check, X, Save, Loader } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Check, X, Save, Loader, AlertCircle } from 'lucide-react';
 import { useStore } from '../store/store';
 import { firestoreAsistencia, getDocRest } from '../services/firestore';
 import type { Asistencia as AsistenciaType, RegistroAsistencia } from '../types';
@@ -26,19 +26,21 @@ const Asistencia = () => {
   const [registros, setRegistros] = useState<RegistroAsistencia[]>([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const campId = currentCamp?.id || '';
 
-  const makeDefaultRegistros = useCallback(() =>
-    campers.map(c => ({ acampadoId: c.id, nombre: c.nombre, presente: true, nota: '' })),
-    [campers]
-  );
+  // Use a ref so the effect can read current campers without campers being a dependency
+  // (avoids re-fetching and resetting the list every time a participant is imported)
+  const campersRef = useRef(campers);
+  useEffect(() => { campersRef.current = campers; }, [campers]);
 
   useEffect(() => {
     if (!campId) return;
     setLoading(true);
     setSaved(false);
+    setSaveError('');
     const id = `${campId}_${fecha}`;
 
     getDocRest(`campamentos/${campId}/asistencia/${id}`)
@@ -46,12 +48,14 @@ const Asistencia = () => {
         if (data && Array.isArray(data.registros)) {
           setRegistros(data.registros as RegistroAsistencia[]);
         } else {
-          setRegistros(makeDefaultRegistros());
+          setRegistros(campersRef.current.map(c => ({ acampadoId: c.id, nombre: c.nombre, presente: true, nota: '' })));
         }
       })
-      .catch(() => setRegistros(makeDefaultRegistros()))
+      .catch(() => {
+        setRegistros(campersRef.current.map(c => ({ acampadoId: c.id, nombre: c.nombre, presente: true, nota: '' })));
+      })
       .finally(() => setLoading(false));
-  }, [fecha, campId, makeDefaultRegistros]);
+  }, [fecha, campId]); // Only re-fetch when date or camp changes, NOT when campers updates
 
   const toggle = (id: string) => {
     setRegistros(prev => prev.map(r => r.acampadoId === id ? { ...r, presente: !r.presente } : r));
@@ -64,8 +68,9 @@ const Asistencia = () => {
   };
 
   const handleSave = async () => {
-    if (!campId) return;
+    if (!campId || registros.length === 0) return;
     setSaving(true);
+    setSaveError('');
     const record: AsistenciaType = {
       id: `${campId}_${fecha}`,
       campId,
@@ -76,8 +81,9 @@ const Asistencia = () => {
       await firestoreAsistencia.save(campId, record);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
+      setSaveError('Error al guardar. Comprueba tu conexión e inténtalo de nuevo.');
     } finally {
       setSaving(false);
     }
@@ -103,13 +109,20 @@ const Asistencia = () => {
         </div>
         <button
           onClick={handleSave}
-          disabled={saving || campers.length === 0}
+          disabled={saving || registros.length === 0}
           className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors"
         >
           {saving ? <Loader size={16} className="animate-spin" /> : saved ? <Check size={16} /> : <Save size={16} />}
           {saving ? 'Guardando...' : saved ? 'Guardado' : 'Guardar lista'}
         </button>
       </div>
+
+      {saveError && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+          <AlertCircle size={16} className="flex-shrink-0" />
+          {saveError}
+        </div>
+      )}
 
       {/* Date navigator */}
       <div className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between gap-4">

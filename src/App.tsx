@@ -11,6 +11,10 @@ import Login from './pages/Login';
 import Onboarding from './pages/Onboarding';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import CookieBanner from './components/CookieBanner';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
 
 // Lazy — only loaded when the user navigates to these routes
 const ParentDashboard      = lazy(() => import('./pages/ParentDashboard'));
@@ -81,6 +85,9 @@ function AppRoutes() {
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/benefits" element={<Benefits />} />
+          <Route path="/privacidad" element={<PrivacyPolicy />} />
+          <Route path="/terminos" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/create-camp" element={<CreateCamp />} />
           <Route path="/onboarding" element={<Onboarding />} />
@@ -129,6 +136,7 @@ function App() {
   return (
     <ErrorBoundary>
       <AppRoutes />
+      <CookieBanner />
     </ErrorBoundary>
   );
 }

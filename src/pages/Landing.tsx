@@ -708,7 +708,11 @@ const Landing = () => {
           </div>
           <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
             <p>© {new Date().getFullYear()} Kamplay · Todos los derechos reservados</p>
-            <p className="text-gray-600 text-xs">Software de gestión para campamentos de verano · España</p>
+            <div className="flex items-center gap-4 text-gray-500 text-xs">
+              <Link to="/privacidad" className="hover:text-gray-300 transition-colors">Privacidad</Link>
+              <Link to="/terminos" className="hover:text-gray-300 transition-colors">Términos</Link>
+              <Link to="/cookies" className="hover:text-gray-300 transition-colors">Cookies</Link>
+            </div>
           </div>
         </div>
       </footer>

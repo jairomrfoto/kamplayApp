@@ -527,6 +527,20 @@ export async function saveCoordinator(campId: string, coordinator: CampCoordinat
   );
 }
 
+/** Promote a monitor to coordinator: updates their role in usuarios/{uid}. */
+export async function promoteMonitorToCoordinator(uid: string): Promise<void> {
+  return restFirstWrite(
+    async () => {
+      const existing = await getDocRest(`usuarios/${uid}`);
+      await setDocRest(`usuarios/${uid}`, { ...(existing || {}), role: 'coordinator' });
+    },
+    async () => {
+      await updateDoc(doc(db, 'usuarios', uid), { role: 'coordinator' })
+        .catch(() => setDoc(doc(db, 'usuarios', uid), { role: 'coordinator' }, { merge: true }));
+    }
+  );
+}
+
 export async function getCoordinatorProfile(campId: string, uid: string): Promise<Partial<CampCoordinator> | null> {
   return raceBothReads(
     async () => {

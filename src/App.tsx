@@ -37,6 +37,7 @@ const JoinCamp             = lazy(() => import('./pages/JoinCamp'));
 const Asistencia           = lazy(() => import('./pages/Asistencia'));
 const AdminDashboard       = lazy(() => import('./pages/AdminDashboard'));
 const CampDirectory        = lazy(() => import('./pages/CampDirectory'));
+const MiPlan               = lazy(() => import('./pages/MiPlan'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-stone-50">
@@ -93,6 +94,7 @@ function AppRoutes() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/join-camp" element={<JoinCamp />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/mi-plan" element={<MiPlan />} />
           <Route path="/directorio" element={<CampDirectory />} />
           <Route path="/parent-dashboard/*" element={<ParentDashboard />} />
           <Route path="/coordinator-dashboard/*" element={<CoordinatorDashboard />} />

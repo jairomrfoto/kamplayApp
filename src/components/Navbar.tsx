@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, User, ChevronDown, PlusCircle, Menu } from 'lucide-react';
+import { LogOut, User, ChevronDown, PlusCircle, Menu, CreditCard } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useStore } from '../store/store';
@@ -84,6 +84,14 @@ const Navbar = () => {
                     <User size={15} /> Mi perfil
                   </Link>
                 )}
+
+                <Link
+                  to="/mi-plan"
+                  onClick={() => setShowProfileMenu(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 font-medium"
+                >
+                  <CreditCard size={15} /> Mi Plan
+                </Link>
 
                 <div className="border-t border-gray-100 mt-1">
                   <button

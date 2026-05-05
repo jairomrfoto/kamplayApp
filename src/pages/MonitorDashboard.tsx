@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle, Clock, Lock } from 'lucide-react';
+import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle, Clock, Lock, CreditCard } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
 import Activities from '../components/monitor-dashboard/Activities';
@@ -104,6 +104,13 @@ const MonitorDashboard = () => {
                       className="flex items-center gap-2 px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full font-semibold"
                     >
                       <PlusCircle size={15} /> Crear mi campamento
+                    </Link>
+                    <Link
+                      to="/mi-plan"
+                      onClick={() => setShowMenu(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full font-medium"
+                    >
+                      <CreditCard size={15} /> Mi Plan
                     </Link>
                     <button
                       onClick={handleLogout}

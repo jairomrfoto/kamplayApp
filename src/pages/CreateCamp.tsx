@@ -36,16 +36,15 @@ const PLANS = [
 
 const CreateCamp = () => {
   const { profile, loading } = useUserProfile();
-  const isActive      = profile?.subscriptionStatus === 'active' || profile?.subscriptionStatus === 'trialing';
-  const isCoordinator = profile?.role === 'coordinator';
-  const bypass        = import.meta.env.VITE_BYPASS_SUBSCRIPTION === 'true';
+  const isActive = profile?.subscriptionStatus === 'active' || profile?.subscriptionStatus === 'trialing';
+  const bypass   = import.meta.env.VITE_BYPASS_SUBSCRIPTION === 'true';
 
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   const [paying, setPaying]             = useState(false);
   const [payError, setPayError]         = useState('');
 
-  // Active subscribers, coordinators set by admin, and bypass mode skip the payment flow
-  const showForm = isActive || isCoordinator || bypass;
+  // Only active Professional subscribers (or dev bypass) skip the plan selector
+  const showForm = isActive || bypass;
 
   const handleCampReady = async (camp: Camp) => {
     if (showForm) return; // already handled inside CampForm

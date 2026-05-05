@@ -224,16 +224,18 @@ export function useFirestoreSync() {
               }
             }).catch(() => {});
           }
-        } else if (local?.campId) {
-          const localRole = local.role || 'coordinator';
+        } else {
+          // No Firestore profile exists — save it now so Firestore security rules
+          // (e.g. hasCoordinatorRole) work correctly even on first session.
+          const localRole = (local?.role || 'coordinator') as 'coordinator' | 'monitor' | 'parent' | 'profesor';
           await saveUserProfile({
             uid: user.uid,
-            campId: local.campId,
-            campIds: local.campIds || [local.campId],
+            campId: local?.campId || '',
+            campIds: local?.campIds || (local?.campId ? [local.campId] : []),
             role: localRole,
             email: user.email || '',
             nombre: user.displayName || '',
-          });
+          }).catch(() => {});
         }
       } catch {
         // Firestore offline — localStorage already handled this

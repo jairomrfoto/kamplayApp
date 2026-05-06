@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
+import { useUserProfile } from '../../hooks/useUserProfile';
 import { saveUserProfile, saveCampInfo, saveJoinCodes } from '../../services/firestore';
 import { generateJoinCode } from '../../utils/generateJoinCode';
 import { updateLocalCamp } from '../../utils/localProfile';
-import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle, RefreshCw } from 'lucide-react';
+import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle, RefreshCw, CreditCard, CheckCircle, Star } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
 import type { Camp } from '../../types/camp';
 import type { UserProfile } from '../../types';
@@ -13,6 +15,9 @@ const CampOverview = () => {
   const { currentCamp, monitores, campers, actividades, incidencias, isLoading, setCurrentCamp } = useStore();
   const isCampus = currentCamp?.type === 'campus';
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { profile, loading: profileLoading } = useUserProfile();
+  const isActive = profile?.subscriptionStatus === 'active' || profile?.subscriptionStatus === 'trialing';
   const [showIncidentForm, setShowIncidentForm] = useState(false);
   const [copiedMonitor, setCopiedMonitor] = useState(false);
   const [copiedParent, setCopiedParent] = useState(false);
@@ -122,8 +127,74 @@ const CampOverview = () => {
     );
   }
 
-  // No camp yet — show prompt to create one
+  // No camp yet
   if (!currentCamp) {
+    // Still loading profile — wait before deciding which state to show
+    if (profileLoading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <Loader size={32} className="animate-spin text-orange-600" />
+        </div>
+      );
+    }
+
+    // No subscription → show pricing CTA
+    if (!isActive) {
+      return (
+        <div className="max-w-2xl mx-auto mt-8 space-y-6">
+          <div className="text-center">
+            <div className="text-5xl mb-3">🏕️</div>
+            <h2 className="text-2xl font-extrabold text-gray-900">Bienvenido a Kamplay</h2>
+            <p className="text-gray-500 mt-2 text-sm max-w-md mx-auto">
+              Para crear y gestionar campamentos o campus elige el plan que mejor se adapte a ti.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { label: 'Express', price: '9 €', note: 'Hasta 3 días', features: ['1 campamento o campus', 'Acampados, grupos y monitores', 'Actividades y asistencia', 'Editable 2 días post-evento'] },
+              { label: 'Estándar', price: '15 €', note: 'Hasta 7 días', popular: true, features: ['1 campamento o campus', 'Actividades, menú e incidencias', 'Escáner de documentos', 'Editable 7 días post-evento'] },
+              { label: 'Profesional', price: '30 €/mes', note: 'Ilimitado', features: ['Campamentos ilimitados', 'Sin límite de duración', 'Escáner de documentos', 'Directorio y valoraciones'] },
+            ].map(plan => (
+              <div
+                key={plan.label}
+                className={`relative bg-white rounded-2xl border-2 p-5 ${plan.popular ? 'border-orange-400 shadow-md' : 'border-gray-200'}`}
+              >
+                {plan.popular && (
+                  <span className="absolute -top-2.5 left-4 bg-orange-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <Star size={10} /> Más popular
+                  </span>
+                )}
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{plan.label}</p>
+                <p className="text-2xl font-extrabold text-gray-900">{plan.price}</p>
+                <p className="text-xs text-orange-500 font-semibold mb-4">{plan.note}</p>
+                <ul className="space-y-1.5 mb-4">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600">
+                      <CheckCircle size={12} className="text-green-500 flex-shrink-0 mt-0.5" /> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              onClick={() => navigate('/mi-plan')}
+              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm"
+            >
+              <CreditCard size={16} /> Ver planes y precios
+            </button>
+          </div>
+          <p className="text-center text-xs text-gray-400">
+            Pago único por evento o suscripción mensual · Cancela cuando quieras
+          </p>
+        </div>
+      );
+    }
+
+    // Has subscription → show create camp prompt
     return (
       <div className="max-w-lg mx-auto mt-8">
         {!creating ? (
@@ -136,7 +207,7 @@ const CampOverview = () => {
               Crea tu primer campamento o campus para empezar a gestionar participantes, monitores y actividades.
             </p>
             <button
-              onClick={() => setCreating(true)}
+              onClick={() => navigate('/create-camp')}
               className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
             >
               Crear campamento o campus

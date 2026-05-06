@@ -65,11 +65,16 @@ export default function MiPlan() {
     setBusy(true);
     setError('');
     try {
-      const { clientSecret } = await startSubscriptionCheckout(interval, true);
-      if (clientSecret) {
-        setCheckoutSecret(clientSecret);
+      const result = await startSubscriptionCheckout(interval, true);
+      console.log('[Kamplay Pay] checkout result:', result);
+      if (result.clientSecret) {
+        setCheckoutSecret(result.clientSecret);
+      } else {
+        console.warn('[Kamplay Pay] No clientSecret in result — function may not be updated');
+        setError('Error del servidor: no se recibió el token de pago. Inténtalo de nuevo.');
       }
     } catch (e: any) {
+      console.error('[Kamplay Pay] error:', e);
       setError(e?.message || 'Error al iniciar el pago');
     } finally {
       setBusy(false);

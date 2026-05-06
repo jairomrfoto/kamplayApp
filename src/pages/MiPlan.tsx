@@ -65,7 +65,7 @@ export default function MiPlan() {
     setBusy(true);
     setError('');
     try {
-      const result = await startSubscriptionCheckout(interval, true);
+      const result = await startSubscriptionCheckout(interval);
       console.log('[Kamplay Pay] checkout result:', result);
       if (result.clientSecret) {
         setCheckoutSecret(result.clientSecret);

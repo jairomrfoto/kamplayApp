@@ -61,7 +61,7 @@ const CreateCamp = () => {
     if (selectedPlan === 'subscription') {
       setPaying(true);
       try {
-        const { clientSecret } = await startSubscriptionCheckout('month', true);
+        const { clientSecret } = await startSubscriptionCheckout('month');
         if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
       } catch (e: any) {
         setPayError(e?.message || 'Error al iniciar el pago');
@@ -77,7 +77,7 @@ const CreateCamp = () => {
     try {
       const draft: Camp = { ...camp, status: 'draft', planType: selectedPlan };
       await saveCampInfo(draft);
-      const { clientSecret } = await startEventCheckout(selectedPlan, camp.id, true);
+      const { clientSecret } = await startEventCheckout(selectedPlan, camp.id);
       const label = selectedPlan === 'standard' ? 'Estándar · 15 €' : 'Express · 9 €';
       if (clientSecret) openCheckout(clientSecret, `Plan ${label}`);
     } catch (e: any) {
@@ -188,7 +188,7 @@ const CreateCamp = () => {
                 onClick={async () => {
                   setPaying(true);
                   try {
-                    const { clientSecret } = await startSubscriptionCheckout('month', true);
+                    const { clientSecret } = await startSubscriptionCheckout('month');
                     if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
                   } catch (e: any) { setPayError(e?.message || 'Error'); }
                   finally { setPaying(false); }
@@ -202,7 +202,7 @@ const CreateCamp = () => {
                 onClick={async () => {
                   setPaying(true);
                   try {
-                    const { clientSecret } = await startSubscriptionCheckout('year', true);
+                    const { clientSecret } = await startSubscriptionCheckout('year');
                     if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 250 €/año');
                   } catch (e: any) { setPayError(e?.message || 'Error'); }
                   finally { setPaying(false); }

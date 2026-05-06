@@ -267,15 +267,16 @@ exports.createSubscriptionCheckout = functions
   .https.onCall(async (data, context) => {
     assertAuth(context);
     const { uid, token: { email } } = context.auth;
-    const interval  = data && data.interval === 'year' ? 'year' : 'month';
-    const embedded  = !!(data && data.embedded);
-    const amount    = interval === 'year' ? SUBSCRIPTION_ANNUAL_CENTS : SUBSCRIPTION_MONTHLY_CENTS;
+    const interval   = data && data.interval === 'year' ? 'year' : 'month';
+    const amount     = interval === 'year' ? SUBSCRIPTION_ANNUAL_CENTS : SUBSCRIPTION_MONTHLY_CENTS;
     const customerId = await getOrCreateStripeCustomer(uid, email);
 
-    const sessionParams = {
+    const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       mode: 'subscription',
+      ui_mode: 'embedded',
+      return_url: `${appUrl()}/coordinator-dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`,
       line_items: [{
         price_data: {
           currency: 'eur',
@@ -291,20 +292,8 @@ exports.createSubscriptionCheckout = functions
       metadata: { firebaseUID: uid },
       subscription_data: { metadata: { firebaseUID: uid } },
       allow_promotion_codes: true,
-    };
-
-    if (embedded) {
-      sessionParams.ui_mode = 'embedded';
-      sessionParams.return_url = `${appUrl()}/coordinator-dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`;
-    } else {
-      sessionParams.success_url = `${appUrl()}/coordinator-dashboard?subscription=success`;
-      sessionParams.cancel_url  = `${appUrl()}/coordinator-dashboard?subscription=cancelled`;
-    }
-
-    const session = await getStripe().checkout.sessions.create(sessionParams);
-    return embedded
-      ? { clientSecret: session.client_secret, sessionId: session.id }
-      : { url: session.url, sessionId: session.id };
+    });
+    return { clientSecret: session.client_secret, sessionId: session.id };
   });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -316,7 +305,7 @@ exports.createEventCheckout = functions
   .https.onCall(async (data, context) => {
     assertAuth(context);
     const { uid, token: { email } } = context.auth;
-    const { planType, campId, embedded } = data || {};
+    const { planType, campId } = data || {};
     if (!planType || !campId) {
       throw new functions.https.HttpsError('invalid-argument', 'Faltan planType o campId.');
     }
@@ -328,10 +317,12 @@ exports.createEventCheckout = functions
     const label      = planType === 'standard' ? 'Estándar (hasta 7 días)' : 'Express (hasta 3 días)';
     const customerId = await getOrCreateStripeCustomer(uid, email);
 
-    const sessionParams = {
+    const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       mode: 'payment',
+      ui_mode: 'embedded',
+      return_url: `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}&session_id={CHECKOUT_SESSION_ID}`,
       line_items: [{
         price_data: {
           currency: 'eur',
@@ -345,20 +336,8 @@ exports.createEventCheckout = functions
       }],
       allow_promotion_codes: true,
       metadata: { firebaseUID: uid, campId, planType },
-    };
-
-    if (embedded) {
-      sessionParams.ui_mode = 'embedded';
-      sessionParams.return_url = `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}&session_id={CHECKOUT_SESSION_ID}`;
-    } else {
-      sessionParams.success_url = `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}`;
-      sessionParams.cancel_url  = `${appUrl()}/create-camp?event=cancelled`;
-    }
-
-    const session = await getStripe().checkout.sessions.create(sessionParams);
-    return embedded
-      ? { clientSecret: session.client_secret, sessionId: session.id }
-      : { url: session.url, sessionId: session.id };
+    });
+    return { clientSecret: session.client_secret, sessionId: session.id };
   });
 
 // ─────────────────────────────────────────────────────────────────────────────

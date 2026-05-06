@@ -5,14 +5,13 @@ const fns = getFunctions(app, 'europe-west1');
 
 // ── Plan Profesional — suscripción mensual o anual ────────────────────────────
 export async function startSubscriptionCheckout(
-  interval: 'month' | 'year' = 'month',
-  embedded = false
-): Promise<{ url?: string; clientSecret?: string; sessionId: string }> {
+  interval: 'month' | 'year' = 'month'
+): Promise<{ clientSecret: string; sessionId: string }> {
   const fn = httpsCallable<
-    { interval: string; embedded: boolean },
-    { url?: string; clientSecret?: string; sessionId: string }
+    { interval: string },
+    { clientSecret: string; sessionId: string }
   >(fns, 'createSubscriptionCheckout');
-  const result = await fn({ interval, embedded });
+  const result = await fn({ interval });
   return result.data;
 }
 
@@ -25,14 +24,13 @@ export async function openBillingPortal(): Promise<{ url: string }> {
 // ── Plan por evento — Estándar (15 €) o Express (9 €) ─────────────────────────
 export async function startEventCheckout(
   planType: 'standard' | 'express',
-  campId: string,
-  embedded = false
-): Promise<{ url?: string; clientSecret?: string; sessionId: string }> {
+  campId: string
+): Promise<{ clientSecret: string; sessionId: string }> {
   const fn = httpsCallable<
-    { planType: string; campId: string; embedded: boolean },
-    { url?: string; clientSecret?: string; sessionId: string }
+    { planType: string; campId: string },
+    { clientSecret: string; sessionId: string }
   >(fns, 'createEventCheckout');
-  const result = await fn({ planType, campId, embedded });
+  const result = await fn({ planType, campId });
   return result.data;
 }
 

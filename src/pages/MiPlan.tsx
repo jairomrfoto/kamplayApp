@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { startSubscriptionCheckout, openBillingPortal } from '../services/stripe';
+import EmbeddedCheckoutModal from '../components/stripe/EmbeddedCheckoutModal';
 
 const FEATURES_PRO = [
   'Campamentos y campus ilimitados',
@@ -54,6 +55,7 @@ export default function MiPlan() {
   const [interval, setInterval] = useState<'month' | 'year'>('month');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [checkoutSecret, setCheckoutSecret] = useState<string | null>(null);
 
   const status = profile?.subscriptionStatus;
   const isActive = status === 'active' || status === 'trialing';
@@ -63,10 +65,13 @@ export default function MiPlan() {
     setBusy(true);
     setError('');
     try {
-      const { url } = await startSubscriptionCheckout(interval);
-      window.location.href = url;
+      const { clientSecret } = await startSubscriptionCheckout(interval, true);
+      if (clientSecret) {
+        setCheckoutSecret(clientSecret);
+      }
     } catch (e: any) {
       setError(e?.message || 'Error al iniciar el pago');
+    } finally {
       setBusy(false);
     }
   }
@@ -212,7 +217,7 @@ export default function MiPlan() {
                   className="flex items-center justify-center gap-2 w-full bg-green-800 hover:bg-green-900 text-white font-bold text-sm rounded-xl px-4 py-3 disabled:opacity-50 transition-colors"
                 >
                   {busy ? <Loader size={16} className="animate-spin" /> : <CreditCard size={16} />}
-                  {busy ? 'Redirigiendo a pago...' : `Suscribirse · ${interval === 'year' ? '250 €/año' : '30 €/mes'}`}
+                  {busy ? 'Preparando pago...' : `Suscribirse · ${interval === 'year' ? '250 €/año' : '30 €/mes'}`}
                 </button>
                 <p className="text-xs text-center text-gray-400">Cancela cuando quieras. Pago seguro con Stripe.</p>
               </div>
@@ -276,6 +281,14 @@ export default function MiPlan() {
             Los planes por evento se activan al crear el campamento. El pago se procesa de forma segura con Stripe.
           </p>
         </div>
+
+        {checkoutSecret && (
+          <EmbeddedCheckoutModal
+            clientSecret={checkoutSecret}
+            title={`Plan Profesional · ${interval === 'year' ? '250 €/año' : '30 €/mes'}`}
+            onClose={() => setCheckoutSecret(null)}
+          />
+        )}
 
         {/* ── COMPARATIVA ─────────────────────────────────── */}
         <div className="bg-orange-50 border border-orange-100 rounded-2xl p-5">

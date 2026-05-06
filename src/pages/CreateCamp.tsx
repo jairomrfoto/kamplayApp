@@ -5,6 +5,7 @@ import CampForm from '../components/camps/CampForm';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { startSubscriptionCheckout, startEventCheckout } from '../services/stripe';
 import { saveCampInfo } from '../services/firestore';
+import EmbeddedCheckoutModal from '../components/stripe/EmbeddedCheckoutModal';
 import type { Camp } from '../types/camp';
 
 type PlanType = 'subscription' | 'standard' | 'express';
@@ -42,36 +43,46 @@ const CreateCamp = () => {
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   const [paying, setPaying]             = useState(false);
   const [payError, setPayError]         = useState('');
+  const [checkoutSecret, setCheckoutSecret] = useState<string | null>(null);
+  const [checkoutTitle, setCheckoutTitle]   = useState('');
 
   // Only active Professional subscribers (or dev bypass) skip the plan selector
   const showForm = isActive || bypass;
 
+  const openCheckout = async (clientSecret: string, title: string) => {
+    setCheckoutSecret(clientSecret);
+    setCheckoutTitle(title);
+  };
+
   const handleCampReady = async (camp: Camp) => {
-    if (showForm) return; // already handled inside CampForm
+    if (showForm) return;
     if (!selectedPlan) return;
 
     if (selectedPlan === 'subscription') {
       setPaying(true);
       try {
-        const { url } = await startSubscriptionCheckout('month');
-        window.location.href = url;
+        const { clientSecret } = await startSubscriptionCheckout('month', true);
+        if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
       } catch (e: any) {
         setPayError(e?.message || 'Error al iniciar el pago');
+      } finally {
         setPaying(false);
       }
       return;
     }
 
-    // Save camp as draft first, then redirect to Stripe
+    // Save camp as draft first, then open embedded checkout
     setPaying(true);
     setPayError('');
     try {
       const draft: Camp = { ...camp, status: 'draft', planType: selectedPlan };
       await saveCampInfo(draft);
-      const { url } = await startEventCheckout(selectedPlan, camp.id);
-      window.location.href = url;
+      const { clientSecret } = await startEventCheckout(selectedPlan, camp.id, true);
+      const label = selectedPlan === 'standard' ? 'Estándar · 15 €' : 'Express · 9 €';
+      if (clientSecret) openCheckout(clientSecret, `Plan ${label}`);
     } catch (e: any) {
       setPayError(e?.message || 'Error al iniciar el pago');
+    } finally {
       setPaying(false);
     }
   };
@@ -109,7 +120,7 @@ const CreateCamp = () => {
           </p>
         </div>
 
-        {/* Plan selector — solo para usuarios sin suscripción activa ni rol de coordinador */}
+        {/* Plan selector */}
         {!showForm && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -155,7 +166,7 @@ const CreateCamp = () => {
           </div>
         )}
 
-        {/* Formulario — siempre visible para coordinadores/suscriptores, o cuando elige plan por evento */}
+        {/* Formulario */}
         {(showForm || (selectedPlan && selectedPlan !== 'subscription')) && (
           <div className="space-y-6">
             {payError && (
@@ -172,26 +183,48 @@ const CreateCamp = () => {
         {!showForm && selectedPlan === 'subscription' && (
           <div className="bg-gray-900 rounded-2xl p-6 text-white text-center space-y-4">
             <p className="font-bold text-lg">Plan Profesional — uso ilimitado</p>
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 flex-wrap">
               <button
-                onClick={async () => { setPaying(true); try { const { url } = await startSubscriptionCheckout('month'); window.location.href = url; } catch (e: any) { setPayError(e?.message || 'Error'); setPaying(false); } }}
+                onClick={async () => {
+                  setPaying(true);
+                  try {
+                    const { clientSecret } = await startSubscriptionCheckout('month', true);
+                    if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
+                  } catch (e: any) { setPayError(e?.message || 'Error'); }
+                  finally { setPaying(false); }
+                }}
                 disabled={paying}
                 className="bg-orange-500 hover:bg-orange-400 text-white font-bold px-6 py-3 rounded-xl disabled:opacity-50"
               >
-                {paying ? 'Redirigiendo...' : '30 €/mes'}
+                {paying ? 'Preparando...' : '30 €/mes'}
               </button>
               <button
-                onClick={async () => { setPaying(true); try { const { url } = await startSubscriptionCheckout('year'); window.location.href = url; } catch (e: any) { setPayError(e?.message || 'Error'); setPaying(false); } }}
+                onClick={async () => {
+                  setPaying(true);
+                  try {
+                    const { clientSecret } = await startSubscriptionCheckout('year', true);
+                    if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 250 €/año');
+                  } catch (e: any) { setPayError(e?.message || 'Error'); }
+                  finally { setPaying(false); }
+                }}
                 disabled={paying}
                 className="border-2 border-orange-400 text-orange-400 hover:bg-orange-500 hover:text-white font-bold px-6 py-3 rounded-xl disabled:opacity-50 transition-colors"
               >
-                {paying ? 'Redirigiendo...' : '250 €/año · Ahorras 2 meses'}
+                {paying ? 'Preparando...' : '250 €/año · Ahorras 2 meses'}
               </button>
             </div>
             {payError && <p className="text-red-400 text-sm">{payError}</p>}
           </div>
         )}
       </main>
+
+      {checkoutSecret && (
+        <EmbeddedCheckoutModal
+          clientSecret={checkoutSecret}
+          title={checkoutTitle}
+          onClose={() => setCheckoutSecret(null)}
+        />
+      )}
     </div>
   );
 };

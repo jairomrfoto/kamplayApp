@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { Loader } from 'lucide-react';
+import DemoModeBanner from './components/DemoModeBanner';
 
 // Eager — needed immediately on first paint
 import Landing from './pages/Landing';
@@ -104,6 +105,7 @@ function AppRoutes() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <DemoModeBanner />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Landing />} />

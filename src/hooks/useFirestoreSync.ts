@@ -25,7 +25,7 @@ import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from 
 import type { CampCoordinator } from '../types/camp';
 import {
   demoCamp, demoCampers, demoMonitores, demoGrupos, demoCabanas,
-  demoMateriales, demoActividades, demoMenus, demoIncidencias, demoNovedades,
+  demoMateriales, demoActividades, demoHorarios, demoMenus, demoIncidencias, demoNovedades,
   DEMO_CAMP_ID,
 } from '../demo/demoData';
 
@@ -35,7 +35,7 @@ export function useFirestoreSync() {
     setMonitores, setCurrentMonitor, setCurrentCoordinator,
     setUserCamps, addCampToUser, setSwitchCampFn,
     setCampCache, applyCampCache, setMisActividades, setNovedades,
-    setDemoMode, setGrupos, setCabanas, setMateriales, setActividades, setMenus,
+    setDemoMode, setGrupos, setCabanas, setMateriales, setActividades, setMenus, setHorariosDiarios,
   } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
@@ -56,6 +56,7 @@ export function useFirestoreSync() {
     setMateriales(demoMateriales);
     setActividades(demoActividades);
     setMenus(demoMenus);
+    setHorariosDiarios(demoHorarios);
     setIncidencias(demoIncidencias);
     setNovedades(demoNovedades);
     const demoCoordinator: CampCoordinator = {
@@ -72,8 +73,8 @@ export function useFirestoreSync() {
     };
     setCurrentCoordinator(demoCoordinator);
   }, [setDemoMode, setCurrentCamp, setUserCamps, setCampers, setMonitores, setGrupos,
-      setCabanas, setMateriales, setActividades, setMenus, setIncidencias, setNovedades,
-      setCurrentCoordinator]);
+      setCabanas, setMateriales, setActividades, setMenus, setHorariosDiarios,
+      setIncidencias, setNovedades, setCurrentCoordinator]);
 
   const loadCamp = useCallback(async (campId: string, uid: string, localCamp?: any) => {
     if (!campId || loadedCampIdRef.current === campId) return;

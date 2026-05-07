@@ -129,6 +129,7 @@ interface AppState {
   setMateriales: (materiales: Material[]) => void;
   setActividades: (actividades: Actividad[]) => void;
   setMenus: (menus: MenuItem[]) => void;
+  setHorariosDiarios: (horarios: HorarioDiario[]) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -639,6 +640,7 @@ export const useStore = create<AppState>((set, get) => ({
   setMateriales: (materiales) => set({ materiales }),
   setActividades: (actividades) => set({ actividades }),
   setMenus: (menus) => set({ menus }),
+  setHorariosDiarios: (horariosDiarios) => set({ horariosDiarios }),
 
   transferMainCoordinator: (newMainCoordinatorId) => {
     set((state) => {

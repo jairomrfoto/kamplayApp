@@ -1,7 +1,7 @@
 import type { Camp } from '../types/camp';
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
-  Actividad, MenuItem, Incident, Novedad,
+  Actividad, HorarioDiario, MenuItem, Incident, Novedad,
 } from '../types';
 
 export const DEMO_CAMP_ID = '__demo__';
@@ -200,6 +200,16 @@ export const demoActividades: Actividad[] = [
     descripcion: 'Gymkana entre todos los grupos con pruebas de habilidad, trabajo en equipo y orientación.',
     ubicacion: 'Campo central del campamento',
   },
+];
+
+// ── Horarios diarios (mapea actividades a su día) ─────────────────────────────
+export const demoHorarios: HorarioDiario[] = [
+  { id: 'hor1', dia: d(7, 2), actividades: ['act1'] },
+  { id: 'hor2', dia: d(7, 3), actividades: ['act2'] },
+  { id: 'hor3', dia: d(7, 4), actividades: ['act3'] },
+  { id: 'hor4', dia: d(7, 5), actividades: ['act4'] },
+  { id: 'hor5', dia: d(7, 6), actividades: ['act5'] },
+  { id: 'hor6', dia: d(7, 7), actividades: ['act6'] },
 ];
 
 // ── Menú semanal ──────────────────────────────────────────────────────────────

@@ -14,14 +14,14 @@ export default function DemoModeBanner() {
   const isMonitor = profile?.role === 'monitor';
 
   return (
-    <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 min-w-0">
-          <FlaskConical size={15} className="flex-shrink-0 opacity-90" />
+          <FlaskConical size={15} className="flex-shrink-0" />
           <p className="text-sm font-medium truncate">
             <span className="font-bold">Modo Prueba</span>
             <span className="text-amber-100 hidden sm:inline">
-              {' '}· Estás viendo datos de ejemplo — explora la app con libertad, nada es real
+              {' '}· Datos de ejemplo — explora la aplicación con total libertad
             </span>
           </p>
         </div>

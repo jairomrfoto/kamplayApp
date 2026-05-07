@@ -23,7 +23,6 @@ import NovedadesFeed from '../components/novedades/NovedadesFeed';
 import Asistencia from './Asistencia';
 import ChatPanel from '../components/chat/ChatPanel';
 import CampListingEditor from '../components/coordinator/CampListingEditor';
-import DemoModeBanner from '../components/DemoModeBanner';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useStore } from '../store/store';
@@ -136,7 +135,6 @@ const CoordinatorDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <DemoModeBanner />
       <div className="flex flex-col lg:flex-row">
         <Sidebar />
         <main className="flex-1 p-4 lg:p-6">

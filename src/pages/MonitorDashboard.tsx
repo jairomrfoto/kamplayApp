@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import DemoModeBanner from '../components/DemoModeBanner';
 import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle, Clock, Lock, CreditCard } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
@@ -126,8 +125,6 @@ const MonitorDashboard = () => {
           </div>
         </div>
       </header>
-
-      <DemoModeBanner />
 
       {/* No camp banner */}
       {!currentCamp && (

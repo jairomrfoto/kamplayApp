@@ -4,6 +4,7 @@ import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { saveUserProfile, saveCampInfo, saveJoinCodes } from '../../services/firestore';
+import DemoSectionBanner from '../DemoSectionBanner';
 import { generateJoinCode } from '../../utils/generateJoinCode';
 import { updateLocalCamp } from '../../utils/localProfile';
 import { Users, Calendar, Package, MapPin, Clock, AlertTriangle, Copy, Check, UserCog, Loader, PlusCircle, RefreshCw, CreditCard, CheckCircle, Star } from 'lucide-react';

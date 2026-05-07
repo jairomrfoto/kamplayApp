@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
-import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle, Clock, Lock, CreditCard } from 'lucide-react';
+import { UserCircle, Calendar, History, LogOut, ChevronDown, Users, BookOpen, Tent, Newspaper, ClipboardList, MessageCircle, PlusCircle, Clock, ShieldOff, CreditCard } from 'lucide-react';
 import Profile from '../components/monitor-dashboard/Profile';
 import CurrentCamp from '../components/monitor-dashboard/CurrentCamp';
 import Activities from '../components/monitor-dashboard/Activities';
@@ -51,7 +51,28 @@ const MonitorDashboard = () => {
 
   const monitorName = user?.displayName || user?.email?.split('@')[0] || 'Monitor';
 
+  const PendingAccessScreen = () => (
+    <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
+      <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center">
+        <ShieldOff size={28} className="text-amber-500" />
+      </div>
+      <div>
+        <h3 className="text-lg font-bold text-gray-800 mb-1">Acceso pendiente de aprobación</h3>
+        <p className="text-sm text-gray-500 max-w-sm">
+          Aún no tienes permisos para acceder a esta sección. Contacta con el coordinador de tu campamento para que active tu acceso.
+        </p>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
+    // Profile and history are always accessible
+    if (activeTab === 'profile') return <Profile />;
+    if (activeTab === 'history') return <CampHistory />;
+
+    // All operational tabs blocked while pending
+    if (isPendiente) return <PendingAccessScreen />;
+
     switch (activeTab) {
       case 'current':         return <CurrentCamp />;
       case 'novedades':       return <NovedadesFeed rol="monitor" />;
@@ -60,8 +81,6 @@ const MonitorDashboard = () => {
       case 'asistencia':      return <Asistencia />;
       case 'activities':      return <Activities />;
       case 'mis-actividades': return <MisActividades />;
-      case 'profile':         return <Profile />;
-      case 'history':         return <CampHistory />;
       default:                return null;
     }
   };

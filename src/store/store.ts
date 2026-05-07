@@ -70,6 +70,7 @@ interface AppState {
   updateMonitor: (monitor: Monitor) => void;
   updateMonitorPermisos: (monitorId: string, permisos: Monitor['permisos']) => void;
   addMonitor: (monitor: Monitor) => void;
+  removeMonitor: (monitorId: string) => void;
   setCurrentMonitor: (monitor: Monitor | undefined) => void;
 
   // ── Acampados ────────────────────────────────────────────────────────────
@@ -306,6 +307,14 @@ export const useStore = create<AppState>((set, get) => ({
     const { currentCamp } = get();
     if (currentCamp?.id) {
       firestoreMonitores.save(currentCamp.id, monitor).catch(console.error);
+    }
+  },
+
+  removeMonitor: (monitorId) => {
+    set((state) => ({ monitores: state.monitores.filter(m => m.id !== monitorId) }));
+    const { currentCamp } = get();
+    if (currentCamp?.id) {
+      firestoreMonitores.delete(currentCamp.id, monitorId).catch(console.error);
     }
   },
 

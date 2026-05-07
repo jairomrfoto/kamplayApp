@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/store';
-import { Shield, X, Clock, ArrowUpCircle, CheckCircle, Loader } from 'lucide-react';
+import { Shield, X, Clock, ArrowUpCircle, CheckCircle, Loader, Trash2, AlertTriangle } from 'lucide-react';
 import type { Monitor } from '../../types';
 import type { CampCoordinator } from '../../types/camp';
 
@@ -10,9 +10,10 @@ interface Props {
 }
 
 const MonitorPermissions = ({ monitor, onClose }: Props) => {
-  const { updateMonitorPermisos, currentCamp, addCoordinator } = useStore();
+  const { updateMonitorPermisos, removeMonitor, currentCamp, addCoordinator } = useStore();
   const [permisos, setPermisos] = useState(monitor.permisos);
   const [showPromoteConfirm, setShowPromoteConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [promoting, setPromoting] = useState(false);
   const [promoted, setPromoted] = useState(false);
   const isCampus = currentCamp?.type === 'campus';
@@ -111,6 +112,34 @@ const MonitorPermissions = ({ monitor, onClose }: Props) => {
               Cerrar
             </button>
           </div>
+        ) : showDeleteConfirm ? (
+          /* Delete confirmation */
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+              <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-red-800">¿Eliminar a {monitor.nombre} del campamento?</p>
+                <p className="text-sm text-red-700 mt-1">
+                  Perderá el acceso inmediatamente y deberá usar un nuevo código para volver a unirse.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => { removeMonitor(monitor.id); onClose(); }}
+                className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-semibold"
+              >
+                <Trash2 size={14} />
+                Eliminar del campamento
+              </button>
+            </div>
+          </div>
         ) : showPromoteConfirm ? (
           /* Promote confirmation */
           <div className="space-y-4">
@@ -158,8 +187,8 @@ const MonitorPermissions = ({ monitor, onClose }: Props) => {
               ))}
             </div>
 
-            {/* Divider + promote option */}
-            <div className="border-t border-gray-100 pt-4">
+            {/* Divider + promote + delete */}
+            <div className="border-t border-gray-100 pt-4 space-y-2">
               <button
                 type="button"
                 onClick={() => setShowPromoteConfirm(true)}
@@ -167,6 +196,14 @@ const MonitorPermissions = ({ monitor, onClose }: Props) => {
               >
                 <ArrowUpCircle size={16} />
                 Ascender a Coordinador
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium transition-colors"
+              >
+                <Trash2 size={16} />
+                Eliminar del campamento
               </button>
             </div>
 

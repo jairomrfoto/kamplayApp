@@ -33,7 +33,7 @@ export default function EmbeddedCheckoutModal({ clientSecret, onClose, title = '
         if (!stripe) throw new Error('No se pudo cargar Stripe');
         if (destroyed) return;
 
-        checkout = await (stripe as any).initEmbeddedCheckout({
+        checkout = await (stripe as any).createEmbeddedCheckoutPage({
           fetchClientSecret: () => Promise.resolve(clientSecret),
         });
 

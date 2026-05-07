@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { Loader } from 'lucide-react';
 import DemoModeBanner from './components/DemoModeBanner';
@@ -100,6 +100,17 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+const NotFound = () => (
+  <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 px-6 text-center">
+    <div className="text-6xl mb-4">🏕️</div>
+    <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Página no encontrada</h1>
+    <p className="text-gray-500 mb-6 max-w-sm">La URL que buscas no existe o ha cambiado de dirección.</p>
+    <Link to="/" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl text-sm transition-colors">
+      Volver al inicio
+    </Link>
+  </div>
+);
+
 function AppRoutes() {
   useFirestoreSync();
 
@@ -153,6 +164,7 @@ function AppRoutes() {
               </div>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </Router>

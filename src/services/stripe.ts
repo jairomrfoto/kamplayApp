@@ -3,14 +3,29 @@ import { app } from '../config/firebase';
 
 const fns = getFunctions(app, 'europe-west1');
 
-// ── Plan Profesional — suscripción mensual o anual ────────────────────────────
+// ── Embedded checkout — suscripción o evento ──────────────────────────────────
+export async function startEmbeddedCheckout(params: {
+  type: 'subscription';
+  interval: 'month' | 'year';
+} | {
+  type: 'event';
+  planType: 'standard' | 'express';
+  campId: string;
+}): Promise<{ clientSecret: string; sessionId: string }> {
+  const fn = httpsCallable<object, { clientSecret: string; sessionId: string }>(
+    fns, 'createEmbeddedCheckout'
+  );
+  const result = await fn(params);
+  return result.data;
+}
+
+// ── Funciones originales (redirect) — se mantienen por compatibilidad ─────────
 export async function startSubscriptionCheckout(
   interval: 'month' | 'year' = 'month'
-): Promise<{ clientSecret: string; sessionId: string }> {
-  const fn = httpsCallable<
-    { interval: string },
-    { clientSecret: string; sessionId: string }
-  >(fns, 'createSubscriptionCheckout');
+): Promise<{ url: string; sessionId: string }> {
+  const fn = httpsCallable<{ interval: string }, { url: string; sessionId: string }>(
+    fns, 'createSubscriptionCheckout'
+  );
   const result = await fn({ interval });
   return result.data;
 }
@@ -21,15 +36,13 @@ export async function openBillingPortal(): Promise<{ url: string }> {
   return result.data;
 }
 
-// ── Plan por evento — Estándar (15 €) o Express (9 €) ─────────────────────────
 export async function startEventCheckout(
   planType: 'standard' | 'express',
   campId: string
-): Promise<{ clientSecret: string; sessionId: string }> {
-  const fn = httpsCallable<
-    { planType: string; campId: string },
-    { clientSecret: string; sessionId: string }
-  >(fns, 'createEventCheckout');
+): Promise<{ url: string; sessionId: string }> {
+  const fn = httpsCallable<{ planType: string; campId: string }, { url: string; sessionId: string }>(
+    fns, 'createEventCheckout'
+  );
   const result = await fn({ planType, campId });
   return result.data;
 }

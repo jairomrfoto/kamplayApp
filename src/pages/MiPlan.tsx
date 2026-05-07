@@ -5,7 +5,7 @@ import {
   ArrowLeft, ExternalLink, Loader, Star, Infinity, Calendar,
 } from 'lucide-react';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { startSubscriptionCheckout, openBillingPortal } from '../services/stripe';
+import { startEmbeddedCheckout, openBillingPortal } from '../services/stripe';
 import EmbeddedCheckoutModal from '../components/stripe/EmbeddedCheckoutModal';
 
 const FEATURES_PRO = [
@@ -65,14 +65,8 @@ export default function MiPlan() {
     setBusy(true);
     setError('');
     try {
-      const result = await startSubscriptionCheckout(interval);
-      console.log('[Kamplay Pay] checkout result:', result);
-      if (result.clientSecret) {
-        setCheckoutSecret(result.clientSecret);
-      } else {
-        console.warn('[Kamplay Pay] No clientSecret in result — function may not be updated');
-        setError('Error del servidor: no se recibió el token de pago. Inténtalo de nuevo.');
-      }
+      const result = await startEmbeddedCheckout({ type: 'subscription', interval });
+      setCheckoutSecret(result.clientSecret);
     } catch (e: any) {
       console.error('[Kamplay Pay] error:', e);
       setError(e?.message || 'Error al iniciar el pago');

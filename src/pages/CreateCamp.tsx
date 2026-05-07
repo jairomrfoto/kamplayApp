@@ -3,7 +3,7 @@ import { ArrowLeft, Check, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CampForm from '../components/camps/CampForm';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { startSubscriptionCheckout, startEventCheckout } from '../services/stripe';
+import { startEmbeddedCheckout } from '../services/stripe';
 import { saveCampInfo } from '../services/firestore';
 import EmbeddedCheckoutModal from '../components/stripe/EmbeddedCheckoutModal';
 import type { Camp } from '../types/camp';
@@ -61,8 +61,8 @@ const CreateCamp = () => {
     if (selectedPlan === 'subscription') {
       setPaying(true);
       try {
-        const { clientSecret } = await startSubscriptionCheckout('month');
-        if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
+        const { clientSecret } = await startEmbeddedCheckout({ type: 'subscription', interval: 'month' });
+        openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
       } catch (e: any) {
         setPayError(e?.message || 'Error al iniciar el pago');
       } finally {
@@ -77,9 +77,9 @@ const CreateCamp = () => {
     try {
       const draft: Camp = { ...camp, status: 'draft', planType: selectedPlan };
       await saveCampInfo(draft);
-      const { clientSecret } = await startEventCheckout(selectedPlan, camp.id);
+      const { clientSecret } = await startEmbeddedCheckout({ type: 'event', planType: selectedPlan, campId: camp.id });
       const label = selectedPlan === 'standard' ? 'Estándar · 15 €' : 'Express · 9 €';
-      if (clientSecret) openCheckout(clientSecret, `Plan ${label}`);
+      openCheckout(clientSecret, `Plan ${label}`);
     } catch (e: any) {
       setPayError(e?.message || 'Error al iniciar el pago');
     } finally {
@@ -188,8 +188,8 @@ const CreateCamp = () => {
                 onClick={async () => {
                   setPaying(true);
                   try {
-                    const { clientSecret } = await startSubscriptionCheckout('month');
-                    if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
+                    const { clientSecret } = await startEmbeddedCheckout({ type: 'subscription', interval: 'month' });
+                    openCheckout(clientSecret, 'Plan Profesional · 30 €/mes');
                   } catch (e: any) { setPayError(e?.message || 'Error'); }
                   finally { setPaying(false); }
                 }}
@@ -202,8 +202,8 @@ const CreateCamp = () => {
                 onClick={async () => {
                   setPaying(true);
                   try {
-                    const { clientSecret } = await startSubscriptionCheckout('year');
-                    if (clientSecret) openCheckout(clientSecret, 'Plan Profesional · 250 €/año');
+                    const { clientSecret } = await startEmbeddedCheckout({ type: 'subscription', interval: 'year' });
+                    openCheckout(clientSecret, 'Plan Profesional · 250 €/año');
                   } catch (e: any) { setPayError(e?.message || 'Error'); }
                   finally { setPaying(false); }
                 }}

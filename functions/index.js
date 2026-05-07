@@ -267,16 +267,13 @@ exports.createSubscriptionCheckout = functions
   .https.onCall(async (data, context) => {
     assertAuth(context);
     const { uid, token: { email } } = context.auth;
-    const interval   = data && data.interval === 'year' ? 'year' : 'month';
-    const amount     = interval === 'year' ? SUBSCRIPTION_ANNUAL_CENTS : SUBSCRIPTION_MONTHLY_CENTS;
+    const interval = data && data.interval === 'year' ? 'year' : 'month';
+    const amount   = interval === 'year' ? SUBSCRIPTION_ANNUAL_CENTS : SUBSCRIPTION_MONTHLY_CENTS;
     const customerId = await getOrCreateStripeCustomer(uid, email);
-
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       mode: 'subscription',
-      ui_mode: 'embedded',
-      return_url: `${appUrl()}/coordinator-dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`,
       line_items: [{
         price_data: {
           currency: 'eur',
@@ -289,11 +286,13 @@ exports.createSubscriptionCheckout = functions
         },
         quantity: 1,
       }],
+      success_url: `${appUrl()}/coordinator-dashboard?subscription=success`,
+      cancel_url:  `${appUrl()}/coordinator-dashboard?subscription=cancelled`,
       metadata: { firebaseUID: uid },
       subscription_data: { metadata: { firebaseUID: uid } },
       allow_promotion_codes: true,
     });
-    return { clientSecret: session.client_secret, sessionId: session.id };
+    return { url: session.url, sessionId: session.id };
   });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -313,16 +312,14 @@ exports.createEventCheckout = functions
       throw new functions.https.HttpsError('invalid-argument', 'planType debe ser standard o express.');
     }
 
-    const amount     = planType === 'standard' ? STANDARD_EVENT_CENTS : EXPRESS_EVENT_CENTS;
-    const label      = planType === 'standard' ? 'Estándar (hasta 7 días)' : 'Express (hasta 3 días)';
-    const customerId = await getOrCreateStripeCustomer(uid, email);
+    const amount      = planType === 'standard' ? STANDARD_EVENT_CENTS : EXPRESS_EVENT_CENTS;
+    const label       = planType === 'standard' ? 'Estándar (hasta 7 días)' : 'Express (hasta 3 días)';
+    const customerId  = await getOrCreateStripeCustomer(uid, email);
 
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       mode: 'payment',
-      ui_mode: 'embedded',
-      return_url: `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}&session_id={CHECKOUT_SESSION_ID}`,
       line_items: [{
         price_data: {
           currency: 'eur',
@@ -335,9 +332,84 @@ exports.createEventCheckout = functions
         quantity: 1,
       }],
       allow_promotion_codes: true,
+      success_url: `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}`,
+      cancel_url:  `${appUrl()}/create-camp?event=cancelled`,
       metadata: { firebaseUID: uid, campId, planType },
     });
+    return { url: session.url, sessionId: session.id };
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 2b. EMBEDDED CHECKOUT — Suscripción o evento con ui_mode=embedded
+// ─────────────────────────────────────────────────────────────────────────────
+exports.createEmbeddedCheckout = functions
+  .region('europe-west1')
+  .runWith({ secrets: ['STRIPE_SECRET_KEY'] })
+  .https.onCall(async (data, context) => {
+    assertAuth(context);
+    const { uid, token: { email } } = context.auth;
+    const { type, interval, planType, campId } = data || {};
+    const customerId = await getOrCreateStripeCustomer(uid, email);
+
+    let sessionParams;
+
+    if (type === 'subscription') {
+      const iv     = interval === 'year' ? 'year' : 'month';
+      const amount = iv === 'year' ? SUBSCRIPTION_ANNUAL_CENTS : SUBSCRIPTION_MONTHLY_CENTS;
+      sessionParams = {
+        customer: customerId,
+        payment_method_types: ['card'],
+        mode: 'subscription',
+        ui_mode: 'embedded',
+        return_url: `${appUrl()}/coordinator-dashboard?subscription=success&session_id={CHECKOUT_SESSION_ID}`,
+        line_items: [{
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `Kamplay Profesional — ${iv === 'year' ? 'Anual' : 'Mensual'}`,
+              description: 'Uso ilimitado de todas las funciones: campamentos, campus, escáner de documentos y gestión completa.',
+            },
+            unit_amount: amount,
+            recurring: { interval: iv },
+          },
+          quantity: 1,
+        }],
+        metadata: { firebaseUID: uid },
+        subscription_data: { metadata: { firebaseUID: uid } },
+        allow_promotion_codes: true,
+      };
+    } else if (type === 'event') {
+      if (!planType || !campId) throw new functions.https.HttpsError('invalid-argument', 'Faltan planType o campId.');
+      if (!['standard', 'express'].includes(planType)) throw new functions.https.HttpsError('invalid-argument', 'planType inválido.');
+      const amount = planType === 'standard' ? STANDARD_EVENT_CENTS : EXPRESS_EVENT_CENTS;
+      const label  = planType === 'standard' ? 'Estándar (hasta 7 días)' : 'Express (hasta 3 días)';
+      sessionParams = {
+        customer: customerId,
+        payment_method_types: ['card'],
+        mode: 'payment',
+        ui_mode: 'embedded',
+        return_url: `${appUrl()}/coordinator-dashboard?event=success&campId=${campId}&session_id={CHECKOUT_SESSION_ID}`,
+        line_items: [{
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `Kamplay ${label}`,
+              description: `Licencia de evento. ${planType === 'standard' ? 'Editable 7 días post-evento.' : 'Editable 2 días post-evento.'}`,
+            },
+            unit_amount: amount,
+          },
+          quantity: 1,
+        }],
+        allow_promotion_codes: true,
+        metadata: { firebaseUID: uid, campId, planType },
+      };
+    } else {
+      throw new functions.https.HttpsError('invalid-argument', 'type debe ser subscription o event.');
+    }
+
+    const session = await getStripe().checkout.sessions.create(sessionParams);
     return { clientSecret: session.client_secret, sessionId: session.id };
+  });
   });
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -22,10 +22,10 @@ export default function DemoModeBanner() {
           </p>
         </div>
         <button
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/mi-plan')}
           className="flex items-center gap-1.5 flex-shrink-0 text-xs sm:text-sm font-bold bg-white text-orange-600 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
         >
-          Probar app
+          Empezar mi campamento
           <ArrowRight size={13} />
         </button>
       </div>

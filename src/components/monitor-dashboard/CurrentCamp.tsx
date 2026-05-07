@@ -4,11 +4,14 @@ import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import { MapPin, Calendar, Users, UserCog, AlertTriangle, Tent } from 'lucide-react';
 import IncidentForm from '../shared/IncidentForm';
+import PendingPermissionAlert from '../PendingPermissionAlert';
 
 const CurrentCamp = () => {
-  const { currentCamp, campers, monitores, grupos } = useStore();
+  const { currentCamp, campers, monitores, grupos, currentMonitor } = useStore();
   const { user } = useAuth();
   const [showIncidentForm, setShowIncidentForm] = React.useState(false);
+  const [showPendingAlert, setShowPendingAlert] = React.useState(false);
+  const isPendiente = currentMonitor?.pendiente === true;
 
   const formatDate = (d: Date | string) =>
     new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -29,6 +32,7 @@ const CurrentCamp = () => {
 
   return (
     <div className="space-y-6 p-4">
+      {showPendingAlert && <PendingPermissionAlert onClose={() => setShowPendingAlert(false)} />}
       {/* Camp info card */}
       <div className="bg-orange-50 rounded-xl p-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -46,7 +50,7 @@ const CurrentCamp = () => {
             </div>
           </div>
           <button
-            onClick={() => setShowIncidentForm(true)}
+            onClick={() => isPendiente ? setShowPendingAlert(true) : setShowIncidentForm(true)}
             className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm shrink-0"
           >
             <AlertTriangle size={16} /> Reportar incidencia

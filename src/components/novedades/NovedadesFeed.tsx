@@ -4,6 +4,7 @@ import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import NovedadForm from './NovedadForm';
 import DemoSectionBanner from '../DemoSectionBanner';
+import PendingPermissionAlert from '../PendingPermissionAlert';
 
 interface Props {
   rol?: 'coordinator' | 'monitor' | 'parent';
@@ -19,9 +20,11 @@ function timeAgo(date: Date): string {
 }
 
 const NovedadesFeed = ({ rol = 'parent' }: Props) => {
-  const { novedades, deleteNovedad, currentCamp } = useStore();
+  const { novedades, deleteNovedad, currentCamp, currentMonitor } = useStore();
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
+  const [showPendingAlert, setShowPendingAlert] = useState(false);
+  const isPendiente = currentMonitor?.pendiente === true;
 
   const canPost = rol === 'coordinator' || rol === 'monitor';
 
@@ -40,6 +43,7 @@ const NovedadesFeed = ({ rol = 'parent' }: Props) => {
   return (
     <div className="space-y-4">
       <DemoSectionBanner description="Canal de comunicación interna del equipo. Comparte avisos, novedades y actualizaciones entre coordinadores y monitores. Todo el equipo ve las publicaciones en tiempo real." />
+      {showPendingAlert && <PendingPermissionAlert onClose={() => setShowPendingAlert(false)} />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -52,7 +56,7 @@ const NovedadesFeed = ({ rol = 'parent' }: Props) => {
         </div>
         {canPost && (
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => isPendiente ? setShowPendingAlert(true) : setShowForm(true)}
             className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shadow-sm"
           >
             <Plus size={16} />

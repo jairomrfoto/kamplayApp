@@ -410,7 +410,6 @@ exports.createEmbeddedCheckout = functions
     const session = await getStripe().checkout.sessions.create(sessionParams);
     return { clientSecret: session.client_secret, sessionId: session.id };
   });
-  });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. PORTAL DE FACTURACIÓN

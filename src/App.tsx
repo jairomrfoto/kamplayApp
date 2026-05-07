@@ -45,12 +45,38 @@ const PageLoader = () => (
   </div>
 );
 
+const CHUNK_RELOAD_KEY = 'chunk_reload_attempted';
+
+function isChunkError(err: Error) {
+  return (
+    err.name === 'ChunkLoadError' ||
+    err.message?.includes('Failed to fetch dynamically imported module') ||
+    err.message?.includes('Importing a module script failed')
+  );
+}
+
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { error: Error | null }
 > {
   state = { error: null };
-  static getDerivedStateFromError(error: Error) { return { error }; }
+
+  static getDerivedStateFromError(error: Error) {
+    if (isChunkError(error)) {
+      const alreadyRetried = sessionStorage.getItem(CHUNK_RELOAD_KEY);
+      if (!alreadyRetried) {
+        sessionStorage.setItem(CHUNK_RELOAD_KEY, '1');
+        window.location.reload();
+        return { error: null };
+      }
+    }
+    return { error };
+  }
+
+  componentDidUpdate() {
+    if (!this.state.error) sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+  }
+
   render() {
     if (this.state.error) {
       return (
@@ -59,11 +85,8 @@ class ErrorBoundary extends React.Component<
             <div className="text-4xl mb-4">⚠️</div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">Algo salió mal</h2>
             <p className="text-sm text-gray-500 mb-4">Recarga la página para continuar.</p>
-            <pre className="text-xs text-left bg-gray-50 rounded-lg p-3 overflow-auto text-red-600 mb-4">
-              {(this.state.error as Error).message}
-            </pre>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => { sessionStorage.removeItem(CHUNK_RELOAD_KEY); window.location.reload(); }}
               className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-colors"
             >
               Recargar página

@@ -23,6 +23,11 @@ import {
 import { useStore } from '../store/store';
 import { getLocalProfile, setLocalProfile, updateLocalCamp, addLocalCamp } from '../utils/localProfile';
 import type { CampCoordinator } from '../types/camp';
+import {
+  demoCamp, demoCampers, demoMonitores, demoGrupos, demoCabanas,
+  demoMateriales, demoActividades, demoMenus, demoIncidencias, demoNovedades,
+  DEMO_CAMP_ID,
+} from '../demo/demoData';
 
 export function useFirestoreSync() {
   const {
@@ -30,6 +35,7 @@ export function useFirestoreSync() {
     setMonitores, setCurrentMonitor, setCurrentCoordinator,
     setUserCamps, addCampToUser, setSwitchCampFn,
     setCampCache, applyCampCache, setMisActividades, setNovedades,
+    setDemoMode, setGrupos, setCabanas, setMateriales, setActividades, setMenus,
   } = useStore();
   const unsubscribeIncidenciasRef = useRef<(() => void) | null>(null);
   const unsubscribeCampersRef = useRef<(() => void) | null>(null);
@@ -38,6 +44,36 @@ export function useFirestoreSync() {
   const loadedCampIdRef = useRef<string | null>(null);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const currentUidRef = useRef<string | null>(null);
+
+  const activateDemoMode = useCallback((uid: string) => {
+    setDemoMode(true);
+    setCurrentCamp(demoCamp);
+    setUserCamps([demoCamp]);
+    setCampers(demoCampers);
+    setMonitores(demoMonitores);
+    setGrupos(demoGrupos);
+    setCabanas(demoCabanas);
+    setMateriales(demoMateriales);
+    setActividades(demoActividades);
+    setMenus(demoMenus);
+    setIncidencias(demoIncidencias);
+    setNovedades(demoNovedades);
+    const demoCoordinator: CampCoordinator = {
+      id: uid,
+      campId: DEMO_CAMP_ID,
+      email: auth.currentUser?.email || '',
+      name: auth.currentUser?.displayName || 'Demo',
+      role: 'coordinator',
+      permissions: {
+        manageCoordinators: true, manageMonitors: true, manageCampers: true,
+        manageActivities: true, manageSchedule: true, viewReports: true,
+      },
+      isMainCoordinator: true,
+    };
+    setCurrentCoordinator(demoCoordinator);
+  }, [setDemoMode, setCurrentCamp, setUserCamps, setCampers, setMonitores, setGrupos,
+      setCabanas, setMateriales, setActividades, setMenus, setIncidencias, setNovedades,
+      setCurrentCoordinator]);
 
   const loadCamp = useCallback(async (campId: string, uid: string, localCamp?: any) => {
     if (!campId || loadedCampIdRef.current === campId) return;
@@ -224,6 +260,15 @@ export function useFirestoreSync() {
               }
             }).catch(() => {});
           }
+          // Check demo mode: no camp AND no active subscription AND coordinator/monitor role
+          const hasCamp = !!(campId || campIds.length || local?.campId);
+          const hasActiveSub = profile.subscriptionStatus === 'active' || profile.subscriptionStatus === 'trialing';
+          const isDemoRole = profile.role === 'coordinator' || profile.role === 'monitor';
+          if (!hasCamp && !hasActiveSub && isDemoRole) {
+            activateDemoMode(user.uid);
+          } else if (hasCamp || hasActiveSub) {
+            setDemoMode(false);
+          }
         } else {
           // No Firestore profile exists — save it now so Firestore security rules
           // (e.g. hasCoordinatorRole) work correctly even on first session.
@@ -236,6 +281,8 @@ export function useFirestoreSync() {
             email: user.email || '',
             nombre: user.displayName || '',
           }).catch(() => {});
+          // Brand-new user with no camp — activate demo
+          if (!local?.campId) activateDemoMode(user.uid);
         }
       } catch {
         // Firestore offline — localStorage already handled this
@@ -250,5 +297,5 @@ export function useFirestoreSync() {
       if (unsubscribeNovedadesRef.current) unsubscribeNovedadesRef.current();
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
-  }, [loadCamp, setCurrentCamp, setUserCamps]);
+  }, [loadCamp, setCurrentCamp, setUserCamps, activateDemoMode, setDemoMode]);
 }

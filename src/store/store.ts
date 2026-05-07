@@ -120,11 +120,21 @@ interface AppState {
   updateCoordinatorPermissions: (coordinatorId: string, permissions: CampCoordinator['permissions']) => void;
   updateCoordinator: (coordinator: CampCoordinator) => void;
   transferMainCoordinator: (newMainCoordinatorId: string) => void;
+
+  // ── Demo mode ────────────────────────────────────────────────────────────
+  isDemoMode: boolean;
+  setDemoMode: (val: boolean) => void;
+  setGrupos: (grupos: Grupo[]) => void;
+  setCabanas: (cabanas: Cabana[]) => void;
+  setMateriales: (materiales: Material[]) => void;
+  setActividades: (actividades: Actividad[]) => void;
+  setMenus: (menus: MenuItem[]) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
   // ── Estado inicial ───────────────────────────────────────────────────────
   isLoading: false,
+  isDemoMode: false,
   sidebarOpen: false,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
@@ -622,6 +632,13 @@ export const useStore = create<AppState>((set, get) => ({
     const { currentCamp } = get();
     if (currentCamp?.id) saveCoordinator(currentCamp.id, updatedCoordinator).catch(console.error);
   },
+
+  setDemoMode: (val) => set({ isDemoMode: val }),
+  setGrupos: (grupos) => set({ grupos }),
+  setCabanas: (cabanas) => set({ cabanas }),
+  setMateriales: (materiales) => set({ materiales }),
+  setActividades: (actividades) => set({ actividades }),
+  setMenus: (menus) => set({ menus }),
 
   transferMainCoordinator: (newMainCoordinatorId) => {
     set((state) => {

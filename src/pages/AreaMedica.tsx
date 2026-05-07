@@ -3,6 +3,7 @@ import { useStore } from '../store/store';
 import { Plus, Heart, Pill, AlertCircle, Clock } from 'lucide-react';
 import MedicalRecordForm from '../components/medical/MedicalRecordForm';
 import MedicationChecklist from '../components/medical/MedicationChecklist';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 
 const AreaMedica = () => {
   const { campers, currentCamp } = useStore();
@@ -19,6 +20,7 @@ const AreaMedica = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Seguimiento centralizado de la salud de los acampados: alergias, medicación programada y notas médicas importantes para que nada se te escape." />
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">Área Médica</h2>
         <button 

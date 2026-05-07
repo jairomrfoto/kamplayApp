@@ -305,6 +305,7 @@ const CampOverview = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Vista general de tu programa: métricas clave, últimas novedades del equipo e incidencias pendientes de resolución. Desde aquí también puedes crear nuevos campamentos o campus." />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

@@ -3,6 +3,7 @@ import { useStore } from '../store/store';
 import { Plus, Users, UserCog, ChevronDown, ChevronUp } from 'lucide-react';
 import EvaluacionGrupoForm from '../components/EvaluacionGrupoForm';
 import EvaluacionCamperForm from '../components/EvaluacionCamperForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import GrupoForm from '../components/grupos/GrupoForm';
 
 const Grupos = () => {
@@ -18,6 +19,7 @@ const Grupos = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Organiza los acampados en grupos por edad o nivel. Asigna monitores responsables a cada grupo y realiza evaluaciones del progreso grupal e individual." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{isCampus ? 'Grupos del Campus' : 'Grupos de Campamento'}</h2>
         <button 

@@ -3,6 +3,7 @@ import { Plus, Trash2, Newspaper } from 'lucide-react';
 import { useStore } from '../../store/store';
 import { useAuth } from '../../hooks/useAuth';
 import NovedadForm from './NovedadForm';
+import DemoSectionBanner from '../DemoSectionBanner';
 
 interface Props {
   rol?: 'coordinator' | 'monitor' | 'parent';
@@ -38,6 +39,7 @@ const NovedadesFeed = ({ rol = 'parent' }: Props) => {
 
   return (
     <div className="space-y-4">
+      <DemoSectionBanner description="Canal de comunicación interna del equipo. Comparte avisos, novedades y actualizaciones entre coordinadores y monitores. Todo el equipo ve las publicaciones en tiempo real." />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

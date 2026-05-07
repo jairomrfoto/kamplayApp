@@ -3,6 +3,7 @@ import { useStore } from '../store/store';
 import { AlertTriangle, Upload } from 'lucide-react';
 import HorarioDiario from '../components/HorarioDiario';
 import IncidentForm from '../components/shared/IncidentForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import DocumentImportModal from '../components/DocumentImport/DocumentImportModal';
 
 const Dashboard = () => {
@@ -54,6 +55,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Panel de control del campamento: consulta el horario del día, el estado de las incidencias abiertas y accede rápidamente a las funciones más usadas." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-gray-800">

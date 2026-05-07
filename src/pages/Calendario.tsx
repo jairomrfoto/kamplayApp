@@ -3,6 +3,7 @@ import {
   ChevronLeft, ChevronRight, Plus, X, Clock, MapPin,
   Users, Trash2, Edit2, BookOpen, Search,
 } from 'lucide-react';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useStore } from '../store/store';
@@ -528,7 +529,7 @@ const Calendario: React.FC = () => {
 
   return (
     <div className="space-y-4">
-
+      <DemoSectionBanner description="Planifica y visualiza todas las actividades del campamento. Navega por días, semanas o meses para tener una visión completa del programa y detectar solapamientos." />
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>

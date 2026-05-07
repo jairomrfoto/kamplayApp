@@ -3,6 +3,7 @@ import { useStore } from '../store/store';
 import { Plus, Users, ClipboardCheck, UserCog, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import CabanaForm from '../components/cabanas/CabanaForm';
 import CabinNoteForm from '../components/cabanas/CabinNoteForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 
 const Cabanas = () => {
   const { cabanas, monitores } = useStore();
@@ -28,6 +29,7 @@ const Cabanas = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Control de ocupación y estado de las cabañas. Asigna acampados y monitores encargados, registra revisiones de limpieza y gestiona cualquier incidencia de infraestructura." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de Cabañas</h2>
         <button 

@@ -3,6 +3,7 @@ import { BookOpen, Search, Plus, Clock, Users, MapPin, Calendar } from 'lucide-r
 import { useStore } from '../store/store';
 import { categorias } from '../utils/actividadesConfig';
 import type { ActividadPersonal } from '../types';
+import DemoSectionBanner from './DemoSectionBanner';
 
 const MisActividades = () => {
   const { misActividades, addActividad, currentCamp } = useStore();
@@ -52,6 +53,7 @@ const MisActividades = () => {
 
   return (
     <div className="space-y-4">
+      <DemoSectionBanner description="Tu biblioteca personal de actividades reutilizables. Crea plantillas propias que puedas aplicar en cualquier campamento futuro sin tener que empezar desde cero." />
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">

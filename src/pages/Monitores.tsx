@@ -3,6 +3,7 @@ import { useStore } from '../store/store';
 import { Plus, Search, RefreshCw, Shield, Bell } from 'lucide-react';
 import MonitorProfile from '../components/monitors/MonitorProfile';
 import MonitorProfileForm from '../components/monitors/MonitorProfileForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import MonitorPermissions from '../components/coordinator/MonitorPermissions';
 import type { Monitor } from '../types';
 
@@ -36,6 +37,7 @@ const Monitores = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Gestión del equipo de monitores: perfil profesional, grupos asignados, permisos de acceso a cada sección y evaluaciones de desempeño." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Equipo de Monitores</h2>
         <button

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../store/store';
 import { Shield, UserPlus, Mail, X } from 'lucide-react';
 import type { CampCoordinator } from '../../types/camp';
+import DemoSectionBanner from '../DemoSectionBanner';
 
 interface Props {
   onClose?: () => void;
@@ -47,6 +48,7 @@ const CoordinatorManagement = ({ onClose }: Props) => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Gestión del equipo de coordinación. Añade otros coordinadores al campamento, define sus permisos de acceso y, si es necesario, transfiere la dirección del programa." />
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-900">Gestión de Coordinadores</h2>
         <button

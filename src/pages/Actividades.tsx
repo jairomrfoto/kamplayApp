@@ -3,6 +3,7 @@ import { FixedSizeGrid as Grid } from 'react-window';
 import { Plus, Filter, BookOpen, Layers } from 'lucide-react';
 import { useStore } from '../store/store';
 import ActividadForm from '../components/actividades/ActividadForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import ActividadCard from '../components/actividades/ActividadCard';
 import CategoriaFilter from '../components/actividades/CategoriaFilter';
 import PlantillaCard from '../components/actividades/PlantillaCard';
@@ -61,6 +62,7 @@ const Actividades = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Catálogo de actividades del campamento. Crea nuevas actividades, asigna monitores y grupos, define los materiales necesarios y fija el horario de cada sesión." />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Actividades</h2>

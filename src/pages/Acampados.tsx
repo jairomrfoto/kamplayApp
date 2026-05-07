@@ -3,6 +3,7 @@ import { FixedSizeList as List } from 'react-window';
 import { useStore } from '../store/store';
 import { Plus, Search, Edit, Trash, FileSpreadsheet } from 'lucide-react';
 import CamperForm from '../components/acampados/CamperForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import type { Camper } from '../types';
 import EditCamperForm from '../components/acampados/EditCamperForm';
 import CamperProfileDetail from '../components/acampados/CamperProfileDetail';
@@ -72,6 +73,7 @@ const Acampados = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Registro completo de todos los participantes: grupo asignado, cabaña, datos de contacto e información médica. Puedes importar acampados desde Excel o añadirlos uno a uno." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de {participantsLabel}</h2>
         <div className="flex items-center gap-2">

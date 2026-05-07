@@ -3,6 +3,7 @@ import { Send, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useStore } from '../../store/store';
 import { subscribeToChat, sendChatMessage } from '../../services/chatFirestore';
+import DemoSectionBanner from '../DemoSectionBanner';
 import type { ChatMessage } from '../../services/chatFirestore';
 
 type Role = 'coordinator' | 'monitor' | 'parent' | 'profesor';
@@ -94,6 +95,7 @@ export default function ChatPanel({ userRole, userName }: Props) {
 
   return (
     <div className="flex flex-col" style={{ minHeight: '520px' }}>
+      <DemoSectionBanner description="Mensajería instantánea del equipo. Coordina con monitores y el resto de coordinadores en tiempo real sin salir de la aplicación." />
       {/* Canal switcher */}
       <div className="flex gap-2 mb-4 pb-3 border-b border-gray-100">
         <button

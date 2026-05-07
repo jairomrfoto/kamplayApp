@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../store/store';
 import { Plus, Search, Package, Trash, X } from 'lucide-react';
 import type { Material } from '../types';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 
 const ESTADOS: Material['estado'][] = ['Disponible', 'En Uso', 'Mantenimiento'];
 
@@ -36,6 +37,7 @@ const Materiales = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Inventario del campamento. Controla el stock, el estado y la disponibilidad de todos los materiales y equipos necesarios para las actividades." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Inventario de Materiales</h2>
         <button

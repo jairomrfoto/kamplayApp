@@ -3,6 +3,7 @@ import { useStore } from '../store/store';
 import { Plus, Search, Filter, Clock, MessageCircle, History, AlertTriangle, Users } from 'lucide-react';
 import IncidentForm from '../components/shared/IncidentForm';
 import IncidentFollowUpForm from '../components/shared/IncidentFollowUpForm';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 
 const Incidencias = () => {
   const { incidencias, campers, monitores, currentCamp } = useStore();
@@ -70,6 +71,7 @@ const Incidencias = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Registro y seguimiento de incidencias. Documenta lo ocurrido, clasifica por tipo e impacto, registra las acciones tomadas y realiza el seguimiento hasta la resolución." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Registro de Incidencias</h2>
         <button

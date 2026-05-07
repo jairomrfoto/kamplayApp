@@ -3,6 +3,7 @@ import { Plus, Calendar } from 'lucide-react';
 import MenuDiario from '../components/menu/MenuDiario';
 import MenuForm from '../components/menu/MenuForm';
 import { useStore } from '../store/store';
+import DemoSectionBanner from '../components/DemoSectionBanner';
 import { useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -27,6 +28,7 @@ const Menu = () => {
 
   return (
     <div className="space-y-6">
+      <DemoSectionBanner description="Planificación del menú diario: desayuno, almuerzo, merienda y cena. Incluye control de alérgenos para que ningún acampado coma algo que no deba." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Menú del Campamento</h2>
         {isCoordinator && (

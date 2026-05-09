@@ -470,6 +470,13 @@ export async function getUserActividades(uid: string): Promise<ActividadPersonal
   );
 }
 
+export async function deleteUserActividad(uid: string, actividadId: string): Promise<void> {
+  return restFirstWrite(
+    () => deleteDocRest(`usuarios/${uid}/actividades/${actividadId}`),
+    () => deleteDoc(doc(db, 'usuarios', uid, 'actividades', actividadId))
+  );
+}
+
 // ─── CRUD genérico por colección ─────────────────────────────────────────────
 
 function makeCrud<T extends { id: string }>(colName: string) {

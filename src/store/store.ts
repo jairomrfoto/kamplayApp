@@ -11,7 +11,7 @@ import {
   firestoreCabanas, firestoreMateriales, firestoreActividades,
   firestoreHorarios, firestoreMenus, firestoreIncidencias, firestoreNovedades,
   loadCampData, getCampByCode, saveCampInfo, saveCoordinator,
-  saveUserActividad,
+  saveUserActividad, deleteUserActividad,
 } from '../services/firestore';
 import type { CampData } from '../services/firestore';
 import { auth } from '../config/firebase';
@@ -84,6 +84,8 @@ interface AppState {
   deleteActividad: (actividadId: string) => void;
   setMisActividades: (actividades: ActividadPersonal[]) => void;
   addMiActividad: (actividad: ActividadPersonal) => void;
+  deleteMiActividad: (actividadId: string) => void;
+  updateMiActividad: (actividad: ActividadPersonal) => void;
 
   // ── Novedades ────────────────────────────────────────────────────────────
   setNovedades: (novedades: Novedad[]) => void;
@@ -406,6 +408,20 @@ export const useStore = create<AppState>((set, get) => ({
       misActividades: state.misActividades.some(a => a.id === actividad.id)
         ? state.misActividades
         : [...state.misActividades, actividad],
+    }));
+    const uid = auth.currentUser?.uid;
+    if (uid) saveUserActividad(uid, actividad).catch(console.error);
+  },
+
+  deleteMiActividad: (actividadId) => {
+    set((state) => ({ misActividades: state.misActividades.filter(a => a.id !== actividadId) }));
+    const uid = auth.currentUser?.uid;
+    if (uid) deleteUserActividad(uid, actividadId).catch(console.error);
+  },
+
+  updateMiActividad: (actividad) => {
+    set((state) => ({
+      misActividades: state.misActividades.map(a => a.id === actividad.id ? actividad : a),
     }));
     const uid = auth.currentUser?.uid;
     if (uid) saveUserActividad(uid, actividad).catch(console.error);

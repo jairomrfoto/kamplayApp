@@ -233,13 +233,16 @@ export interface ActividadPersonal {
   id: string;
   titulo: string;
   descripcion?: string;
+  objetivo?: string;
   categoria: string;
   duracion: number;
   edadMinima: number;
   edadMaxima: number;
   capacidadMaxima: number;
   ubicacion: string;
-  campId: string;
-  campNombre: string;
+  materiales?: string;
+  notas?: string;
+  campId?: string;
+  campNombre?: string;
   fechaGuardado: Date;
 }

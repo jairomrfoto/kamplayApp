@@ -363,7 +363,7 @@ const CampDirectory = () => {
             </p>
             <Link to="/create-camp"
               className="inline-flex items-center gap-2 bg-white text-orange-600 font-bold px-6 py-3 rounded-xl hover:bg-orange-50 shadow-md">
-              Crear mi programa gratis <ChevronRight size={16} />
+              Crear mi programa <ChevronRight size={16} />
             </Link>
           </div>
         )}

@@ -7,6 +7,7 @@ import DemoSectionBanner from '../components/DemoSectionBanner';
 import ActividadCard from '../components/actividades/ActividadCard';
 import CategoriaFilter from '../components/actividades/CategoriaFilter';
 import PlantillaCard from '../components/actividades/PlantillaCard';
+import MiActividadForm from '../components/MiActividadForm';
 import { actividadesEjemplo } from '../data/actividadesEjemplo';
 import type { ActividadPlantilla } from '../data/actividadesEjemplo';
 import type { ActividadPersonal } from '../types';
@@ -23,6 +24,7 @@ const Actividades = () => {
 
   const [tab, setTab] = useState<'campamento' | 'banco' | 'mia'>('campamento');
   const [showForm, setShowForm] = useState(false);
+  const [showMiaForm, setShowMiaForm] = useState(false);
   const [plantillaInicial, setPlantillaInicial] = useState<Partial<ActividadPlantilla> | undefined>();
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('todas');
   const [gridWidth, setGridWidth] = useState(window.innerWidth - 384);
@@ -85,13 +87,23 @@ const Actividades = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Actividades</h2>
-        <button
-          onClick={() => { setPlantillaInicial(undefined); setShowForm(true); }}
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
-        >
-          <Plus size={20} />
-          Nueva Actividad
-        </button>
+        {tab === 'mia' ? (
+          <button
+            onClick={() => setShowMiaForm(true)}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
+          >
+            <Plus size={20} />
+            Crear actividad
+          </button>
+        ) : (
+          <button
+            onClick={() => { setPlantillaInicial(undefined); setShowForm(true); }}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-2"
+          >
+            <Plus size={20} />
+            Nueva Actividad
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -203,9 +215,16 @@ const Actividades = () => {
             <div className="bg-white rounded-xl shadow-sm p-12 text-center">
               <User size={40} className="mx-auto text-gray-300 mb-3" />
               <p className="text-gray-500 font-medium mb-1">Tu biblioteca personal está vacía</p>
-              <p className="text-gray-400 text-sm mb-4">
-                Guarda tus propias plantillas desde el apartado <strong>Mi Biblioteca</strong> en tu perfil.
+              <p className="text-gray-400 text-sm mb-5">
+                Crea plantillas propias y vincúlalas a cualquier campamento cuando quieras.
               </p>
+              <button
+                onClick={() => setShowMiaForm(true)}
+                className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm transition-colors"
+              >
+                <Plus size={16} />
+                Crear actividad
+              </button>
             </div>
           ) : (
             <>
@@ -243,7 +262,7 @@ const Actividades = () => {
         </div>
       )}
 
-      {/* Modal form */}
+      {/* Camp activity form */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <ActividadForm
@@ -251,6 +270,11 @@ const Actividades = () => {
             initialData={plantillaInicial}
           />
         </div>
+      )}
+
+      {/* Personal activity form */}
+      {showMiaForm && (
+        <MiActividadForm onClose={() => setShowMiaForm(false)} />
       )}
     </div>
   );

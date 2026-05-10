@@ -66,11 +66,12 @@ const MonitorDashboard = () => {
   );
 
   const renderContent = () => {
-    // Profile and history are always accessible
+    // Always accessible — personal, no camp required
     if (activeTab === 'profile') return <Profile />;
     if (activeTab === 'history') return <CampHistory />;
+    if (activeTab === 'mis-actividades') return <MisActividades />;
 
-    // All operational tabs blocked while pending
+    // All camp-related tabs blocked while pending
     if (isPendiente) return <PendingAccessScreen />;
 
     switch (activeTab) {

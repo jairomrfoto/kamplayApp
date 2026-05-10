@@ -289,7 +289,7 @@ const Landing = () => {
             {[
               { value: '5 min', label: 'para crear tu primer programa', icon: Clock },
               { value: '3 roles', label: 'coordinador, monitor y familia', icon: Users },
-              { value: '0 €',    label: 'para empezar, sin tarjeta', icon: Award },
+              { value: '9 €',    label: 'desde, por evento · sin permanencia', icon: Award },
               { value: '100%',   label: 'sin papeles ni hojas de cálculo', icon: Zap },
             ].map(({ value, label, icon: Icon }) => (
               <div key={label} className="flex flex-col items-center gap-2">

@@ -26,7 +26,7 @@ const PLANS_EVENTO = [
     color: 'gray',
     features: [
       'Un campamento o campus',
-      'Hasta 3 días de duración',
+      'Campamento o campus de hasta 3 días',
       'Acampados, grupos y monitores',
       'Actividades y asistencia',
       'Editable 2 días post-evento',
@@ -40,7 +40,7 @@ const PLANS_EVENTO = [
     color: 'orange',
     features: [
       'Un campamento o campus',
-      'Hasta 7 días de duración',
+      'Campamento o campus de hasta 7 días',
       'Acampados, grupos y monitores',
       'Actividades, menú e incidencias',
       'Escáner de documentos con IA',

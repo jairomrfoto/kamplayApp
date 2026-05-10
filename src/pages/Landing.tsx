@@ -143,8 +143,8 @@ const faqs = [
     a: 'Kamplay es una plataforma de gestión para campamentos de verano y campus diurnos. Reúne en una sola app las herramientas que necesitan coordinadores, monitores y familias: gestión de participantes, área médica, actividades, comunicación y mucho más. Olvídate de los Excel y los grupos de WhatsApp.',
   },
   {
-    q: '¿Es gratuito Kamplay?',
-    a: 'Sí. Kamplay tiene un plan gratuito para empezar sin coste. Puedes crear tu programa, invitar a tu equipo y gestionar tu campamento desde el primer día sin introducir ninguna tarjeta de crédito.',
+    q: '¿Cuánto cuesta Kamplay?',
+    a: 'Kamplay funciona con planes de pago por evento: Express (9 €, hasta 3 días) y Estándar (15 €, hasta 7 días). Si organizas varios programas al año, el plan Profesional (30 €/mes o 250 €/año) incluye campamentos y campus ilimitados. No hay opción gratuita, pero puedes ver una demo sin registrarte.',
   },
   {
     q: '¿Para qué tipos de campamentos está diseñado?',
@@ -224,7 +224,7 @@ const Landing = () => {
               Iniciar sesión
             </Link>
             <Link to="/create-camp" className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shadow-sm">
-              Empezar gratis
+              Crear campamento
             </Link>
           </div>
         </div>
@@ -260,7 +260,7 @@ const Landing = () => {
               to="/create-camp"
               className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-orange-600 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
             >
-              Crear mi programa gratis <ChevronRight size={20} />
+              Crear mi campamento <ChevronRight size={20} />
             </Link>
             <Link
               to="/login"
@@ -271,7 +271,7 @@ const Landing = () => {
           </div>
 
           <p className="mt-6 text-orange-200 text-sm">
-            Registro gratuito · Sin tarjeta de crédito · Listo en 5 minutos
+            Desde 9 €/evento · Sin permanencia · Configuración en 5 minutos
           </p>
         </div>
 
@@ -422,7 +422,7 @@ const Landing = () => {
               {
                 step: '1', icon: Zap,
                 title: 'Crea tu programa',
-                desc: 'Regístrate gratis, elige entre campamento o campus y configura los datos básicos en menos de 5 minutos.',
+                desc: 'Regístrate, elige entre campamento o campus y configura los datos básicos en menos de 5 minutos.',
               },
               {
                 step: '2', icon: Users,
@@ -455,7 +455,7 @@ const Landing = () => {
               to="/create-camp"
               className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shadow-md hover:shadow-lg"
             >
-              Crear mi programa gratis <ChevronRight size={18} />
+              Crear mi campamento <ChevronRight size={18} />
             </Link>
           </div>
         </div>
@@ -539,7 +539,7 @@ const Landing = () => {
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Express</p>
               <p className="text-4xl font-extrabold text-gray-900 mb-1">9 €</p>
               <p className="text-sm text-gray-400 mb-1">pago único por evento</p>
-              <p className="text-xs text-orange-500 font-semibold mb-6">Hasta 3 días</p>
+              <p className="text-xs text-orange-500 font-semibold mb-6">Campamento o campus de hasta 3 días</p>
               <ul className="space-y-2.5 mb-8 flex-1">
                 {[
                   'Un campamento o campus',
@@ -565,7 +565,7 @@ const Landing = () => {
               <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-2">Estándar</p>
               <p className="text-4xl font-extrabold text-gray-900 mb-1">15 €</p>
               <p className="text-sm text-gray-400 mb-1">pago único por evento</p>
-              <p className="text-xs text-orange-500 font-semibold mb-6">Hasta 7 días</p>
+              <p className="text-xs text-orange-500 font-semibold mb-6">Campamento o campus de hasta 7 días</p>
               <ul className="space-y-2.5 mb-8 flex-1">
                 {[
                   'Un campamento o campus',
@@ -655,14 +655,14 @@ const Landing = () => {
             Únete a los coordinadores que ya gestionan sus campamentos de verano con Kamplay.
           </p>
           <p className="text-green-300 text-sm mb-10">
-            Gratis para empezar · Sin tarjeta de crédito · Configuración en 5 minutos
+            Desde 9 €/evento · Sin permanencia · Configuración en 5 minutos
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/create-camp"
               className="flex items-center justify-center gap-2 bg-white text-green-700 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
             >
-              Crear mi campamento gratis <ChevronRight size={20} />
+              Crear mi campamento <ChevronRight size={20} />
             </Link>
             <Link
               to="/login"

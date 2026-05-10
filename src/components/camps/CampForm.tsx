@@ -30,11 +30,11 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
   const [campType, setCampType] = useState<'campamento' | 'campus'>('campamento');
   const [formData, setFormData] = useState<CampFormData>({
     name: '',
-    monitorsCount: 1,
+    monitorsCount: 0,
     startDate: null,
     endDate: null,
     location: '',
-    maxCampers: 1,
+    maxCampers: 0,
     coordinators: [],
     mainCoordinator: '',
     joinCodes: { monitors: '', families: '' },
@@ -254,10 +254,12 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
           touched={touched.monitorsCount}
         >
           <input
-            type="number"
-            min="1"
-            value={formData.monitorsCount}
-            onChange={(e) => handleChange('monitorsCount', parseInt(e.target.value) || 1)}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="Ej: 5"
+            value={formData.monitorsCount || ''}
+            onChange={(e) => handleChange('monitorsCount', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
             onBlur={() => handleBlur('monitorsCount')}
             className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
           />
@@ -284,10 +286,12 @@ const CampForm = ({ planType = 'subscription', onCampCreated }: CampFormProps) =
         touched={touched.maxCampers}
       >
         <input
-          type="number"
-          min="1"
-          value={formData.maxCampers}
-          onChange={(e) => handleChange('maxCampers', parseInt(e.target.value) || 1)}
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          placeholder="Ej: 30"
+          value={formData.maxCampers || ''}
+          onChange={(e) => handleChange('maxCampers', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
           onBlur={() => handleBlur('maxCampers')}
           className="w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-400"
         />

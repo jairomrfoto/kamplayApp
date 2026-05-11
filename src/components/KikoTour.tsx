@@ -88,7 +88,7 @@ export default function KikoTour() {
   };
 
   return (
-    <div className="fixed bottom-0 right-0 z-40 flex items-end gap-0 pointer-events-none">
+    <div className="fixed bottom-12 right-0 z-40 flex items-end gap-0 pointer-events-none">
 
       {/* Card — floats above Kiko */}
       <div className="pointer-events-auto mb-6 mr-2 bg-white rounded-2xl shadow-2xl border-2 border-orange-200 p-4 w-72 relative self-end">

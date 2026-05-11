@@ -281,10 +281,10 @@ const Landing = () => {
             </div>
 
             {/* Right — Kiko */}
-            <div className="flex justify-center items-end relative">
+            <div className="flex flex-col justify-center items-center relative">
               <div className="relative">
-                {/* Speech bubble */}
-                <div className="absolute -top-6 -right-4 sm:-right-10 z-10 bg-white border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-xl max-w-[200px]">
+                {/* Speech bubble — hidden on mobile to avoid overlapping Kiko */}
+                <div className="hidden sm:block absolute -top-6 -right-10 z-10 bg-white border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-xl max-w-[200px]">
                   <p className="text-sm font-bold text-gray-800 leading-snug">¡Hola! Soy Kiko, tu guía en Kamplay 🏕️</p>
                   <div className="absolute -bottom-2.5 left-6 w-4 h-4 bg-white border-r-2 border-b-2 border-orange-300 rotate-45" />
                 </div>
@@ -293,6 +293,10 @@ const Landing = () => {
                   alt="Kiko, la mascota de Kamplay"
                   className="w-[280px] sm:w-[420px] md:w-[600px] object-contain kiko-float drop-shadow-2xl"
                 />
+              </div>
+              {/* Speech bubble below image on mobile only */}
+              <div className="sm:hidden mt-3 bg-white border-2 border-orange-300 rounded-2xl px-4 py-2.5 shadow-lg text-center">
+                <p className="text-sm font-bold text-gray-800">¡Hola! Soy Kiko, tu guía en Kamplay 🏕️</p>
               </div>
             </div>
 

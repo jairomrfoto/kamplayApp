@@ -91,7 +91,7 @@ export default function KikoTour() {
     <div className="fixed bottom-12 right-0 z-40 flex items-end gap-0 pointer-events-none">
 
       {/* Card — floats above Kiko */}
-      <div className="pointer-events-auto mb-6 mr-2 bg-white rounded-2xl shadow-2xl border-2 border-orange-200 p-4 w-72 relative self-end">
+      <div className="pointer-events-auto mb-4 sm:mb-6 mr-1 sm:mr-2 bg-white rounded-2xl shadow-2xl border-2 border-orange-200 p-3 sm:p-4 w-52 sm:w-72 relative self-end">
 
         {/* Close */}
         <button
@@ -155,7 +155,7 @@ export default function KikoTour() {
         <img
           src="/mascota.png"
           alt="Kiko"
-          className="w-40 sm:w-56 object-contain kiko-float drop-shadow-xl"
+          className="w-20 sm:w-56 object-contain kiko-float drop-shadow-xl"
         />
       </div>
 

@@ -127,6 +127,8 @@ interface AppState {
   // ── Demo mode ────────────────────────────────────────────────────────────
   isDemoMode: boolean;
   setDemoMode: (val: boolean) => void;
+  demoTourActive: boolean;
+  setDemoTourActive: (val: boolean) => void;
   setGrupos: (grupos: Grupo[]) => void;
   setCabanas: (cabanas: Cabana[]) => void;
   setMateriales: (materiales: Material[]) => void;
@@ -139,6 +141,7 @@ export const useStore = create<AppState>((set, get) => ({
   // ── Estado inicial ───────────────────────────────────────────────────────
   isLoading: false,
   isDemoMode: false,
+  demoTourActive: false,
   sidebarOpen: false,
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
@@ -660,6 +663,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setDemoMode: (val) => set({ isDemoMode: val }),
+  setDemoTourActive: (val) => set({ demoTourActive: val }),
   setGrupos: (grupos) => set({ grupos }),
   setCabanas: (cabanas) => set({ cabanas }),
   setMateriales: (materiales) => set({ materiales }),

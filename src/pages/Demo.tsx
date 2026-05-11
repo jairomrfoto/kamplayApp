@@ -28,6 +28,7 @@ export default function Demo() {
     setDemoMode, setCurrentCamp, setUserCamps, setCampers, setMonitores,
     setGrupos, setCabanas, setMateriales, setActividades, setMenus,
     setHorariosDiarios, setIncidencias, setNovedades, setCurrentCoordinator,
+    setDemoTourActive,
   } = useStore();
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function Demo() {
     setIncidencias(demoIncidencias);
     setNovedades(demoNovedades);
     setCurrentCoordinator(demoCoordinator);
+    setDemoTourActive(true);
     navigate('/coordinator-dashboard', { replace: true });
   }, []);
 

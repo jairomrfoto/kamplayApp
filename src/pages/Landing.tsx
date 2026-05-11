@@ -223,6 +223,9 @@ const Landing = () => {
             <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
               Iniciar sesión
             </Link>
+            <Link to="/demo" className="text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors border border-gray-200">
+              Ver demo
+            </Link>
             <Link to="/create-camp" className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shadow-sm">
               Crear campamento
             </Link>
@@ -263,10 +266,10 @@ const Landing = () => {
               Crear mi campamento <ChevronRight size={20} />
             </Link>
             <Link
-              to="/login"
+              to="/demo"
               className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-base px-7 py-4 rounded-2xl transition-all duration-200"
             >
-              Ya tengo cuenta
+              Ver demo en vivo
             </Link>
           </div>
 

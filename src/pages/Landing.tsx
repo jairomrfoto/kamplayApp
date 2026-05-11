@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Kiko from '../components/Kiko';
+import { Helmet } from 'react-helmet-async';
 import {
   ChevronRight, Check, Shield, Zap, Users, Heart,
   Calendar, ClipboardList, Package, BookOpen, MessageSquare,
@@ -207,6 +207,13 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
 const Landing = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
+      <Helmet>
+        <title>Kamplay · Software de Gestión para Campamentos y Campus de Verano</title>
+        <meta name="description" content="La plataforma todo-en-uno para gestionar campamentos de verano y campus diurnos. Coordinadores, monitores y familias en una sola app. Área médica, actividades y comunicación. Desde 9 €/evento." />
+        <link rel="canonical" href="https://kamplay.es/" />
+        <meta property="og:url" content="https://kamplay.es/" />
+        <meta property="og:title" content="Kamplay · Software para Campamentos y Campus de Verano" />
+      </Helmet>
 
       {/* ── Navbar ── */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-100 shadow-sm">

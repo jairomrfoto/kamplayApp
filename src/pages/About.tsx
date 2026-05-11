@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import Navigation from '../components/landing/Navigation';
 import { Shield, Users, Calendar, ClipboardCheck } from 'lucide-react';
 
@@ -28,6 +29,11 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Sobre Kamplay · Software para Campamentos de Verano</title>
+        <meta name="description" content="Conoce Kamplay, la plataforma que simplifica la gestión de campamentos de verano y campus diurnos. Creada para coordinadores, monitores y familias." />
+        <link rel="canonical" href="https://kamplay.es/about" />
+      </Helmet>
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -138,9 +138,17 @@ const Onboarding = () => {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex flex-col justify-center py-12 px-4">
       <div className="mx-auto w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🏕️</div>
+          <div className="flex justify-center mb-2">
+            <div className="relative inline-block">
+              <img src="/mascota.png" alt="Kiko" className="w-28 h-28 object-contain kiko-float" />
+            </div>
+          </div>
+          <div className="inline-block bg-white border-2 border-orange-300 rounded-2xl px-4 py-2.5 shadow-md mb-5 relative">
+            <p className="text-sm font-bold text-gray-800">¡Hola! Soy Kiko 👋 ¿Cuál es tu rol?</p>
+            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-l-2 border-t-2 border-orange-300 rotate-45" />
+          </div>
           <h1 className="text-2xl font-extrabold text-gray-900">¡Bienvenido a Kamplay!</h1>
-          <p className="text-gray-500 mt-2">¿Cuál es tu rol en el programa?</p>
+          <p className="text-gray-500 mt-2">Elige tu perfil para acceder a tu panel</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 space-y-3">

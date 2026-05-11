@@ -103,7 +103,13 @@ class ErrorBoundary extends React.Component<
 
 const NotFound = () => (
   <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 px-6 text-center">
-    <div className="text-6xl mb-4">🏕️</div>
+    <div className="relative mb-2">
+      <img src="/mascota.png" alt="Kiko perdido" className="w-36 h-36 object-contain kiko-float" />
+    </div>
+    <div className="bg-white border-2 border-orange-300 rounded-2xl px-5 py-3 shadow-md mb-6 relative">
+      <p className="text-sm font-bold text-gray-700">¡Ups! Me he perdido en el bosque… 🌲</p>
+      <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-l-2 border-t-2 border-orange-300 rotate-45" />
+    </div>
     <h1 className="text-3xl font-extrabold text-gray-800 mb-2">Página no encontrada</h1>
     <p className="text-gray-500 mb-6 max-w-sm">La URL que buscas no existe o ha cambiado de dirección.</p>
     <Link to="/" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl text-sm transition-colors">

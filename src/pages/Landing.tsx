@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Kiko from '../components/Kiko';
 import {
   ChevronRight, Check, Shield, Zap, Users, Heart,
   Calendar, ClipboardList, Package, BookOpen, MessageSquare,
@@ -242,40 +243,60 @@ const Landing = () => {
           <span className="absolute bottom-8 right-8 text-5xl">🏔️</span>
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 md:py-32 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/20 border border-white/30 text-white text-xs font-bold px-4 py-1.5 rounded-full mb-8 uppercase tracking-wider">
-            <Award size={13} /> Software para campamentos y campus de verano
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+            {/* Left — copy */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-white/20 border border-white/30 text-white text-xs font-bold px-4 py-1.5 rounded-full mb-8 uppercase tracking-wider">
+                <Award size={13} /> Software para campamentos y campus de verano
+              </div>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                Gestiona tu campamento<br className="hidden sm:block" /> de verano sin caos
+              </h1>
+              <p className="text-lg sm:text-xl text-orange-100 max-w-xl mb-4">
+                La plataforma todo-en-uno que coordinadores, monitores y familias necesitaban.
+                Participantes, área médica, actividades y comunicación — todo en una sola app.
+              </p>
+              <p className="text-sm text-orange-200 mb-10 max-w-lg">
+                Diseñada para campamentos con pernocta y campus diurnos. Sin papeles, sin Excel, sin WhatsApp.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+                <Link
+                  to="/create-camp"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-orange-600 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  Crear mi campamento <ChevronRight size={20} />
+                </Link>
+                <Link
+                  to="/demo"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-base px-7 py-4 rounded-2xl transition-all duration-200"
+                >
+                  Ver demo en vivo
+                </Link>
+              </div>
+              <p className="mt-6 text-orange-200 text-sm text-center lg:text-left">
+                Desde 9 €/evento · Sin permanencia · Configuración en 5 minutos
+              </p>
+            </div>
+
+            {/* Right — Kiko */}
+            <div className="flex justify-center items-end relative">
+              <div className="relative">
+                {/* Speech bubble */}
+                <div className="absolute -top-6 -right-4 sm:-right-10 z-10 bg-white border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-xl max-w-[200px]">
+                  <p className="text-sm font-bold text-gray-800 leading-snug">¡Hola! Soy Kiko, tu guía en Kamplay 🏕️</p>
+                  <div className="absolute -bottom-2.5 left-6 w-4 h-4 bg-white border-r-2 border-b-2 border-orange-300 rotate-45" />
+                </div>
+                <img
+                  src="/kiko.png"
+                  alt="Kiko, la mascota de Kamplay"
+                  className="w-56 sm:w-72 md:w-80 object-contain kiko-float drop-shadow-2xl"
+                />
+              </div>
+            </div>
+
           </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-            Gestiona tu campamento<br className="hidden sm:block" /> de verano sin caos
-          </h1>
-          <p className="text-lg sm:text-xl text-orange-100 max-w-2xl mx-auto mb-4">
-            La plataforma todo-en-uno que coordinadores, monitores y familias necesitaban.
-            Participantes, área médica, actividades y comunicación — todo en una sola app.
-          </p>
-          <p className="text-sm text-orange-200 mb-10 max-w-lg mx-auto">
-            Diseñada para campamentos de verano con pernocta y campus diurnos. Sin papeles, sin Excel, sin WhatsApp.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              to="/create-camp"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-orange-600 font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-200"
-            >
-              Crear mi campamento <ChevronRight size={20} />
-            </Link>
-            <Link
-              to="/demo"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-base px-7 py-4 rounded-2xl transition-all duration-200"
-            >
-              Ver demo en vivo
-            </Link>
-          </div>
-
-          <p className="mt-6 text-orange-200 text-sm">
-            Desde 9 €/evento · Sin permanencia · Configuración en 5 minutos
-          </p>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0" aria-hidden="true">
@@ -303,6 +324,57 @@ const Landing = () => {
                 <p className="text-xs text-gray-500 leading-tight">{label}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Kiko — presentación de funcionalidades ── */}
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+
+            {/* Kiko */}
+            <div className="flex justify-center order-2 lg:order-1">
+              <div className="relative">
+                <img
+                  src="/mascota.png"
+                  alt="Kiko, la mascota de Kamplay"
+                  className="w-64 sm:w-80 object-contain kiko-float drop-shadow-xl"
+                />
+                <div className="absolute top-4 -right-4 bg-orange-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md rotate-6">
+                  ¡Tu guía! 🐿️
+                </div>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="order-1 lg:order-2">
+              <span className="inline-block text-orange-500 font-bold text-sm uppercase tracking-wider mb-3">Tu nuevo compañero</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">¡Hola! Soy Kiko</h2>
+              <p className="text-gray-500 mb-8 text-lg leading-relaxed">
+                Soy la ardilla monitora de Kamplay. Estoy aquí para que saques el máximo partido a la plataforma y tu campamento sea un éxito desde el primer día.
+              </p>
+              <div className="space-y-4">
+                {[
+                  { emoji: '👦', title: 'Ficha completa de cada acampado', desc: 'Datos médicos, alergias, medicación y contactos de emergencia siempre a mano.' },
+                  { emoji: '📅', title: 'Planificación de actividades', desc: 'Crea el horario, asigna monitores y grupos, y todo el equipo lo ve al instante.' },
+                  { emoji: '👨‍👩‍👧', title: 'Familias siempre informadas', desc: 'Panel para padres con menú, novedades y estado médico en tiempo real.' },
+                  { emoji: '🛡️', title: 'Equipo coordinado', desc: 'Gestiona los permisos de cada monitor y mantén el control del programa.' },
+                ].map(({ emoji, title, desc }) => (
+                  <div key={title} className="flex items-start gap-4 bg-white rounded-2xl p-4 shadow-sm border border-orange-100">
+                    <span className="text-2xl flex-shrink-0">{emoji}</span>
+                    <div>
+                      <p className="font-bold text-gray-800 text-sm">{title}</p>
+                      <p className="text-sm text-gray-500 mt-0.5 leading-snug">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link to="/demo" className="mt-8 inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors">
+                Ver todo en la demo <ChevronRight size={16} />
+              </Link>
+            </div>
+
           </div>
         </div>
       </section>

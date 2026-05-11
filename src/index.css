@@ -18,3 +18,15 @@
 
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+@keyframes kiko-float {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50%       { transform: translateY(-12px) rotate(1deg); }
+}
+.kiko-float { animation: kiko-float 3.5s ease-in-out infinite; }
+
+@keyframes kiko-peek {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+.kiko-peek { animation: kiko-peek 2.5s ease-in-out infinite; }

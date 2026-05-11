@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, X } from 'lucide-react';
+import { ChevronRight, X, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../store/store';
 
@@ -54,10 +54,9 @@ const TOUR_STEPS = [
 export default function KikoTour() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isDemoMode, demoTourActive, setDemoTourActive } = useStore();
+  const { isDemoMode, demoTourActive, setDemoTourActive, setDemoMode } = useStore();
   const [step, setStep] = useState(0);
 
-  // Sync step to current path when user navigates manually
   useEffect(() => {
     const idx = TOUR_STEPS.findIndex(s => location.pathname === s.path);
     if (idx !== -1) setStep(idx);
@@ -82,19 +81,18 @@ export default function KikoTour() {
     setDemoTourActive(false);
   };
 
-  return (
-    <div className="fixed bottom-20 right-4 z-40 flex items-end gap-3 max-w-sm pointer-events-none">
-      {/* Kiko */}
-      <div className="flex-shrink-0 pointer-events-none select-none">
-        <img
-          src="/mascota.png"
-          alt="Kiko"
-          className="w-20 h-20 object-contain kiko-float drop-shadow-lg"
-        />
-      </div>
+  const handleExitDemo = () => {
+    setDemoTourActive(false);
+    setDemoMode(false);
+    navigate('/');
+  };
 
-      {/* Card */}
-      <div className="pointer-events-auto bg-white rounded-2xl shadow-2xl border-2 border-orange-200 p-4 flex-1 relative">
+  return (
+    <div className="fixed bottom-0 right-0 z-40 flex items-end gap-0 pointer-events-none">
+
+      {/* Card — floats above Kiko */}
+      <div className="pointer-events-auto mb-6 mr-2 bg-white rounded-2xl shadow-2xl border-2 border-orange-200 p-4 w-72 relative self-end">
+
         {/* Close */}
         <button
           onClick={handleSkip}
@@ -104,8 +102,8 @@ export default function KikoTour() {
           <X size={15} />
         </button>
 
-        {/* Step indicator */}
-        <div className="flex items-center gap-1 mb-2">
+        {/* Step dots */}
+        <div className="flex items-center gap-1 mb-2 pr-5">
           {TOUR_STEPS.map((_, i) => (
             <div
               key={i}
@@ -131,13 +129,16 @@ export default function KikoTour() {
           {current.message}
         </p>
 
+        {/* Triangle pointing to Kiko */}
+        <div className="absolute -bottom-2.5 right-10 w-4 h-4 bg-white border-r-2 border-b-2 border-orange-200 rotate-45" />
+
         {/* Actions */}
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={handleSkip}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            onClick={handleExitDemo}
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
           >
-            Omitir tour
+            <LogOut size={12} /> Salir de la demo
           </button>
           <button
             onClick={handleNext}
@@ -148,6 +149,16 @@ export default function KikoTour() {
           </button>
         </div>
       </div>
+
+      {/* Kiko — grande */}
+      <div className="pointer-events-none select-none flex-shrink-0">
+        <img
+          src="/mascota.png"
+          alt="Kiko"
+          className="w-40 sm:w-56 object-contain kiko-float drop-shadow-xl"
+        />
+      </div>
+
     </div>
   );
 }

@@ -291,7 +291,7 @@ const Landing = () => {
                 <img
                   src="/mascota.png"
                   alt="Kiko, la mascota de Kamplay"
-                  className="w-64 sm:w-80 md:w-96 object-contain kiko-float drop-shadow-2xl"
+                  className="w-[280px] sm:w-[420px] md:w-[600px] object-contain kiko-float drop-shadow-2xl"
                 />
               </div>
             </div>
@@ -339,7 +339,7 @@ const Landing = () => {
                 <img
                   src="/mascota.png"
                   alt="Kiko, la mascota de Kamplay"
-                  className="w-72 sm:w-96 object-contain kiko-float drop-shadow-xl"
+                  className="w-[320px] sm:w-[500px] object-contain kiko-float drop-shadow-xl"
                 />
                 <div className="absolute top-4 -right-4 bg-orange-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md rotate-6">
                   ¡Tu guía! 🐿️

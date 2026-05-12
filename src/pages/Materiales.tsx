@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/store';
-import { Plus, Search, Package, Trash, X } from 'lucide-react';
+import { Plus, Search, Package, Trash, X, MapPin } from 'lucide-react';
 import type { Material } from '../types';
 import DemoSectionBanner from '../components/DemoSectionBanner';
 
-const ESTADOS: Material['estado'][] = ['Disponible', 'En Uso', 'Mantenimiento'];
+const ESTADOS: Material['estado'][] = ['Disponible', 'Pedido'];
 
 const statusColor = (estado: string) => {
   if (estado === 'Disponible') return 'bg-green-100 text-green-800';
-  if (estado === 'En Uso') return 'bg-blue-100 text-blue-800';
-  if (estado === 'Mantenimiento') return 'bg-yellow-100 text-yellow-800';
+  if (estado === 'Pedido')     return 'bg-amber-100 text-amber-800';
   return 'bg-gray-100 text-gray-800';
 };
+
+const emptyForm = { nombre: '', cantidad: 1, estado: 'Disponible' as Material['estado'], categoria: '', ubicacion: '' };
 
 const Materiales = () => {
   const { materiales, addMaterial, currentCamp } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ nombre: '', cantidad: 1, estado: 'Disponible' as Material['estado'], categoria: '' });
+  const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
   const filtered = materiales.filter(m =>
     m.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.categoria.toLowerCase().includes(searchTerm.toLowerCase())
+    m.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (m.ubicacion ?? '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -30,14 +32,14 @@ const Materiales = () => {
     if (!currentCamp) return;
     setSaving(true);
     addMaterial({ id: crypto.randomUUID(), ...form });
-    setForm({ nombre: '', cantidad: 1, estado: 'Disponible', categoria: '' });
+    setForm(emptyForm);
     setShowForm(false);
     setSaving(false);
   };
 
   return (
     <div className="space-y-6">
-      <DemoSectionBanner description="Inventario del campamento. Controla el stock, el estado y la disponibilidad de todos los materiales y equipos necesarios para las actividades." />
+      <DemoSectionBanner description="Inventario del campamento. Controla el stock, la disponibilidad y la ubicación de todos los materiales necesarios para las actividades." />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Inventario de Materiales</h2>
         <button
@@ -53,7 +55,7 @@ const Materiales = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
-            placeholder="Buscar materiales..."
+            placeholder="Buscar por nombre, categoría o ubicación..."
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
@@ -67,23 +69,32 @@ const Materiales = () => {
             </div>
           ) : (
             filtered.map(material => (
-              <div key={material.id} className="border rounded-lg p-4">
-                <div className="flex items-start justify-between">
+              <div key={material.id} className="border rounded-xl p-4 hover:shadow-sm transition-shadow">
+                <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 rounded-lg">
+                    <div className="p-2 bg-orange-100 rounded-lg flex-shrink-0">
                       <Package className="text-orange-600" size={20} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-800">{material.nombre}</h3>
-                      <p className="text-sm text-gray-500">{material.categoria}</p>
+                      <h3 className="font-semibold text-gray-800 leading-tight">{material.nombre}</h3>
+                      <p className="text-xs text-gray-500">{material.categoria}</p>
                     </div>
                   </div>
-                </div>
-                <div className="mt-3 flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Cantidad: <span className="font-medium text-gray-800">{material.cantidad}</span></span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor(material.estado)}`}>
+                  <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${statusColor(material.estado)}`}>
                     {material.estado}
                   </span>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between text-sm">
+                  <span className="text-gray-500">
+                    Cantidad: <span className="font-medium text-gray-800">{material.cantidad}</span>
+                  </span>
+                  {material.ubicacion && (
+                    <span className="flex items-center gap-1 text-xs text-gray-500">
+                      <MapPin size={11} className="text-gray-400" />
+                      {material.ubicacion}
+                    </span>
+                  )}
                 </div>
               </div>
             ))
@@ -91,7 +102,7 @@ const Materiales = () => {
         </div>
       </div>
 
-      {/* Add material modal */}
+      {/* Modal añadir material */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl w-full max-w-md p-6">
@@ -120,7 +131,16 @@ const Materiales = () => {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación <span className="text-gray-400 font-normal">(opcional)</span></label>
+                <input
+                  value={form.ubicacion}
+                  onChange={e => setForm({ ...form, ubicacion: e.target.value })}
+                  placeholder="Ej: Almacén A, Caja 3, Sala de monitores..."
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
                   <input

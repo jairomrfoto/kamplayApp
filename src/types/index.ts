@@ -38,7 +38,6 @@ export interface Monitor {
   especialidad: string;
   grupoAsignado: string;
   cabanaAsignada: string;
-  encuestas: EncuestaMonitor[];
   permisos: {
     editarActividades: boolean;
     editarMateriales: boolean;
@@ -52,12 +51,6 @@ export interface Monitor {
   email?: string;
 }
 
-export interface EncuestaMonitor {
-  id: string;
-  monitorId: string;
-  fecha: Date;
-  respuestas: Record<string, string | number | boolean>;
-}
 
 export interface EvaluacionGrupo {
   id: string;
@@ -102,8 +95,9 @@ export interface Material {
   id: string;
   nombre: string;
   cantidad: number;
-  estado: 'Disponible' | 'En Uso' | 'Mantenimiento';
+  estado: 'Disponible' | 'Pedido';
   categoria: string;
+  ubicacion?: string;
 }
 
 export interface Actividad {

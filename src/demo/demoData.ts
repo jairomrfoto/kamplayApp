@@ -31,25 +31,25 @@ export const demoCamp: Camp = {
 export const demoMonitores: Monitor[] = [
   {
     id: 'mon1', nombre: 'Laura Martínez', especialidad: 'Deportes acuáticos',
-    grupoAsignado: 'grp1', cabanaAsignada: 'cab1', encuestas: [],
+    grupoAsignado: 'grp1', cabanaAsignada: 'cab1', 
     permisos: { editarActividades: true, editarMateriales: true, editarGrupos: true, editarCabanas: false, editarAreaMedica: false, asistencia: true },
     foto: '', email: 'laura@demo.kamplay.es',
   },
   {
     id: 'mon2', nombre: 'Carlos Ruiz', especialidad: 'Aventura y montaña',
-    grupoAsignado: 'grp2', cabanaAsignada: 'cab2', encuestas: [],
+    grupoAsignado: 'grp2', cabanaAsignada: 'cab2', 
     permisos: { editarActividades: true, editarMateriales: false, editarGrupos: false, editarCabanas: false, editarAreaMedica: false, asistencia: true },
     foto: '', email: 'carlos@demo.kamplay.es',
   },
   {
     id: 'mon3', nombre: 'Ana García', especialidad: 'Manualidades y creatividad',
-    grupoAsignado: 'grp3', cabanaAsignada: 'cab3', encuestas: [],
+    grupoAsignado: 'grp3', cabanaAsignada: 'cab3', 
     permisos: { editarActividades: true, editarMateriales: true, editarGrupos: false, editarCabanas: false, editarAreaMedica: true, asistencia: true },
     foto: '', email: 'ana@demo.kamplay.es',
   },
   {
     id: 'mon4', nombre: 'David López', especialidad: 'Educación ambiental',
-    grupoAsignado: 'grp1', cabanaAsignada: 'cab1', encuestas: [],
+    grupoAsignado: 'grp1', cabanaAsignada: 'cab1', 
     permisos: { editarActividades: false, editarMateriales: false, editarGrupos: false, editarCabanas: false, editarAreaMedica: false, asistencia: true },
     foto: '', email: 'david@demo.kamplay.es',
   },
@@ -137,11 +137,11 @@ export const demoCabanas: Cabana[] = [
 export const demoMateriales: Material[] = [
   { id: 'mat1', nombre: 'Kayaks (x4)', cantidad: 4, estado: 'Disponible', categoria: 'Deportes acuáticos' },
   { id: 'mat2', nombre: 'Cascos de escalada', cantidad: 12, estado: 'Disponible', categoria: 'Aventura' },
-  { id: 'mat3', nombre: 'Cuerdas de escalada (30 m)', cantidad: 3, estado: 'En Uso', categoria: 'Aventura' },
+  { id: 'mat3', nombre: 'Cuerdas de escalada (30 m)', cantidad: 3, estado: 'Disponible', categoria: 'Aventura' },
   { id: 'mat4', nombre: 'Botiquín de primeros auxilios', cantidad: 2, estado: 'Disponible', categoria: 'Sanidad' },
   { id: 'mat5', nombre: 'Pinturas y pinceles', cantidad: 30, estado: 'Disponible', categoria: 'Manualidades' },
   { id: 'mat6', nombre: 'Tiendas de campaña (6 plazas)', cantidad: 5, estado: 'Disponible', categoria: 'Equipamiento' },
-  { id: 'mat7', nombre: 'Sacos de dormir', cantidad: 15, estado: 'Mantenimiento', categoria: 'Equipamiento' },
+  { id: 'mat7', nombre: 'Sacos de dormir', cantidad: 15, estado: 'Pedido', categoria: 'Equipamiento' },
 ];
 
 // ── Actividades ───────────────────────────────────────────────────────────────

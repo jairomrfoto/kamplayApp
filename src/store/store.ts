@@ -3,7 +3,7 @@ import { initialData } from './initialData';
 import type {
   Camper, Monitor, Grupo, Cabana, Material,
   Actividad, HorarioDiario, MenuItem, Incident,
-  EncuestaMonitor, EvaluacionGrupo, EvaluacionCamper, ActividadPersonal, Novedad,
+  EvaluacionGrupo, EvaluacionCamper, ActividadPersonal, Novedad,
 } from '../types';
 import type { Camp, CampCoordinator } from '../types/camp';
 import {
@@ -105,7 +105,6 @@ interface AppState {
   asignarMonitorACabana: (monitorId: string, cabanaId: string) => void;
 
   // ── Encuestas y evaluaciones ─────────────────────────────────────────────
-  addEncuestaMonitor: (encuesta: EncuestaMonitor) => void;
   addEvaluacionGrupo: (evaluacion: EvaluacionGrupo) => void;
   addEvaluacionCamper: (evaluacion: EvaluacionCamper) => void;
 
@@ -524,22 +523,6 @@ export const useStore = create<AppState>((set, get) => ({
       const cabana = cabanas.find(c => c.id === cabanaId);
       const monitor = monitores.find(m => m.id === monitorId);
       if (cabana) firestoreCabanas.save(currentCamp.id, cabana).catch(console.error);
-      if (monitor) firestoreMonitores.save(currentCamp.id, monitor).catch(console.error);
-    }
-  },
-
-  // ── Encuestas y evaluaciones ─────────────────────────────────────────────
-  addEncuestaMonitor: (encuesta) => {
-    set((state) => ({
-      monitores: state.monitores.map(m =>
-        m.id === encuesta.monitorId
-          ? { ...m, encuestas: [...m.encuestas, encuesta] }
-          : m
-      ),
-    }));
-    const { currentCamp, monitores } = get();
-    if (currentCamp?.id) {
-      const monitor = monitores.find(m => m.id === encuesta.monitorId);
       if (monitor) firestoreMonitores.save(currentCamp.id, monitor).catch(console.error);
     }
   },

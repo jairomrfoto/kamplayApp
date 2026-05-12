@@ -1,13 +1,18 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/store';
 
 export default function DemoModeBanner() {
-  const { isDemoMode } = useStore();
+  const { isDemoMode, setDemoMode } = useStore();
   const navigate = useNavigate();
 
   if (!isDemoMode) return null;
+
+  const handleExit = () => {
+    setDemoMode(false);
+    navigate('/');
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
@@ -28,13 +33,22 @@ export default function DemoModeBanner() {
               {' '}· Estás explorando Kamplay con datos de ejemplo
             </span>
           </p>
-          <button
-            onClick={() => navigate('/mi-plan')}
-            className="flex items-center gap-1.5 flex-shrink-0 text-xs sm:text-sm font-bold bg-white text-orange-600 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
-          >
-            Crear mi campamento
-            <ArrowRight size={13} />
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={handleExit}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold bg-white/20 hover:bg-white/30 border border-white/30 text-white px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+            >
+              <ArrowLeft size={13} />
+              Volver
+            </button>
+            <button
+              onClick={() => navigate('/mi-plan')}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold bg-white text-orange-600 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+            >
+              Crear mi campamento
+              <ArrowRight size={13} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

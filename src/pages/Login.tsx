@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Tent, Loader, Eye, EyeOff, CheckCircle, AlertCircle, Mail } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { saveUserProfile } from '../services/firestore';
 import { setLocalProfile } from '../utils/localProfile';
@@ -97,7 +99,6 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
 
 // ── Component ────────────────────────────────────────────────────────────────
 type Mode = 'login' | 'register';
@@ -136,18 +137,19 @@ const Login = () => {
   useEffect(() => {
     if (authLoading) return;
     if (!user?.emailVerified) return;
-    if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
-      // Ensure admin has a usuarios document so admin panel loads correctly
-      saveUserProfile({
-        uid: user.uid, campId: '', role: 'coordinator',
-        email: user.email || '',
-        nombre: user.displayName || user.email?.split('@')[0] || '',
-      }).catch(() => {});
-      setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
-      navigate('/admin', { replace: true });
-    } else {
-      navigate('/onboarding', { replace: true });
-    }
+    getDoc(doc(db, 'admins', user.uid)).then(snap => {
+      if (snap.exists()) {
+        saveUserProfile({
+          uid: user.uid, campId: '', role: 'coordinator',
+          email: user.email || '',
+          nombre: user.displayName || user.email?.split('@')[0] || '',
+        }).catch(() => {});
+        setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
+    }).catch(() => navigate('/onboarding', { replace: true }));
   }, [user, authLoading]);
 
   // Lockout countdown

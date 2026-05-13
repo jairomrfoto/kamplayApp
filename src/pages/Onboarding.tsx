@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { saveUserProfile, getUserProfile } from '../services/firestore';
@@ -59,6 +60,8 @@ const Onboarding = () => {
           setLocalProfile(user.uid, { role: profile.role as Role, campId: profile.campId || '' });
           redirectByRole(profile.role as Role, navigate);
         } else {
+          // First access after email verification — send welcome email once
+          httpsCallable(getFunctions(undefined, 'europe-west1'), 'sendWelcomeEmail')({}).catch(() => {});
           setChecking(false);
         }
       })

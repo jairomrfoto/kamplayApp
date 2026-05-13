@@ -7,13 +7,13 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
-  sendPasswordResetEmail,
   sendEmailVerification,
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
   type User,
 } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth, googleProvider } from '../config/firebase';
 
 export function useAuth() {
@@ -63,7 +63,8 @@ export function useAuth() {
   };
 
   const sendPasswordReset = async (email: string) => {
-    await sendPasswordResetEmail(auth, email);
+    const fn = httpsCallable(getFunctions(undefined, 'europe-west1'), 'requestPasswordReset');
+    await fn({ email });
   };
 
   const changePassword = async (currentPassword: string, newPassword: string) => {

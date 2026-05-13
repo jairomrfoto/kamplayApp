@@ -20,7 +20,7 @@
  *   firebase functions:secrets:set SMTP_PASS
  */
 
-const functions  = require('firebase-functions');
+const functions  = require('firebase-functions/v1');
 const { defineSecret } = require('firebase-functions/params');
 const admin      = require('firebase-admin');
 const nodemailer = require('nodemailer');

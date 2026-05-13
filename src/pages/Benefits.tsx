@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import Navigation from '../components/landing/Navigation';
 import { Heart, Brain, Users, Sun } from 'lucide-react';
 
@@ -48,6 +49,11 @@ const Benefits = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Beneficios de Kamplay · Gestión de Campamentos sin Estrés</title>
+        <meta name="description" content="Descubre cómo Kamplay transforma la gestión de tu campamento: menos papeles, más control, familias informadas y equipo coordinado desde el móvil." />
+        <link rel="canonical" href="https://kamplay.es/benefits" />
+      </Helmet>
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

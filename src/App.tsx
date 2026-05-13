@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { Loader } from 'lucide-react';
 import DemoModeBanner from './components/DemoModeBanner';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Kiko from '../components/Kiko';
+import { Helmet } from 'react-helmet-async';
 import {
   ChevronRight, Check, Shield, Zap, Users, Heart,
   Calendar, ClipboardList, Package, BookOpen, MessageSquare,
@@ -207,6 +207,13 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
 const Landing = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
+      <Helmet>
+        <title>Kamplay · Software de Gestión para Campamentos y Campus de Verano</title>
+        <meta name="description" content="La plataforma todo-en-uno para gestionar campamentos de verano y campus diurnos. Coordinadores, monitores y familias en una sola app. Área médica, actividades y comunicación. Desde 9 €/evento." />
+        <link rel="canonical" href="https://kamplay.es/" />
+        <meta property="og:url" content="https://kamplay.es/" />
+        <meta property="og:title" content="Kamplay · Software para Campamentos y Campus de Verano" />
+      </Helmet>
 
       {/* ── Navbar ── */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-stone-100 shadow-sm">
@@ -281,18 +288,22 @@ const Landing = () => {
             </div>
 
             {/* Right — Kiko */}
-            <div className="flex justify-center items-end relative">
+            <div className="flex flex-col justify-center items-center relative">
               <div className="relative">
-                {/* Speech bubble */}
-                <div className="absolute -top-6 -right-4 sm:-right-10 z-10 bg-white border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-xl max-w-[200px]">
+                {/* Speech bubble — hidden on mobile to avoid overlapping Kiko */}
+                <div className="hidden sm:block absolute -top-6 -right-10 z-10 bg-white border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-xl max-w-[200px]">
                   <p className="text-sm font-bold text-gray-800 leading-snug">¡Hola! Soy Kiko, tu guía en Kamplay 🏕️</p>
                   <div className="absolute -bottom-2.5 left-6 w-4 h-4 bg-white border-r-2 border-b-2 border-orange-300 rotate-45" />
                 </div>
                 <img
-                  src="/kiko.png"
+                  src="/mascota.png"
                   alt="Kiko, la mascota de Kamplay"
-                  className="w-56 sm:w-72 md:w-80 object-contain kiko-float drop-shadow-2xl"
+                  className="w-[280px] sm:w-[420px] md:w-[600px] object-contain kiko-float drop-shadow-2xl"
                 />
+              </div>
+              {/* Speech bubble below image on mobile only */}
+              <div className="sm:hidden mt-3 bg-white border-2 border-orange-300 rounded-2xl px-4 py-2.5 shadow-lg text-center">
+                <p className="text-sm font-bold text-gray-800">¡Hola! Soy Kiko, tu guía en Kamplay 🏕️</p>
               </div>
             </div>
 
@@ -339,7 +350,7 @@ const Landing = () => {
                 <img
                   src="/mascota.png"
                   alt="Kiko, la mascota de Kamplay"
-                  className="w-64 sm:w-80 object-contain kiko-float drop-shadow-xl"
+                  className="w-[320px] sm:w-[500px] object-contain kiko-float drop-shadow-xl"
                 />
                 <div className="absolute top-4 -right-4 bg-orange-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md rotate-6">
                   ¡Tu guía! 🐿️

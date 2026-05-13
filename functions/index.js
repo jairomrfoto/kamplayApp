@@ -1,5 +1,5 @@
 /**
- * Kamplay — Cloud Functions  (redeploy: 2026-05-01b)
+ * Kamplay — Cloud Functions  (redeploy: 2026-05-13)
  *
  * ── Secretos (Google Secret Manager) — ejecutar UNA VEZ en tu terminal: ──────
  *   firebase functions:secrets:set STRIPE_SECRET_KEY
@@ -9,18 +9,18 @@
  *
  *   Cada comando te pedirá el valor de forma interactiva (no queda en el historial).
  *
- * ── Configuración no sensible — crea el archivo functions/.env: ───────────────
+ * ── Configuración no sensible — functions/.env: ───────────────────────────────
  *   APP_URL=https://kamplay.es
- *   SMTP_HOST=smtp.gmail.com
- *   SMTP_PORT=587
- *   SMTP_USER=tu@gmail.com
- *   SMTP_FROM=Kamplay <noreply@kamplay.es>
+ *   SMTP_HOST=smtp.strato.de
+ *   SMTP_PORT=465
+ *   SMTP_USER=equipo@kamplay.es
+ *   SMTP_FROM=Kiko de Kamplay <equipo@kamplay.es>
  *
- * ── SMTP_PASS debe ser una Contraseña de Aplicación de Google: ────────────────
- *   Google Account → Seguridad → Verificación en 2 pasos → Contraseñas de app
+ * ── SMTP_PASS: contraseña de equipo@kamplay.es en Strato ─────────────────────
+ *   firebase functions:secrets:set SMTP_PASS
  */
 
-const functions  = require('firebase-functions');
+const functions  = require('firebase-functions/v1');
 const { defineSecret } = require('firebase-functions/params');
 const admin      = require('firebase-admin');
 const nodemailer = require('nodemailer');
@@ -59,78 +59,193 @@ function getStripe() {
 let _transporter = null;
 function getTransporter() {
   if (!_transporter) {
+    const port = smtpPort();
     _transporter = nodemailer.createTransport({
       host:   smtpHost(),
-      port:   smtpPort(),
-      secure: false,
+      port,
+      secure: port === 465,   // SSL for 465, STARTTLS for 587
       auth: { user: smtpUser(), pass: SMTP_PASS.value() },
     });
   }
   return _transporter;
 }
 
-// ── Email HTML template ───────────────────────────────────────────────────────
-function buildVerificationEmail(verificationLink) {
-  const year = new Date().getFullYear();
+// ── Shared email layout helpers ───────────────────────────────────────────────
+function emailHeader() {
+  return `
+    <tr>
+      <td style="background:linear-gradient(135deg,#f97316,#ea580c);padding:32px 40px;text-align:center;">
+        <img src="https://kamplay.es/mascota.png" alt="Kiko" width="80" height="80"
+             style="display:inline-block;margin-bottom:12px;border-radius:50%;background:#fff3e8;padding:4px;" />
+        <p style="margin:0;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">⛺ Kamplay</p>
+        <p style="margin:4px 0 0;font-size:13px;color:#fed7aa;font-weight:500;">Tu pasión, su felicidad</p>
+      </td>
+    </tr>`;
+}
+
+function emailFooter(year) {
+  return `
+    <tr>
+      <td style="background:#f9fafb;padding:24px 40px;border-top:1px solid #f3f4f6;text-align:center;">
+        <p style="margin:0;font-size:12px;color:#9ca3af;">
+          © ${year} Kamplay · <a href="https://kamplay.es" style="color:#f97316;text-decoration:none;">kamplay.es</a>
+        </p>
+        <p style="margin:6px 0 0;font-size:11px;color:#d1d5db;">
+          Si tienes alguna duda escríbenos a
+          <a href="mailto:equipo@kamplay.es" style="color:#f97316;text-decoration:none;">equipo@kamplay.es</a>
+        </p>
+      </td>
+    </tr>`;
+}
+
+function emailWrapper(rows) {
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Activa tu cuenta de Kamplay</title>
 </head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:40px 16px;">
     <tr><td align="center">
       <table width="100%" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <tr>
-          <td style="background:#f97316;padding:32px 40px;text-align:center;">
-            <p style="margin:0;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">⛺ Kamplay</p>
-            <p style="margin:6px 0 0;font-size:13px;color:#fed7aa;font-weight:500;">Tu pasión, su felicidad</p>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:40px 40px 32px;">
-            <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">Activa tu cuenta</h1>
-            <p style="margin:0 0 24px;font-size:15px;color:#4b5563;line-height:1.6;">
-              Gracias por registrarte en Kamplay. Para empezar a gestionar tu campamento o campus de verano, confirma tu dirección de correo haciendo clic en el botón:
-            </p>
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td align="center" style="padding:8px 0 32px;">
-                <a href="${verificationLink}"
-                   style="display:inline-block;background:#f97316;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 36px;border-radius:12px;">
-                  Verificar mi correo
-                </a>
-              </td></tr>
-            </table>
-            <p style="margin:0 0 8px;font-size:13px;color:#6b7280;line-height:1.5;">
-              Si el botón no funciona, copia y pega este enlace en tu navegador:
-            </p>
-            <p style="margin:0 0 32px;font-size:12px;color:#9ca3af;word-break:break-all;">${verificationLink}</p>
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:16px 20px;">
-                <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
-                  ⏱ Este enlace es válido durante <strong>24 horas</strong>. Si no has creado esta cuenta, puedes ignorar este correo.
-                </p>
-              </td></tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="background:#f9fafb;padding:24px 40px;border-top:1px solid #f3f4f6;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#9ca3af;">
-              © ${year} Kamplay · <a href="https://kamplay.es" style="color:#f97316;text-decoration:none;">kamplay.es</a>
-            </p>
-            <p style="margin:6px 0 0;font-size:11px;color:#d1d5db;">
-              Recibes este correo porque alguien solicitó crear una cuenta con esta dirección.
-            </p>
-          </td>
-        </tr>
+        ${rows}
       </table>
     </td></tr>
   </table>
 </body>
 </html>`;
+}
+
+// ── Email templates ───────────────────────────────────────────────────────────
+function buildVerificationEmail(verificationLink) {
+  const year = new Date().getFullYear();
+  const body = `
+    <tr>
+      <td style="padding:36px 40px 32px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+          <tr>
+            <td style="background:#fff7ed;border-left:4px solid #f97316;border-radius:8px;padding:14px 18px;">
+              <p style="margin:0;font-size:14px;color:#7c2d12;line-height:1.5;">
+                👋 <strong>¡Hola! Soy Kiko.</strong> Me alegra mucho que te hayas unido a la familia Kamplay. Solo un pequeño paso más para empezar la aventura:
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <h1 style="margin:0 0 10px;font-size:21px;font-weight:700;color:#111827;">Confirma tu dirección de correo</h1>
+        <p style="margin:0 0 24px;font-size:15px;color:#4b5563;line-height:1.65;">
+          Haz clic en el botón de abajo para activar tu cuenta. Después podrás elegir tu rol y empezar a gestionar tu campamento o campus de verano.
+        </p>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td align="center" style="padding:4px 0 28px;">
+            <a href="${verificationLink}"
+               style="display:inline-block;background:#f97316;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 40px;border-radius:12px;letter-spacing:0.2px;">
+              ✅ Verificar mi correo
+            </a>
+          </td></tr>
+        </table>
+
+        <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Si el botón no funciona, copia este enlace en tu navegador:</p>
+        <p style="margin:0 0 28px;font-size:11px;color:#9ca3af;word-break:break-all;">${verificationLink}</p>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px 18px;">
+            <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
+              ⏱ Este enlace es válido durante <strong>24 horas</strong>. Si no has creado esta cuenta, ignora este correo.
+            </p>
+          </td></tr>
+        </table>
+      </td>
+    </tr>`;
+  return emailWrapper(emailHeader() + body + emailFooter(year));
+}
+
+function buildWelcomeEmail(nombre) {
+  const year  = new Date().getFullYear();
+  const saludo = nombre ? `¡Bienvenido/a, ${nombre}!` : '¡Bienvenido/a a la familia!';
+  const body = `
+    <tr>
+      <td style="padding:36px 40px 32px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+          <tr>
+            <td style="background:#f0fdf4;border-left:4px solid #22c55e;border-radius:8px;padding:14px 18px;">
+              <p style="margin:0;font-size:14px;color:#14532d;line-height:1.5;">
+                🎉 <strong>¡Tu cuenta ya está activa!</strong> Kiko y todo el equipo de Kamplay te damos la bienvenida.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <h1 style="margin:0 0 10px;font-size:21px;font-weight:700;color:#111827;">${saludo}</h1>
+        <p style="margin:0 0 20px;font-size:15px;color:#4b5563;line-height:1.65;">
+          Ya puedes acceder a tu panel y empezar a crear campamentos, gestionar acampados, organizar actividades y mucho más.
+        </p>
+
+        <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#111827;">¿Qué puedes hacer ahora?</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+          <tr><td style="padding:6px 0;font-size:14px;color:#4b5563;">⛺ &nbsp;Crear tu campamento o campus de verano</td></tr>
+          <tr><td style="padding:6px 0;font-size:14px;color:#4b5563;">👥 &nbsp;Añadir monitores y acampados</td></tr>
+          <tr><td style="padding:6px 0;font-size:14px;color:#4b5563;">📋 &nbsp;Planificar actividades y menús</td></tr>
+          <tr><td style="padding:6px 0;font-size:14px;color:#4b5563;">🩺 &nbsp;Gestionar el área médica</td></tr>
+        </table>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td align="center" style="padding:4px 0 8px;">
+            <a href="https://kamplay.es/onboarding"
+               style="display:inline-block;background:#f97316;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 40px;border-radius:12px;">
+              🚀 Ir a mi panel
+            </a>
+          </td></tr>
+        </table>
+      </td>
+    </tr>`;
+  return emailWrapper(emailHeader() + body + emailFooter(year));
+}
+
+function buildPasswordResetEmail(resetLink) {
+  const year = new Date().getFullYear();
+  const body = `
+    <tr>
+      <td style="padding:36px 40px 32px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+          <tr>
+            <td style="background:#eff6ff;border-left:4px solid #3b82f6;border-radius:8px;padding:14px 18px;">
+              <p style="margin:0;font-size:14px;color:#1e3a8a;line-height:1.5;">
+                🔐 <strong>¡No te preocupes!</strong> Kiko está aquí para ayudarte a recuperar el acceso a tu cuenta.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <h1 style="margin:0 0 10px;font-size:21px;font-weight:700;color:#111827;">Restablecer contraseña</h1>
+        <p style="margin:0 0 24px;font-size:15px;color:#4b5563;line-height:1.65;">
+          Hemos recibido una solicitud para restablecer la contraseña de tu cuenta Kamplay. Haz clic en el botón para crear una nueva:
+        </p>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td align="center" style="padding:4px 0 28px;">
+            <a href="${resetLink}"
+               style="display:inline-block;background:#3b82f6;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 40px;border-radius:12px;">
+              🔑 Crear nueva contraseña
+            </a>
+          </td></tr>
+        </table>
+
+        <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Si el botón no funciona, copia este enlace en tu navegador:</p>
+        <p style="margin:0 0 28px;font-size:11px;color:#9ca3af;word-break:break-all;">${resetLink}</p>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 18px;">
+            <p style="margin:0;font-size:13px;color:#991b1b;line-height:1.5;">
+              ⏱ Este enlace caduca en <strong>1 hora</strong>. Si no has solicitado este cambio, ignora este correo; tu contraseña no se modificará.
+            </p>
+          </td></tr>
+        </table>
+      </td>
+    </tr>`;
+  return emailWrapper(emailHeader() + body + emailFooter(year));
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -229,7 +344,7 @@ exports.adminUpdateUser = functions
 exports.onUserCreated = functions
   .runWith({ secrets: ['SMTP_PASS'] })
   .auth.user().onCreate(async (user) => {
-    if (user.emailVerified || !user.email) return null;
+    if (!user.email) return null;
 
     const smtpUserVal = smtpUser();
     const smtpPassVal = SMTP_PASS.value();
@@ -239,6 +354,24 @@ exports.onUserCreated = functions
       return null;
     }
 
+    if (user.emailVerified) {
+      // Google / social login — already verified, send welcome directly
+      const nombre = user.displayName || user.email.split('@')[0];
+      try {
+        await getTransporter().sendMail({
+          from:    smtpFrom(),
+          to:      user.email,
+          subject: '¡Bienvenido/a a Kamplay! 🎉',
+          html:    buildWelcomeEmail(nombre),
+        });
+        console.log(`✅ Welcome email sent to ${user.email}`);
+      } catch (err) {
+        console.error('Error sending welcome email:', err);
+      }
+      return null;
+    }
+
+    // Email/password — send verification first
     try {
       const verificationLink = await admin.auth().generateEmailVerificationLink(
         user.email,
@@ -247,7 +380,7 @@ exports.onUserCreated = functions
       await getTransporter().sendMail({
         from:    smtpFrom(),
         to:      user.email,
-        subject: 'Activa tu cuenta de Kamplay',
+        subject: 'Activa tu cuenta de Kamplay ✅',
         html:    buildVerificationEmail(verificationLink),
       });
       console.log(`✅ Verification email sent to ${user.email}`);
@@ -256,6 +389,81 @@ exports.onUserCreated = functions
     }
 
     return null;
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WELCOME EMAIL — called by client after first login post-verification
+// ─────────────────────────────────────────────────────────────────────────────
+exports.sendWelcomeEmail = functions
+  .region('europe-west1')
+  .runWith({ secrets: ['SMTP_PASS'] })
+  .https.onCall(async (data, context) => {
+    assertAuth(context);
+    const { uid } = context.auth;
+
+    // Prevent duplicate sends
+    const userRef = db.doc(`usuarios/${uid}`);
+    const snap    = await userRef.get();
+    if (snap.exists && snap.data().welcomeEmailSent) return { ok: true, skipped: true };
+
+    const authUser = await admin.auth().getUser(uid);
+    const nombre   = authUser.displayName || authUser.email.split('@')[0];
+
+    const smtpUserVal = smtpUser();
+    const smtpPassVal = SMTP_PASS.value();
+    if (!smtpUserVal || !smtpPassVal) return { ok: false, reason: 'smtp_not_configured' };
+
+    try {
+      await getTransporter().sendMail({
+        from:    smtpFrom(),
+        to:      authUser.email,
+        subject: '¡Bienvenido/a a Kamplay! 🎉',
+        html:    buildWelcomeEmail(nombre),
+      });
+      await userRef.set({ welcomeEmailSent: true }, { merge: true });
+      console.log(`✅ Welcome email sent to ${authUser.email}`);
+      return { ok: true };
+    } catch (err) {
+      console.error('Error sending welcome email:', err);
+      return { ok: false, reason: err.message };
+    }
+  });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PASSWORD RESET — custom email via Strato SMTP
+// ─────────────────────────────────────────────────────────────────────────────
+exports.requestPasswordReset = functions
+  .region('europe-west1')
+  .runWith({ secrets: ['SMTP_PASS'] })
+  .https.onCall(async (data, context) => {
+    const email = (data && data.email || '').trim().toLowerCase();
+    if (!email) throw new functions.https.HttpsError('invalid-argument', 'Email requerido.');
+
+    const smtpUserVal = smtpUser();
+    const smtpPassVal = SMTP_PASS.value();
+    if (!smtpUserVal || !smtpPassVal) throw new functions.https.HttpsError('unavailable', 'SMTP no configurado.');
+
+    // Always return success to avoid email enumeration attacks
+    try {
+      const resetLink = await admin.auth().generatePasswordResetLink(email, {
+        url: appUrl() + '/login',
+        handleCodeInApp: false,
+      });
+      await getTransporter().sendMail({
+        from:    smtpFrom(),
+        to:      email,
+        subject: 'Restablecer contraseña de Kamplay 🔑',
+        html:    buildPasswordResetEmail(resetLink),
+      });
+      console.log(`✅ Password reset email sent to ${email}`);
+    } catch (err) {
+      // Swallow "user not found" — never reveal if an email is registered
+      if (err.code !== 'auth/user-not-found') {
+        console.error('Error sending password reset email:', err);
+      }
+    }
+
+    return { ok: true };
   });
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { saveUserProfile, getUserProfile } from '../services/firestore';
 import { getLocalProfile, setLocalProfile } from '../utils/localProfile';
 
 type Role = 'coordinator' | 'monitor' | 'parent' | 'profesor';
-
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
 
 function redirectByRole(role: Role, navigate: (path: string, opts?: object) => void, replace = false) {
   const opts = replace ? { replace: true } : undefined;
@@ -31,21 +32,19 @@ const Onboarding = () => {
     // Block unverified email accounts (Google is always verified)
     if (!user.emailVerified) { navigate('/login'); return; }
 
-    // Admin shortcut — bypass normal role selection
-    if (ADMIN_EMAIL && user.email === ADMIN_EMAIL) {
+    // Admin shortcut — check admins collection (no email in client bundle)
+    getDoc(doc(db, 'admins', user.uid)).then(snap => {
+      if (!snap.exists()) return;
       const adminProfile = {
-        uid: user.uid,
-        campId: '',
+        uid: user.uid, campId: '',
         role: 'coordinator' as Role,
         email: user.email || '',
         nombre: user.displayName || user.email?.split('@')[0] || '',
       };
       setLocalProfile(user.uid, { role: 'coordinator', campId: '' });
-      saveUserProfile(adminProfile)
-        .catch(() => {})
-        .then(() => navigate('/admin', { replace: true }));
-      return;
-    }
+      saveUserProfile(adminProfile).catch(() => {});
+      navigate('/admin', { replace: true });
+    }).catch(() => {});
 
     const cached = getLocalProfile(user.uid);
     if (cached?.role) {
@@ -61,6 +60,8 @@ const Onboarding = () => {
           setLocalProfile(user.uid, { role: profile.role as Role, campId: profile.campId || '' });
           redirectByRole(profile.role as Role, navigate);
         } else {
+          // First access after email verification — send welcome email once
+          httpsCallable(getFunctions(undefined, 'europe-west1'), 'sendWelcomeEmail')({}).catch(() => {});
           setChecking(false);
         }
       })

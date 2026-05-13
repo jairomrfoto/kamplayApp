@@ -12,7 +12,8 @@ import ImportCampersModal from '../components/acampados/ImportCampersModal';
 const ITEM_SIZE = 64; // Altura de cada fila
 
 const Acampados = () => {
-  const { campers, addCamper, deleteCamper, currentCamp, loadFromFirestore } = useStore();
+  const { campers, addCamper, deleteCamper, currentCamp, loadFromFirestore, currentCoordinator } = useStore();
+  const isCoordinator = !!currentCoordinator;
   useEffect(() => { if (currentCamp?.id) loadFromFirestore(currentCamp.id, true); }, [currentCamp?.id]);
   const isCampus = currentCamp?.type === 'campus';
   const participantLabel = isCampus ? 'Participante' : 'Acampado';
@@ -77,14 +78,16 @@ const Acampados = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Gestión de {participantsLabel}</h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowImport(true)}
-            className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 flex items-center gap-1.5 text-sm"
-          >
-            <FileSpreadsheet size={16} />
-            <span className="hidden sm:inline">Importar Excel</span>
-            <span className="sm:hidden">Excel</span>
-          </button>
+          {isCoordinator && (
+            <button
+              onClick={() => setShowImport(true)}
+              className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 flex items-center gap-1.5 text-sm"
+            >
+              <FileSpreadsheet size={16} />
+              <span className="hidden sm:inline">Importar Excel</span>
+              <span className="sm:hidden">Excel</span>
+            </button>
+          )}
           <button
             onClick={() => setShowForm(true)}
             className="bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600 flex items-center gap-1.5 text-sm"

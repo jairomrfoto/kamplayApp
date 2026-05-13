@@ -2,9 +2,12 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ── Favicon & Icons ── -->
+    <link rel="icon" type="image/png" href="/mascota.png" />
+    <link rel="apple-touch-icon" href="/mascota.png" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#f97316" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -14,32 +17,58 @@
     <!-- ── Primary SEO ── -->
     <title>Kamplay · Software de Gestión para Campamentos y Campus de Verano</title>
     <meta name="title"       content="Kamplay · Software de Gestión para Campamentos y Campus de Verano" />
-    <meta name="description" content="La plataforma todo-en-uno para coordinadores, monitores y familias de campamentos de verano y campus. Gestiona acampados, actividades, área médica y comunicación desde una sola app." />
-    <meta name="keywords"    content="gestión campamentos verano, software campamentos, app coordinador campamento, campus verano niños, plataforma campamentos, organizar campamento verano, monitor campamento app, gestión campus verano España, software monitores campamento, seguimiento médico campamento" />
+    <meta name="description" content="La plataforma todo-en-uno para gestionar campamentos de verano y campus diurnos. Coordinadores, monitores y familias en una sola app. Área médica, actividades, asistencia y comunicación. Desde 9 €/evento." />
+    <meta name="keywords"    content="software campamentos verano, gestión campamentos, app campamento verano, campus verano niños, coordinador campamento, monitores campamento app, gestión campus diurno España, programa verano niños app, seguimiento médico campamento, asistencia campus verano" />
     <meta name="author"      content="Kamplay" />
     <meta name="robots"      content="index, follow" />
     <link rel="canonical"    href="https://kamplay.es/" />
+
+    <!-- ── Geo / Local SEO ── -->
+    <meta name="geo.region"      content="ES" />
+    <meta name="geo.placename"   content="España" />
+    <meta name="language"        content="Spanish" />
+    <meta name="content-language" content="es" />
 
     <!-- ── Open Graph / Facebook ── -->
     <meta property="og:type"        content="website" />
     <meta property="og:url"         content="https://kamplay.es/" />
     <meta property="og:site_name"   content="Kamplay" />
     <meta property="og:locale"      content="es_ES" />
-    <meta property="og:title"       content="Kamplay · Software de Gestión para Campamentos y Campus de Verano" />
-    <meta property="og:description" content="La plataforma todo-en-uno para coordinadores, monitores y familias de campamentos de verano. Gestión de acampados, actividades, área médica y comunicación en tiempo real." />
-    <meta property="og:image"       content="https://kamplay.es/og-image.png" />
+    <meta property="og:title"       content="Kamplay · Software para Campamentos y Campus de Verano" />
+    <meta property="og:description" content="Gestiona tu campamento de verano sin caos. Acampados, área médica, actividades y comunicación con familias — todo en una app. Desde 9 €/evento." />
+    <meta property="og:image"       content="https://kamplay.es/mascota.png" />
+    <meta property="og:image:width"  content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt"    content="Kiko, la mascota de Kamplay" />
 
     <!-- ── Twitter Card ── -->
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:url"         content="https://kamplay.es/" />
-    <meta name="twitter:title"       content="Kamplay · Software de Gestión para Campamentos y Campus de Verano" />
-    <meta name="twitter:description" content="La plataforma todo-en-uno para coordinadores, monitores y familias de campamentos de verano. Gestión de acampados, actividades y área médica en tiempo real." />
-    <meta name="twitter:image"       content="https://kamplay.es/og-image.png" />
+    <meta name="twitter:title"       content="Kamplay · Software para Campamentos y Campus de Verano" />
+    <meta name="twitter:description" content="Gestiona tu campamento de verano sin caos. Acampados, área médica, actividades y comunicación — todo en una app. Desde 9 €/evento." />
+    <meta name="twitter:image"       content="https://kamplay.es/mascota.png" />
 
     <!-- ── Fonts ── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- ── Structured Data: WebSite ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Kamplay",
+      "url": "https://kamplay.es",
+      "description": "Software de gestión para campamentos de verano y campus diurnos en España",
+      "inLanguage": "es",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://kamplay.es/directorio?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
     <!-- ── Structured Data: SoftwareApplication ── -->
     <script type="application/ld+json">
@@ -49,13 +78,40 @@
       "name": "Kamplay",
       "url": "https://kamplay.es",
       "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "Gestión de campamentos",
       "operatingSystem": "Web, iOS, Android",
-      "description": "Plataforma de gestión para campamentos de verano y campus diurnos. Coordinadores, monitores y familias cuentan con herramientas específicas para cada rol.",
+      "inLanguage": "es",
+      "description": "Plataforma de gestión para campamentos de verano y campus diurnos. Coordinadores, monitores y familias cuentan con herramientas específicas para cada rol: fichas médicas, actividades, asistencia, comunicación y mucho más.",
+      "screenshot": "https://kamplay.es/mascota.png",
       "offers": {
-        "@type": "Offer",
-        "price": "9",
+        "@type": "AggregateOffer",
+        "lowPrice": "9",
+        "highPrice": "250",
         "priceCurrency": "EUR",
-        "description": "Desde 9 € por evento"
+        "offerCount": "3",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Express",
+            "price": "9",
+            "priceCurrency": "EUR",
+            "description": "Campamento o campus de hasta 3 días"
+          },
+          {
+            "@type": "Offer",
+            "name": "Estándar",
+            "price": "15",
+            "priceCurrency": "EUR",
+            "description": "Campamento o campus de hasta 7 días"
+          },
+          {
+            "@type": "Offer",
+            "name": "Profesional",
+            "price": "30",
+            "priceCurrency": "EUR",
+            "description": "Campamentos y campus ilimitados por mes"
+          }
+        ]
       },
       "publisher": {
         "@type": "Organization",
@@ -65,11 +121,44 @@
       "featureList": [
         "Gestión de acampados y participantes",
         "Control de área médica y alergias",
-        "Planificación de actividades y calendario",
-        "Asistencia diaria para campus",
+        "Planificación de actividades y horarios",
+        "Asistencia diaria para campus diurnos",
         "Comunicación en tiempo real con familias",
-        "Gestión de cabañas y grupos"
-      ]
+        "Gestión de cabañas y grupos",
+        "Panel exclusivo para monitores",
+        "Panel exclusivo para familias",
+        "Control de materiales e inventario",
+        "Incidencias y seguimiento médico"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "3",
+        "bestRating": "5"
+      }
+    }
+    </script>
+
+    <!-- ── Structured Data: Organization ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Kamplay",
+      "url": "https://kamplay.es",
+      "logo": "https://kamplay.es/mascota.png",
+      "description": "Software de gestión para campamentos de verano y campus diurnos en España.",
+      "areaServed": {
+        "@type": "Country",
+        "name": "España"
+      },
+      "knowsAbout": [
+        "Gestión de campamentos de verano",
+        "Campus diurnos",
+        "Software para coordinadores de campamento",
+        "Aplicaciones para monitores"
+      ],
+      "sameAs": []
     }
     </script>
 
@@ -81,10 +170,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Qué es Kamplay?",
+          "name": "¿Qué es Kamplay y para qué sirve?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Kamplay es una plataforma de gestión para campamentos de verano y campus diurnos. Reúne en una sola app las herramientas que necesitan coordinadores, monitores y familias: gestión de participantes, área médica, actividades, comunicación y mucho más."
+            "text": "Kamplay es una plataforma de gestión para campamentos de verano y campus diurnos. Reúne en una sola app las herramientas que necesitan coordinadores, monitores y familias: gestión de participantes con datos médicos, área médica, actividades, asistencia diaria y comunicación en tiempo real."
           }
         },
         {
@@ -92,59 +181,54 @@
           "name": "¿Cuánto cuesta Kamplay?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Kamplay funciona con planes de pago por evento: Express (9 €, hasta 3 días) y Estándar (15 €, hasta 7 días). Para coordinadores con varios programas al año existe el plan Profesional (30 €/mes o 250 €/año) con campamentos y campus ilimitados. No hay opción gratuita."
+            "text": "Kamplay funciona con planes de pago por evento: Express (9 €, campamento de hasta 3 días) y Estándar (15 €, hasta 7 días). Para coordinadores con varios programas al año existe el plan Profesional (30 €/mes o 250 €/año) con campamentos y campus ilimitados. No hay opción gratuita, pero puedes explorar la plataforma con una demo sin registrarte."
           }
         },
         {
           "@type": "Question",
-          "name": "¿Para qué tipos de campamentos sirve Kamplay?",
+          "name": "¿Para qué tipos de campamentos está diseñado Kamplay?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Kamplay está diseñado tanto para campamentos de verano con pernocta (en cabañas o tiendas de campaña) como para campus diurnos sin pernocta. Se adapta a todo tipo de programas de verano para niños y jóvenes."
+            "text": "Kamplay está diseñado tanto para campamentos de verano con pernocta (en cabañas o tiendas de campaña) como para campus diurnos sin pernocta. Se adapta a programas de cualquier tamaño, desde 20 hasta cientos de participantes."
           }
         },
         {
           "@type": "Question",
-          "name": "¿Pueden los padres ver la información de sus hijos?",
+          "name": "¿Pueden los padres ver la información de sus hijos en el campamento?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sí. Los padres y tutores tienen acceso a un panel propio donde pueden ver el menú, las actividades, el estado médico de su hijo y las novedades del campamento en tiempo real, utilizando el código de acceso que les facilita el coordinador."
+            "text": "Sí. Los padres y tutores tienen acceso a un panel propio donde pueden consultar el menú diario, las actividades, el estado médico de su hijo y las novedades del campamento en tiempo real. Solo necesitan el código que les facilita el coordinador."
           }
         },
         {
           "@type": "Question",
-          "name": "¿Cómo se unen los monitores al campamento?",
+          "name": "¿Cómo se unen los monitores al campamento en Kamplay?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "El coordinador genera un código de acceso exclusivo para monitores. Basta con que compartan ese código y los monitores se unen al campamento al instante, con acceso a sus grupos y participantes asignados."
+            "text": "El coordinador genera un código de acceso exclusivo para monitores. Con ese código, los monitores se unen al instante y acceden a sus grupos, participantes asignados y todas las herramientas de gestión del día a día."
           }
         },
         {
           "@type": "Question",
-          "name": "¿Se puede usar Kamplay en el móvil?",
+          "name": "¿Se puede usar Kamplay en el móvil sin instalar nada?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sí. Kamplay está optimizado para funcionar en móvil, tablet y ordenador. No requiere descarga de ninguna app: funciona directamente desde el navegador en cualquier dispositivo."
+            "text": "Sí. Kamplay está optimizado para funcionar en móvil, tablet y ordenador sin necesidad de descargar ninguna app. Funciona directamente desde el navegador en cualquier dispositivo y sistema operativo."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué información médica se puede gestionar en Kamplay?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cada ficha de participante incluye alergias, intolerancias alimentarias, medicación con pauta y dosis, enfermedades crónicas y observaciones médicas. El área médica permite registrar incidencias y llevar un seguimiento completo durante todo el programa."
           }
         }
       ]
     }
     </script>
 
-    <!-- ── Structured Data: Organization ── -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Kamplay",
-      "url": "https://kamplay.es",
-      "logo": "https://kamplay.es/logo.png",
-      "description": "Software de gestión para campamentos de verano y campus diurnos en España.",
-      "sameAs": []
-    }
-    </script>
     <!-- ── Google Analytics 4 ── -->
-    <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QW2YCGR8F0"></script>
     <script>
       window.dataLayer = window.dataLayer || [];

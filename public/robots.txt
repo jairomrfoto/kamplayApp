@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /coordinator-dashboard/
+Disallow: /monitor-dashboard/
+Disallow: /parent-dashboard/
+Disallow: /profesor-dashboard/
+Disallow: /admin
+Disallow: /create-camp
+Disallow: /join-camp
+Disallow: /onboarding
+
+Sitemap: https://kamplay.es/sitemap.xml

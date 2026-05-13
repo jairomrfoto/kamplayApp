@@ -65,7 +65,7 @@ const JoinCamp = () => {
           especialidad: '',
           grupoAsignado: '',
           cabanaAsignada: '',
-          encuestas: [],
+          
           pendiente: true,
           permisos: {
             editarActividades: false,

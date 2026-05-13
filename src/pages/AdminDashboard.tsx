@@ -4,6 +4,8 @@ import {
   Users, Tent, CreditCard, LogOut, RefreshCw, Loader,
   Search, Shield, FlaskConical,
 } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import {
   adminGetAllUsers, adminGetAllCamps, adminGetAllPayments, adminGetCampStats,
@@ -11,8 +13,6 @@ import {
   type AdminUser, type AdminPayment,
 } from '../services/adminFirestore';
 import type { Camp } from '../types/camp';
-
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
 
 type Tab = 'overview' | 'usuarios' | 'campamentos' | 'pagos';
 
@@ -75,11 +75,13 @@ export default function AdminDashboard() {
   const [userSearch, setUserSearch] = useState('');
   const [campSearch, setCampSearch] = useState('');
 
-  // Guard: wait for auth, then redirect if not admin
+  // Guard: verify uid exists in admins collection (server-side source of truth)
   useEffect(() => {
     if (authLoading) return;
     if (user === null) { navigate('/login', { replace: true }); return; }
-    if (ADMIN_EMAIL && user.email !== ADMIN_EMAIL) { navigate('/', { replace: true }); }
+    getDoc(doc(db, 'admins', user.uid)).then(snap => {
+      if (!snap.exists()) navigate('/', { replace: true });
+    }).catch(() => navigate('/', { replace: true }));
   }, [user, authLoading, navigate]);
 
   const load = useCallback(async () => {

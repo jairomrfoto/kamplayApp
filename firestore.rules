@@ -1,4 +1,4 @@
-// Last deployed: 2026-05-01
+// Last deployed: 2026-05-12
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -21,6 +21,15 @@ service cloud.firestore {
     function isAdmin() {
       return isAuth() &&
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Camp member: user appears in the coordinators or monitors subcollection
+    function isCampMember(campId) {
+      return isAuth() && (
+        isCoordinator(campId) ||
+        exists(/databases/$(database)/documents/campamentos/$(campId)/coordinadores/$(request.auth.uid)) ||
+        exists(/databases/$(database)/documents/campamentos/$(campId)/monitores/$(request.auth.uid))
+      );
     }
 
     // Stripe-managed fields that only Cloud Functions (Admin SDK) may write
@@ -51,10 +60,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ── Join codes — any authenticated user can look up a code to join ────────
+    // ── Join codes — read: any authenticated user; write: only coordinators ──
     match /codigos/{code} {
       allow read: if isAuth();
-      allow write: if isAuth();
+      // Only the coordinator who owns the camp the code belongs to may write
+      allow create: if isAuth() && hasCoordinatorRole(request.auth.uid);
+      allow update, delete: if isAuth() && (
+        isCoordinator(resource.data.campId) || isAdmin()
+      );
     }
 
     // ── User profiles — each user manages only their own; admin reads/writes all ─
@@ -88,9 +101,9 @@ service cloud.firestore {
       }
 
       match /canales/{canalId}/mensajes/{msgId} {
-        allow read: if isAuth();
-        allow create: if isAuth() && request.resource.data.autorId == request.auth.uid;
-        allow update, delete: if isAuth() && resource.data.autorId == request.auth.uid;
+        allow read: if isCampMember(campId);
+        allow create: if isCampMember(campId) && request.resource.data.autorId == request.auth.uid;
+        allow update, delete: if isCampMember(campId) && resource.data.autorId == request.auth.uid;
       }
 
       // Parent ratings — one per parent (docId == parentUid)
@@ -99,9 +112,12 @@ service cloud.firestore {
         allow write: if isAuth() && request.auth.uid == uid;
       }
 
+      // ── Camp subcollections (acampados, monitores, actividades, etc.) ────────
+      // Read: any authenticated user belonging to the camp
+      // Write: only coordinators of this camp or admins
       match /{subcollection}/{docId} {
-        allow read: if isAuth();
-        allow write: if isAuth();
+        allow read: if isCampMember(campId);
+        allow write: if isCoordinator(campId) || isAdmin();
       }
     }
 
